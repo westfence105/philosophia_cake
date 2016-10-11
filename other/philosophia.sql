@@ -1,13 +1,13 @@
 -- 認証データ
-CREATE TABLE IF NOT EXIST users(
+CREATE TABLE IF NOT EXISTS users(
 	username VARCHAR(16) PRIMARY KEY,
-	passwoed VARCHAR(255)
+	password VARCHAR(255)
 );
 
 -- プロフィールデータ
-CREATE TABLE IF NOT EXIST profile_data(
-	username VARCHAR(16),
-	order INT DEFAULT -1,
+CREATE TABLE IF NOT EXISTS profile_data(
+	username VARCHAR(16), index(username),
+	order_key INT DEFAULT -1,
 	type TEXT,
 	data TEXT,
 --
