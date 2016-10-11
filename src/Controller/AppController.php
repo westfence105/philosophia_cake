@@ -43,6 +43,7 @@ class AppController extends Controller
 
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
+        $this->loadComponent('Csrf');
     }
 
     /**
@@ -58,5 +59,9 @@ class AppController extends Controller
         ) {
             $this->set('_serialize', true);
         }
+    }
+
+    public function index(){
+
     }
 }
