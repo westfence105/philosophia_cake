@@ -44,6 +44,11 @@ class AppController extends Controller
         $this->loadComponent('RequestHandler');
         $this->loadComponent('Flash');
         $this->loadComponent('Csrf');
+        $this->loadComponent('Auth', 
+                    [
+                        'authenticate' => 'Form' ,
+                        'loginAction' => [ 'controller' => 'Pages', 'action' => 'introduction' ]
+                    ]);
     }
 
     /**
