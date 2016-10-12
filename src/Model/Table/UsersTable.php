@@ -35,6 +35,10 @@ class UsersTable extends Table
         $this->primaryKey('username');
     }
 
+    public function isValidUsername($str){
+        return preg_match( '/^[_A-Za-z0-9]*$/', $str ) == 1;
+    }
+
     /**
      * Default validation rules.
      *
@@ -43,11 +47,33 @@ class UsersTable extends Table
      */
     public function validationDefault(Validator $validator)
     {
-        $validator
-            ->allowEmpty('username', 'create');
-
-        $validator
-            ->allowEmpty('password');
+        $validator->notEmpty( 'username', __('Username is empty.') )
+                  ->notEmpty( 'password', __('Password is empty.') )
+                  ->add( 'username', [
+                            'unique' => [
+                                'rule' => 'validateUnique',
+                                'provider' => 'table',
+                                'message' => __('Username already exists.')
+                            ] 
+                         ] )
+                  ->add( 'username', [
+                            'length'=> [
+                                'rule' => [ 'lengthBetween', 4, 16 ],
+                                'message' => __('Username have to be between 4 and 16 characters.')
+                            ]
+                         ] )
+                  ->add( 'password', [
+                            'length' => [
+                                'rule' => [ 'minLength', 8 ], 
+                                'message' => __('Password have to be over 8 characters.')
+                            ]
+                         ] )
+                  ->add( 'username', 'custom', [
+                            'rule' => [ $this, 'isValidUsername' ],
+                            'message' => __('Username can only contain letters, numbers or underscore(_).')
+                         ] )
+                  ->ascii( 'password', __('Password can only contain ASCII characters.') )
+            ;
 
         return $validator;
     }
