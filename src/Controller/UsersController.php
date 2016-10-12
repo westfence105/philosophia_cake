@@ -8,7 +8,7 @@ class UsersController extends AppController
     public function initialize(){
         parent::initialize();
 
-        $this->Auth->allow([ 'register' ]);
+        $this->Auth->allow([ 'login', 'register' ]);
     }
 
     public function index(){
