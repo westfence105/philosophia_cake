@@ -3,6 +3,9 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 
+use Cake\Network\Exception\BadRequestException;
+use Cake\Datasource\Exception\RecordNotFoundException;
+
 class UsersController extends AppController
 {
     public function initialize(){
@@ -55,6 +58,16 @@ class UsersController extends AppController
         }
         else {
             $this->set( 'entities', null );
+        }
+    }
+
+    public function profile( $username ){
+        try {
+            $user = $this->Users->get($username);
+            $this->set('username',$username);
+        }
+        catch( RecordNotFoundException $e ) {
+            $this->render('no_user');
         }
     }
 }
