@@ -68,7 +68,10 @@ class ProfileDataTableTest extends TestCase
      */
     public function testValidationDefault()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $entity = $this->ProfileData->newEntity([
+                'username' => 'test'
+            ]);
+        $this->assertEmpty($entity->errors());
     }
 
     /**

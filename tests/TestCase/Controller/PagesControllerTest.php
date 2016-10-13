@@ -32,25 +32,24 @@ class PagesControllerTest extends IntegrationTestCase
      *
      * @return void
      */
-    public function testMutlipleGet()
+    public function testAddUnauthenticatedFails()
     {
         $this->get('/');
-        $this->assertResponseOk();
-        $this->get('/');
-        $this->assertResponseOk();
+        $this->assertRedirect(['controller' => 'Pages', 'action' => 'introduction']);
     }
 
-    /**
-     * testDisplay method
-     *
-     * @return void
-     */
-    public function testDisplay()
-    {
-        $this->get('/pages/home');
+    public function testAddAuthenticated() {
+        $this->session([
+                'Auth' => [
+                    'User' => [
+                        'id' => 1,
+                        'username' => 'testuser'
+                    ]
+                ]
+            ]);
+
+        $this->get('/');
         $this->assertResponseOk();
-        $this->assertResponseContains('CakePHP');
-        $this->assertResponseContains('<html>');
     }
 
     /**
@@ -58,10 +57,10 @@ class PagesControllerTest extends IntegrationTestCase
      *
      * @return void
      */
-    public function testMissingTemplate()
+    public function testMissingMethod()
     {
         Configure::write('debug', false);
-        $this->get('/pages/not_existing');
+        $this->get('/not_existing');
 
         $this->assertResponseError();
         $this->assertResponseContains('Error');
@@ -72,14 +71,14 @@ class PagesControllerTest extends IntegrationTestCase
      *
      * @return void
      */
-    public function testMissingTemplateInDebug()
+    public function testMissingMethodInDebug()
     {
         Configure::write('debug', true);
-        $this->get('/pages/not_existing');
+        $this->get('/not_existing');
 
-        $this->assertResponseFailure();
-        $this->assertResponseContains('Missing Template');
+        $this->assertResponseError();
+        $this->assertResponseContains('Missing Method');
         $this->assertResponseContains('Stacktrace');
-        $this->assertResponseContains('not_existing.ctp');
+        $this->assertResponseContains('missing_action.ctp');
     }
 }
