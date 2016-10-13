@@ -31,6 +31,7 @@ class ProfileDataTable extends Table
         parent::initialize($config);
 
         $this->table('profile_data');
+        $this->belongsTo('Users', [ 'foreignKey' => 'username' ] );
     }
 
     /**
@@ -42,7 +43,7 @@ class ProfileDataTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
-            ->allowEmpty('username');
+            ->notEmpty('username');
 
         $validator
             ->integer('order_key')
@@ -66,7 +67,7 @@ class ProfileDataTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['username']));
+    //    $rules->add($rules->isUnique(['username']));
 
         return $rules;
     }

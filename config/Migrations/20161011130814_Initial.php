@@ -9,35 +9,31 @@ class Initial extends AbstractMigration
         $this->table( 'users', [ 'id' => false, 'primary_key' => ['username'] ])
             ->addColumn('username', 'string',
                 [
-                    'default' => null,
                     'limit' => 16,
                     'null' => false,
                 ])
             ->addColumn('password', 'string', [
-                'default' => null,
+                'default' => '',
                 'limit' => 255,
                 'null' => true,
             ])
             ->create();
 
-        $this->table('profile_data', [ 'id' => false, 'primary_key' => [''] ])
+        $this->table('profile_data', [ 'id' => false ])
             ->addColumn('username', 'string', [
-                'default' => null,
                 'limit' => 16,
-                'null' => true,
+                'null' => false,
             ])
             ->addColumn('order_key', 'integer', [
                 'default' => -1,
-                'limit' => 11,
+                'limit' => null,
                 'null' => true,
             ])
             ->addColumn('type', 'text', [
-                'default' => null,
                 'limit' => null,
                 'null' => true,
             ])
             ->addColumn('data', 'text', [
-                'default' => null,
                 'limit' => null,
                 'null' => true,
             ])

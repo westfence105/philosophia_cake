@@ -16,7 +16,7 @@ class AddLanguageToProfileData extends AbstractMigration
         $table->addColumn('language', 'string', [
             'default' => '',
             'limit' => 3,
-            'null' => false
+            'null' => true
         ]);
         $table->update();
     }

@@ -14,7 +14,7 @@ class AddLanguageToUser extends AbstractMigration
     {
         $table = $this->table('users');
         $table->addColumn('language', 'string', [
-            'default' => null,
+            'default' => '',
             'limit' => 3,
             'null' => true,
         ]);
