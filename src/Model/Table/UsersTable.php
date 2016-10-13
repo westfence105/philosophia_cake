@@ -48,7 +48,8 @@ class UsersTable extends Table
      */
     public function validationDefault(Validator $validator)
     {
-        $validator->notEmpty( 'username', __('Username is empty.') )
+        $validator->requirePresence([ 'username', 'password' ])
+                  ->notEmpty( 'username', __('Username is empty.') )
                   ->notEmpty( 'password', __('Password is empty.') )
                   ->add( 'username', [
                             'unique' => [
@@ -88,7 +89,7 @@ class UsersTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add( $rules->isUnique(['username']), __('Username already exists.') );
+        $rules->addCreate( $rules->isUnique(['username']), __('Username already exists.') );
 
         return $rules;
     }

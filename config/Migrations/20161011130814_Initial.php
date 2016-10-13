@@ -19,7 +19,7 @@ class Initial extends AbstractMigration
             ])
             ->create();
 
-        $this->table('profile_data', [ 'id' => false ])
+        $this->table('profile_data')
             ->addColumn('username', 'string', [
                 'limit' => 16,
                 'null' => false,

@@ -68,10 +68,24 @@ class ProfileDataTableTest extends TestCase
      */
     public function testValidationDefault()
     {
-        $entity = $this->ProfileData->newEntity([
-                'username' => 'test'
-            ]);
-        $this->assertEmpty($entity->errors());
+        $invalid_args = [ [], [ 't' => null ], [ 'username' => null ] ];
+        foreach ( $invalid_args as $key => $value ) {
+            $entity = $this->ProfileData->newEntity( $value );
+            $this->assertNotEmpty( $entity->errors(), json_encode( $value ) );
+        }
+
+        $valid_args = [
+                [
+                    'username' => 'test'
+                ]
+            ];
+        foreach ( $valid_args as $key => $value ) {
+            $entity = $this->ProfileData->newEntity( $value );
+            if( $entity->errors() ){
+                $this->ProfileData->save($entity);
+            }
+            $this->assertEmpty( $entity->errors(), json_encode( $value ) );
+        }
     }
 
     /**
