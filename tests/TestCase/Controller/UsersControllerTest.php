@@ -19,53 +19,53 @@ class UsersControllerTest extends IntegrationTestCase
         'app.users'
     ];
 
-    /**
-     * Test index method
-     *
-     * @return void
-     */
+    public function testUnauthenticatedFails(){
+        $this->get([ 'controller' => 'Users', 'action' => 'index' ]);
+        $this->assertRedirect([ 'controller' => 'Pages', 'action' => 'introduction' ]);
+    }
+
     public function testIndex()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
-    /**
-     * Test view method
-     *
-     * @return void
-     */
-    public function testView()
+    public function testHome()
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
 
-    /**
-     * Test add method
-     *
-     * @return void
-     */
-    public function testAdd()
+    public function testLogin()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $auth_data = [ 'username' => 'test', 'password' => 'password' ];
+        $this->enableCsrfToken();
+        $this->post([ 'controller' => 'Users', 'action' => 'register' ], $auth_data );
+        $this->assertResponseOk('failed to add user');
+
+        $this->post([ 'controller' => 'Users', 'action' => 'login' ], $auth_data );
+        $this->assertRedirect('/');
     }
 
-    /**
-     * Test edit method
-     *
-     * @return void
-     */
-    public function testEdit()
+    public function testRegister()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $auth_data = [ 'username' => 'test', 'password' => 'password' ];
+        $this->enableCsrfToken();
+        $this->post([ 'controller' => 'Users', 'action' => 'register' ], $auth_data );
+        $this->assertResponseOk('failed to add user');
     }
 
-    /**
-     * Test delete method
-     *
-     * @return void
-     */
-    public function testDelete()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
+    public function testProfile(){
+        $auth_data = [ 'username' => 'test', 'password' => 'password' ];
+        $this->enableCsrfToken();
+        $this->post([ 'controller' => 'Users', 'action' => 'register' ], $auth_data );
+        $this->session([ 'Auth' => [ 'User' => [ 'id' => 1, 'username' => 'testuser' ] ] ]);
+        $this->get('/users/test');
+        $this->assertResponseOk('failed to access profile page');
+
+        $this->get('/users');
+        $this->assertResponseCode( 404, 'response of request with no user' );
+
+        $this->get('/users/not_exist');
+        $this->assertResponseCode( 404, 'response of request for not exist user' );
     }
+
 }

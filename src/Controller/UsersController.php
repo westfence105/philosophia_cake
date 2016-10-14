@@ -5,6 +5,7 @@ use App\Controller\AppController;
 
 use Cake\I18n\I18n;
 
+use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\BadRequestException;
 use Cake\Datasource\Exception\RecordNotFoundException;
 
@@ -70,7 +71,7 @@ class UsersController extends AppController
             $this->set('username',$username);
         }
         catch( RecordNotFoundException $e ) {
-            $this->render('no_user');
+            throw new NotFoundException();
         }
     }
 }
