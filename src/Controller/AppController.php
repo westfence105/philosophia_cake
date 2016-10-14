@@ -17,6 +17,11 @@ namespace App\Controller;
 use Cake\Controller\Controller;
 use Cake\Event\Event;
 
+use Cake\I18n\I18n;
+
+use Cake\ORM\TableRegistry;
+use Cake\Datasource\Exception\RecordNotFoundException;
+
 /**
  * Application Controller
  *
@@ -49,6 +54,7 @@ class AppController extends Controller
                         'authenticate' => 'Form' ,
                         'loginAction' => [ 'controller' => 'Pages', 'action' => 'introduction' ]
                     ]);
+        $this->Auth->config('checkAuthIn', 'Controller.initialize');
     }
 
     /**
@@ -63,6 +69,20 @@ class AppController extends Controller
             in_array($this->response->type(), ['application/json', 'application/xml'])
         ) {
             $this->set('_serialize', true);
+        }
+    }
+
+    public function beforeFilter(Event $event){
+        $username = $this->Auth->user('username');
+        if( $username ) {
+            $users = TableRegistry::get('Users');
+            try {
+                $user = $users->get( $username );
+                I18n::locale( $user['language'] );
+            }
+            catch( RecordNotFoundException $e ){
+                $this->redirect( $this->Auth->logout() );
+            }
         }
     }
 }

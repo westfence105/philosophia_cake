@@ -38,20 +38,6 @@ class PagesControllerTest extends IntegrationTestCase
         $this->assertRedirect(['controller' => 'Pages', 'action' => 'introduction']);
     }
 
-    public function testAddAuthenticated() {
-        $this->session([
-                'Auth' => [
-                    'User' => [
-                        'id' => 1,
-                        'username' => 'testuser'
-                    ]
-                ]
-            ]);
-
-        $this->get('/');
-        $this->assertResponseOk();
-    }
-
     /**
      * Test that missing template renders 404 page in production
      *

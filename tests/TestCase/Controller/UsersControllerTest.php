@@ -4,6 +4,8 @@ namespace App\Test\TestCase\Controller;
 use App\Controller\UsersController;
 use Cake\TestSuite\IntegrationTestCase;
 
+use Cake\I18n\I18n;
+
 /**
  * App\Controller\UsersController Test Case
  */
@@ -34,30 +36,21 @@ class UsersControllerTest extends IntegrationTestCase
         $this->markTestIncomplete('Not implemented yet.');
     }
 
-    public function testLogin()
+    public function testUsers()
     {
-        $auth_data = [ 'username' => 'test', 'password' => 'password' ];
+        //test register
+        $auth_data = [ 'username' => 'test', 'password' => 'password', 'language' => 'ja_JP' ];
         $this->enableCsrfToken();
         $this->post([ 'controller' => 'Users', 'action' => 'register' ], $auth_data );
         $this->assertResponseOk('failed to add user');
 
+        //test login
         $this->post([ 'controller' => 'Users', 'action' => 'login' ], $auth_data );
         $this->assertRedirect('/');
-    }
 
-    public function testRegister()
-    {
-        $auth_data = [ 'username' => 'test', 'password' => 'password' ];
-        $this->enableCsrfToken();
-        $this->post([ 'controller' => 'Users', 'action' => 'register' ], $auth_data );
-        $this->assertResponseOk('failed to add user');
-    }
+        $this->session([ 'Auth.User.username' => $auth_data['username'] ]);
 
-    public function testProfile(){
-        $auth_data = [ 'username' => 'test', 'password' => 'password' ];
-        $this->enableCsrfToken();
-        $this->post([ 'controller' => 'Users', 'action' => 'register' ], $auth_data );
-        $this->session([ 'Auth' => [ 'User' => [ 'id' => 1, 'username' => 'testuser' ] ] ]);
+        //test profile
         $this->get('/users/test');
         $this->assertResponseOk('failed to access profile page');
 
