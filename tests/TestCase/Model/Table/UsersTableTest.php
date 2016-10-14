@@ -75,6 +75,7 @@ class UsersTableTest extends TestCase
                 [ 'username' => null, 'password' => 'password' ],
                 [ 'username' => 't', 'password' => 'password' ],    //username too short
                 [ 'username' => 'test', 'password' => 'pass' ],     //password too short
+                [ 'username' => 'testtesttesttestt', 'password' => 'password' ], //username too long
                 [ 'username' => 't@st', 'password' => 'password' ], //invalid username
                 [ 'username' => 'test', 'password' => 'パスワード' ],  //invalid password (not ascii)
                 [ 'username' => 'test', 'password' => 'пароль' ]    //invalid password (not ascii)
@@ -85,26 +86,33 @@ class UsersTableTest extends TestCase
         }
 
         //Assert success
-        $entity = $this->Users->newEntity([ 'username' => 'test', 'password' => 'password' ]);
-        $this->assertEmpty( $entity->errors(), 'failed to create' );
-        if( ! $this->Users->save($entity) ){
-            $this->fail( 'failed to save (null)' );
-        }
-        $this->assertEmpty( $entity->errors(), 'failed to save (error)' );
-        $this->assertEquals( $entity->username, 'test' );
-        try {
-            $this->Users->get('test');
-        }
-        catch(RecordNotFoundException $e) {
-            $this->fail('failed to get saved data');
+        $valid_args = [
+                [ 'username' => 'test', 'password' => 'password' ],
+                [ 'username' => 'testtesttesttest', 'password' => 'password' ], //16 characters username
+                [ 'username' => 'test2', 'password' => 'password' ],        //username contain number
+                [ 'username' => 'test_user', 'password' => 'password' ],    //username contain underscore
+                [ 'username' => 'test', 'password' => 'password2' ],        //password contain number
+                [ 'username' => 'test', 'password' => 'pass_word' ],        //password contain underscore
+            ];
+        foreach ( $valid_args as $key => $args ) {
+            $entity = $this->Users->newEntity( $args );
+            $this->assertEmpty( $entity->errors(), 'failed to create entity : '.json_encode($args) );
         }
 
         //Assert error when duplicate username
-        $entity = $this->Users->newEntity([ 'username' => 'test', 'password' => 'password' ]);
-        if( ! $entity->errors() ){
-            $this->Users->save($entity);
+        for( $i = 0; $i < 2; $i++ ){
+            $entity = $this->Users->newEntity([ 'username' => 'test', 'password' => 'password' ]);
+            if( ! $entity->errors() ){
+                $this->Users->save($entity);
+            }
+
+            if( $i == 0 ){
+                $this->assertEmpty( $entity->errors(), 'duplicate: error creating first' );
+            }
+            else{
+                $this->assertNotEmpty( $entity->errors(), 'duplicate' );
+            }
         }
-        $this->assertNotEmpty( $entity->errors(), 'duplicate' );
     }
 
     /**
