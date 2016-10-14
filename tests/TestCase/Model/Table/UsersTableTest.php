@@ -5,6 +5,7 @@ use App\Model\Table\UsersTable;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
+use Cake\I18n\I18n;
 use Cake\Datasource\Exception\RecordNotFoundException;
 
 /**
@@ -78,7 +79,10 @@ class UsersTableTest extends TestCase
                 [ 'username' => 'testtesttesttestt', 'password' => 'password' ], //username too long
                 [ 'username' => 't@st', 'password' => 'password' ], //invalid username
                 [ 'username' => 'test', 'password' => 'パスワード' ],  //invalid password (not ascii)
-                [ 'username' => 'test', 'password' => 'пароль' ]    //invalid password (not ascii)
+                [ 'username' => 'test', 'password' => 'пароль' ],    //invalid password (not ascii)
+                [ 'username' => 'test', 'password' => 'password', 'language' => 'hoge' ],   //invalid language code
+                [ 'username' => 'test', 'password' => 'password', 'language' => 'en_USA' ], //invalid language code
+                [ 'username' => 'test', 'password' => 'password', 'language' => 'en_12' ],  //invalid language code
             ];
         foreach ( $invalid_args as $key => $value ) {
             $entity = $this->Users->newEntity( $value );
@@ -93,10 +97,18 @@ class UsersTableTest extends TestCase
                 [ 'username' => 'test_user', 'password' => 'password' ],    //username contain underscore
                 [ 'username' => 'test', 'password' => 'password2' ],        //password contain number
                 [ 'username' => 'test', 'password' => 'pass_word' ],        //password contain underscore
+                [ 'username' => 'test', 'password' => 'password', 'language' => 'en' ],     //639-1 language code
+                [ 'username' => 'test', 'password' => 'password', 'language' => 'eng' ],    //639-2 language code
+                [ 'username' => 'test', 'password' => 'password', 'language' => 'en_US' ],  //language code with country
+                [ 'username' => 'test', 'password' => 'password', 'language' => 'en_us' ],  //language code with country
+                [ 'username' => 'test', 'password' => 'password', 'language' => 'en-US' ],  //language code with country
+                [ 'username' => 'test', 'password' => 'password', 'language' => 'en_AU' ],  //language code with country
+                [ 'username' => 'test', 'password' => 'password', 'language' => 'ja_JP' ],  //language code with country
+                [ 'username' => 'test', 'password' => 'password', 'language' => 'ryu' ],    //639-3 language code with countory
             ];
         foreach ( $valid_args as $key => $args ) {
             $entity = $this->Users->newEntity( $args );
-            $this->assertEmpty( $entity->errors(), 'failed to create entity : '.json_encode($args) );
+            $this->assertEmpty( $entity->errors(), "failed to create entity '".json_encode($args)."'" );
         }
 
         //Assert error when duplicate username

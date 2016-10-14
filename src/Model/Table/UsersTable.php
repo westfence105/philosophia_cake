@@ -6,6 +6,8 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
+use Cake\I18n\I18n;
+
 /**
  * Users Model
  *
@@ -34,10 +36,6 @@ class UsersTable extends Table
         $this->displayField('username');
         $this->primaryKey('username');
         $this->hasMany('ProfileData',[ 'foreignKey' => 'username' ]);
-    }
-
-    public function isValidUsername($str){
-        return preg_match( '/^[_A-Za-z0-9]*$/', $str ) == 1;
     }
 
     /**
@@ -71,10 +69,21 @@ class UsersTable extends Table
                             ]
                          ] )
                   ->add( 'username', 'custom', [
-                            'rule' => [ $this, 'isValidUsername' ],
+                            'rule' => function ( $value ) {
+                                    return preg_match('/^[_A-Za-z0-9]*$/', $value ) == 1;
+                                },
                             'message' => __('Username can only contain letters, numbers or underscore(_).')
                          ] )
                   ->ascii( 'password', __('Password can only contain ASCII characters.') )
+            ;
+
+        $validator->allowEmpty('language')
+                  ->add( 'language', 'language_code', [
+                            'rule' => function ($value) {
+                                    return preg_match('/^[a-z]{2,3}([-_][A-Za-z]{2}){0,1}$/', $value ) == 1;
+                                },
+                            'message' => __("Please input ISO 639 language code (ex. 'en', 'en_US', 'eng')")
+                        ] )
             ;
 
         return $validator;
