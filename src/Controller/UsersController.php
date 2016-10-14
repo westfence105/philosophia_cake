@@ -3,6 +3,8 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 
+use Cake\I18n\I18n;
+
 use Cake\Network\Exception\BadRequestException;
 use Cake\Datasource\Exception\RecordNotFoundException;
 
@@ -41,6 +43,7 @@ class UsersController extends AppController
     }
 
     public function register(){
+        $this->set('language', I18n::locale() );
         if ($this->request->is('post') ){
             $user = $this->Users->newEntity( $this->request->data );
     
