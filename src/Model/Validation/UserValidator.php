@@ -53,6 +53,12 @@ class UserValidator extends Validator {
                             },
                         'message' => __("Please input ISO 639 language code (ex. 'en', 'en_US', 'eng')")
                     ] )
+             ->add( 'password_confirm', [
+             		'compare' => [
+             			'rule' => [ 'compareWith', 'password' ],
+             			'message' => __('Password confirm is not match.')
+             		]
+             	] )
             ;
 	}
 }

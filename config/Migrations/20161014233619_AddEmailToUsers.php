@@ -16,7 +16,9 @@ class AddEmailToUsers extends AbstractMigration
         $table->addColumn('email', 'string', [
             'default' => '',
             'null' => false,
+            'limit' => 255,
         ]);
+        $table->addIndex(['email'],['unique' => true ]);
         $table->update();
     }
 }

@@ -3,7 +3,9 @@ namespace App\Controller;
 
 use App\Controller\AppController;
 
+use Cake\ORM\TableRegistry;
 use Cake\I18n\I18n;
+use Cake\Mailer\MailerAwareTrait;
 
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\BadRequestException;
@@ -11,6 +13,8 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 
 class UsersController extends AppController
 {
+    use MailerAwareTrait;
+
     public function initialize(){
         parent::initialize();
 
@@ -18,7 +22,7 @@ class UsersController extends AppController
     }
 
     public function index(){
-        
+        $this->set('username',$this->Auth->user('username'));
     }
 
     public function home(){
@@ -45,23 +49,46 @@ class UsersController extends AppController
 
     public function register(){
         $this->set('language', I18n::locale() );
-        if ($this->request->is('post') ){
-            $user = $this->Users->newEntity( $this->request->data );
+        $this->set( 'entities', null );
+        $token = $this->request->query('token');
+        if( $token ){
+            $temp_users = TableRegistry::get('TempUsers');
+            
+            $cols = ['username', 'password', 'email', 'language'];
+            $select = $temp_users
+                        ->find()
+                        ->select($cols)
+                        ->where([ 'token' => $token ]);
+            $ret =  $this->Users->query()
+                        ->insert($cols)
+                        ->values($select)
+                        ->execute();
+            if( $ret ){
+                $this->Auth->setUser(['username' => $select->first()->username ]);
+                return $this->redirect( $this->Auth->redirectUrl() );
+            }
+            else {
+                $this->Flash->error(__('Failed to add to database.') );
+                $this->set('entities', $user );
+            }
+        }
+        else if ($this->request->is('post') ){
+            $temp_users = TableRegistry::get('TempUsers');
+            $user = $temp_users->newEntity( $this->request->data );
     
             if( $user->errors() ){
                 $this->Flash->error( __('Form data has invalid content.') );
             }
-            else if( $this->Users->save($user) ){
+            else if( $temp_users->save($user) ){
+                debug($user);
                 $this->Flash->success( __x('registration completed','Success') );
+                $this->getMailer('User')->send('verify_email',[$user]);
             }
             else{
                 $this->Flash->error( __('Failed to add to database.') );
             }
 
             $this->set( 'entities', $user );
-        }
-        else {
-            $this->set( 'entities', null );
         }
     }
 
