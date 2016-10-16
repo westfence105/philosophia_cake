@@ -22,7 +22,7 @@ class UsersController extends AppController
     }
 
     public function index(){
-        $this->set('username',$this->Auth->user('username'));
+        
     }
 
     public function home(){

@@ -78,7 +78,10 @@ class AppController extends Controller
             $users = TableRegistry::get('Users');
             try {
                 $user = $users->get( $username );
-                I18n::locale( $user['language'] );
+                $language = $user['language'];
+                @I18n::locale( $language );
+                $this->set('username', $username );
+                $this->set('language', @\Locale::getDisplayLanguage( $language ) );
             }
             catch( RecordNotFoundException $e ){
                 $this->redirect( $this->Auth->logout() );
