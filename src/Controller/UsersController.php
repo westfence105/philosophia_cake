@@ -77,7 +77,6 @@ class UsersController extends AppController
                 $this->Flash->error( __('Form data has invalid content.') );
             }
             else if( $this->TempUsers->save($user) ){
-                debug($user);
                 $this->Flash->success( __x('registration completed','Success') );
                 $this->getMailer('User')->send('verify_email',[$user]);
             }

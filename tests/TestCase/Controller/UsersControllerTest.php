@@ -24,15 +24,15 @@ class UsersControllerTest extends IntegrationTestCase
         'app.temp_users'
     ];
 
+    public $auth_data = [
+            'username' => 'users_test',
+            'password' => 'password'
+        ];
+
     public function setUp(){
         parent::setUp();
 
-
-    }
-
-    public function testUnauthenticatedFails(){
-        $this->get([ 'controller' => 'Users', 'action' => 'index' ]);
-        $this->assertRedirect([ 'controller' => 'Pages', 'action' => 'introduction' ]);
+        $this->enableCsrfToken();
     }
 
     public function testIndex()
@@ -45,10 +45,15 @@ class UsersControllerTest extends IntegrationTestCase
         $this->markTestIncomplete('Not implemented yet.');
     }
 
+    public function testLogin(){
+        $this->post([ 'controller' => 'Users', 'action' => 'login' ], $this->auth_data );
+        $this->assertRedirect('/', $this->_response );
+    }
+
     public function testRegister()
     {
-        $auth_data = [
-                'username' => 'test',
+        $user_data = [
+                'username' => 'test2',
                 'password' => 'password',
                 'language' => 'en_US',
                 'email' => 'test@example.com'
@@ -64,9 +69,7 @@ class UsersControllerTest extends IntegrationTestCase
         $http = new Client();
         $http->delete('http://localhost:1080/messages');
 
-        //test register
-        $this->enableCsrfToken();
-        $this->post([ 'controller' => 'Users', 'action' => 'register' ], $auth_data );
+        $this->post([ 'controller' => 'Users', 'action' => 'register' ], $user_data );
         $this->assertResponseOk('failed to add user',$this->_response);
 
         $response = $http->get('http://localhost:1080/messages/1.plain');
@@ -74,16 +77,12 @@ class UsersControllerTest extends IntegrationTestCase
         $this->assertTrue( preg_match( '/^\/register\?token=.*$/m', $response->body, $matches ) == 1, $response->body );
         $this->get( $matches[0] );
         $this->assertRedirect( '/', $matches[0]."\n".$this->_response );
+    }
 
-        //test login
-        $this->post([ 'controller' => 'Users', 'action' => 'login' ], $auth_data );
-        $this->assertRedirect('/', $this->_response );
+    public function testProfile() {
+        $this->session([ 'Auth.User.username' => $this->auth_data['username'] ]);
 
-        //set session
-        $this->session([ 'Auth.User.username' => $auth_data['username'] ]);
-
-        //test profile
-        $this->get('/users/test');
+        $this->get('/users/users_test');
         $this->assertResponseOk('failed to access profile page');
 
         $this->get('/users');
