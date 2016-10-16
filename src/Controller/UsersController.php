@@ -63,8 +63,10 @@ class UsersController extends AppController
                         ->execute();
             if( $ret ){
                 $this->Auth->setUser(['username' => $select->first()->username ]);
+                $this->TempUsers->deleteAll([ 'token' => $token ]);
+
                 $this->Flash->Success(__('registration completed','Success'));
-                return $this->redirect( $this->Auth->redirectUrl() );
+                return $this->redirect([ 'controller' => 'Users', 'action' => 'home' ]);
             }
             else {
                 $this->Flash->error(__('Failed to add to database.') );
