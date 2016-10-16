@@ -63,6 +63,7 @@ class UsersController extends AppController
                         ->execute();
             if( $ret ){
                 $this->Auth->setUser(['username' => $select->first()->username ]);
+                $this->Flash->Success(__('registration completed','Success'));
                 return $this->redirect( $this->Auth->redirectUrl() );
             }
             else {
@@ -77,8 +78,9 @@ class UsersController extends AppController
                 $this->Flash->error( __('Form data has invalid content.') );
             }
             else if( $this->TempUsers->save($user) ){
-                $this->Flash->success( __x('registration completed','Success') );
                 $this->getMailer('User')->send('verify_email',[$user]);
+                $this->set('email',$user->email);
+                $this->render('register_verify');
             }
             else{
                 $this->Flash->error( __('Failed to add to database.') );
