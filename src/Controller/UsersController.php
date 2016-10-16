@@ -48,15 +48,13 @@ class UsersController extends AppController
     }
 
     public function register(){
+        $this->loadModel('TempUsers');
         $this->set('language', I18n::locale() );
         $this->set( 'entities', null );
         $token = $this->request->query('token');
         if( $token ){
-            $temp_users = TableRegistry::get('TempUsers');
-            
             $cols = ['username', 'password', 'email', 'language'];
-            $select = $temp_users
-                        ->find()
+            $select = $this->TempUsers->find()
                         ->select($cols)
                         ->where([ 'token' => $token ]);
             $ret =  $this->Users->query()
@@ -73,13 +71,12 @@ class UsersController extends AppController
             }
         }
         else if ($this->request->is('post') ){
-            $temp_users = TableRegistry::get('TempUsers');
-            $user = $temp_users->newEntity( $this->request->data );
+            $user = $this->TempUsers->newEntity( $this->request->data );
     
             if( $user->errors() ){
                 $this->Flash->error( __('Form data has invalid content.') );
             }
-            else if( $temp_users->save($user) ){
+            else if( $this->TempUsers->save($user) ){
                 debug($user);
                 $this->Flash->success( __x('registration completed','Success') );
                 $this->getMailer('User')->send('verify_email',[$user]);
