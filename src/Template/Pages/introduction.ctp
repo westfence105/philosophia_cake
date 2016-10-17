@@ -1,2 +1,2 @@
 <h2><?= __x('heading of introduction page','Introduction') ?></h2>
-<?= $this->Html->link( __('Login'), [ 'controller' => 'Users', 'action' => 'login' ] ) ?>
+<?= $this->Html->link( __('Register'), [ 'controller' => 'Users', 'action' => 'register' ] ) ?>

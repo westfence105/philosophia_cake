@@ -7,4 +7,5 @@
 	echo $this->Form->input( 'password_confirm', ['type' => 'password', 'label' => __('Password Confirm'), 'required' => true ] ), "\n";
 	echo $this->Form->input( 'language', ['type' => 'text',	 	'label' => __('Language (ISO 639 Code)'), 'value' => $language ] ), "\n";
 	echo $this->Form->submit(__x('text of register form submit button','Register') ), "\n";
+	echo $this->Form->end();
 ?>
