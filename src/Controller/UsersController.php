@@ -31,6 +31,7 @@ class UsersController extends AppController
 
     public function login()
     {
+        $this->set('title',__('Login'));
         if( $this->request->is('post') ){
             $user = $this->Auth->identify();
             if( $user ){
@@ -48,29 +49,26 @@ class UsersController extends AppController
     }
 
     public function register(){
-        $this->loadModel('TempUsers');
+        $this->set('title', __('Register') );
         $this->set('language', I18n::locale() );
-        $this->set( 'entities', null );
+        $this->set('entities', null );
+        $this->loadModel('TempUsers');
+
         $token = $this->request->query('token');
         if( $token ){
-            $cols = ['username', 'password', 'email', 'language'];
-            $select = $this->TempUsers->find()
-                        ->select($cols)
-                        ->where([ 'token' => $token ]);
-            $ret =  $this->Users->query()
-                        ->insert($cols)
-                        ->values($select)
-                        ->execute();
-            if( $ret ){
-                $this->Auth->setUser(['username' => $select->first()->username ]);
-                $this->TempUsers->deleteAll([ 'token' => $token ]);
+            $user = $this->TempUsers->register( $token );
+            if( $user && empty( $user->errors() ) ){
+                $this->Auth->setUser(['username' => $user->username ]);
 
                 $this->Flash->Success(__('registration completed','Success'));
                 return $this->redirect([ 'controller' => 'Users', 'action' => 'home' ]);
             }
-            else {
+            else if( $user ){
                 $this->Flash->error(__('Failed to add to database.') );
                 $this->set('entities', $user );
+            }
+            else {
+                $this->Flash->error(__('Invalid token given.') );
             }
         }
         else if ($this->request->is('post') ){

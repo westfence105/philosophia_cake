@@ -9,6 +9,10 @@ use Cake\Validation\Validator;
 use Cake\Event\Event;
 use ArrayObject;
 
+use Cake\I18n\Time;
+use Cake\ORM\TableRegistry;
+use Cake\Datasource\Exception\RecordNotFoundException;
+
 /**
  * TempUsers Model
  *
@@ -93,5 +97,31 @@ class TempUsersTable extends Table
         $rules->add( $rules->isUnique(['token', 'username', 'email']) );
 
         return $rules;
+    }
+
+    protected function deleteOutdated(){
+        $this->query()
+             ->delete()
+             ->where(['created <' => new Time('-24 hours') ])
+             ->execute();
+    }
+
+    public function register( string $token ){
+        $this->deleteOutdated();
+        try{
+            $entity = $this->get($token);
+            $data = $entity->toArray();
+            $data['password'] = $data['password_confirm'] = $entity->password;
+            $users = TableRegistry::get('Users');
+            $user = $users->newEntity($data);
+            if( empty( $user->errors() ) ){
+                $users->save($user);
+            }
+            $this->delete($entity);
+            return $user;
+        }
+        catch(RecordNotFoundException $e){
+            return null;
+        }
     }
 }

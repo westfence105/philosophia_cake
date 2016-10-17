@@ -80,4 +80,10 @@ class TempUsersTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
+
+    public function testDeleteOutdated(){
+        if( $this->TempUsers->register('token_outdated') ){
+            $this->fail('outdated token passed to register function');
+        }
+    }
 }

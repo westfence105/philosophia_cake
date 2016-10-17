@@ -3,6 +3,8 @@ namespace App\Test\Fixture;
 
 use Cake\TestSuite\Fixture\TestFixture;
 
+use Cake\I18n\Time;
+
 /**
  * TempUsersFixture
  *
@@ -39,14 +41,18 @@ class TempUsersFixture extends TestFixture
      *
      * @var array
      */
-    public $records = [
-        [
-            'username' => 'Lorem ipsum do',
-            'password' => 'Lorem ipsum dolor sit amet',
-            'language' => 'Lore',
-            'email' => 'Lorem ipsum dolor sit amet',
-            'token' => '33b2fc65-eed4-4164-9485-ca5380d8898f',
-            'created' => '2016-10-16 03:07:29'
-        ],
-    ];
+    public function init() {
+        $this->records = [
+            [
+                'username' => 'test_outdated',
+                'password' => 'password',
+                'language' => 'en_US',
+                'email' => 'test_outdated@example.com',
+                'token' => 'token_outdated',
+                'created' => new Time('-24 hours -1 seconds')
+            ],
+        ];
+
+        parent::init();
+    }
 }

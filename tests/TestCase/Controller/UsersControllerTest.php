@@ -76,7 +76,7 @@ class UsersControllerTest extends IntegrationTestCase
         $this->assertTrue( $response->isOk(), 'failed to get catched mail');
         $this->assertTrue( preg_match( '/^\/register\?token=.*$/m', $response->body, $matches ) == 1, $response->body );
         $this->get( $matches[0] );
-        $this->assertRedirect( '/', $matches[0]."\n".$this->_response );
+        $this->assertRedirect( '/home', $matches[0]."\n".$this->_response );
     }
 
     public function testProfile() {
