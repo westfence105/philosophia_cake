@@ -68,7 +68,44 @@ class NamesTableTest extends TestCase
      */
     public function testValidationDefault()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $sample = ['username' => 'test', 'order_key' => 1, 'name' => 'John', 'type' => 'given', 'display' => 1 ];
+        foreach ( $sample as $key => $value) {
+            $args = $sample;
+            $args[$key] = null;
+            for ( $i=0; $i < 2 ; $i++ ) {
+                $entity = $this->Names->newEntity($args);
+                $this->assertNotEmpty( $entity->errors(), json_encode($args) );
+                unset($args[$key]);
+            }
+        }
+
+        $invalid_args = [
+                [], ['t' => null ],
+                array_merge( $sample, ['order_key' => '' ] ),   //order_key isn't int
+                array_merge( $sample, ['order_key' => 1.2 ] ),  //order_key isn't int
+                array_merge( $sample, ['order_key' => true ] ), //order_key isn't int
+                array_merge( $sample, ['order_key' => [] ] ),   //order_key isn't int
+                array_merge( $sample, ['display' => '' ] ),     //display isn't int
+                array_merge( $sample, ['display' => 1.2 ] ),    //display isn't int
+                array_merge( $sample, ['display' => true ] ),   //display isn't int
+                array_merge( $sample, ['display' => [] ] ),     //display isn't int
+            ];
+
+        foreach ($invalid_args as $key => $args ) {
+            $entity = $this->Names->newEntity( $args );
+            $this->assertNotEmpty( $entity->errors(), json_encode($args) );
+        }
+
+        $valid_args = [
+                $sample,
+                array_merge( $sample, ['clipped' => '' ]),
+                array_merge( $sample, ['clipped' => 'J' ]),
+            ];
+
+        foreach ($valid_args as $key => $args ) {
+            $entity = $this->Names->newEntity( $args );
+            $this->assertEmpty( $entity->errors(), json_encode($args) );
+        }
     }
 
     /**

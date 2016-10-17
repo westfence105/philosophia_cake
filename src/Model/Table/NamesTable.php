@@ -47,26 +47,27 @@ class NamesTable extends Table
             ->integer('id')
             ->allowEmpty('id', 'create');
 
+        $validator->requirePresence([
+                'username', 'order_key', 'name', 'type', 'display'
+            ]);
+
         $validator
-            ->requirePresence('username', 'create')
             ->notEmpty('username');
 
         $validator
+            ->numeric('order_key')
             ->integer('order_key')
-            ->requirePresence('order_key', 'create')
             ->notEmpty('order_key');
 
         $validator
-            ->requirePresence('name', 'create')
             ->notEmpty('name');
 
         $validator
-            ->requirePresence('type', 'create')
             ->notEmpty('type');
 
         $validator
+            ->numeric('display')
             ->integer('display')
-            ->requirePresence('display', 'create')
             ->notEmpty('display');
 
         $validator
@@ -84,8 +85,6 @@ class NamesTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['username']));
-
         return $rules;
     }
 }
