@@ -20,6 +20,7 @@ use Cake\Validation\Validator;
 class NamesTable extends Table
 {
     const DISPLAY = [ 'private' => 0, 'omit' => 1, 'short' => 2, 'display' => 3  ];
+    const DISPLAY_LEBEL = [ 'private' => 0, 'full' => 1, 'normal' => 3 ];
 
     /**
      * Initialize method
@@ -87,5 +88,32 @@ class NamesTable extends Table
     public function buildRules(RulesChecker $rules)
     {
         return $rules;
+    }
+
+    public function getName( string $username, int $display_lebel = self::DISPLAY_LEBEL['normal'] ){
+        $query = $this->find()
+                      ->select(['name','type','short','display'])
+                      ->where(['username' => $username])
+                      ->order(['order_key' => 'ASC'])
+                    ;
+        foreach( $query as $row ){
+            if( $row->display == self::DISPLAY['private'] && $display_lebel != self::DISPLAY_LEBEL['private'] ){
+                continue;
+            }
+            else if( $row->display == self::DISPLAY['omit'] && $display_lebel > self::DISPLAY_LEBEL['full'] ){
+                continue;
+            }
+            else {
+                $name = '';
+                if( $row->display == self::DISPLAY['short'] && $display_lebel > self::DISPLAY_LEBEL['full'] ){
+                    $name = $row->short;
+                }
+                else {
+                    $name = $row->name;
+                }
+                $names[] = ['name' => $name, 'type' => $row->type ];
+            }
+        }
+        return isset($names) ? $names : [];
     }
 }

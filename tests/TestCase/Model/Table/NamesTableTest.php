@@ -117,4 +117,57 @@ class NamesTableTest extends TestCase
     {
         $this->markTestIncomplete('Not implemented yet.');
     }
+
+    public function array_subset( array $exp, array $values ){
+        foreach ( $values as $key => $value) {
+            foreach ( $exp as $e_key => $e_value) {
+                if( isset($value[$e_key]) && $value[$e_key] == $e_value ){
+                    continue;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    public function testGetName(){
+        //display_lebel => normal
+        //expected: 'John D Smith'
+        $names = $this->Names->getName('smith'); //
+        foreach ( $names as $key => $name ) {
+            $this->assertNotEmpty( $name['name'] );
+            $this->assertNotEmpty( $name['type'] );
+        }
+        $expected = [
+                ['name' => 'John',  'type' => 'given'],
+                ['name' => 'D',     'type' => 'middle'],
+                ['name' => 'Smith', 'type' => 'family'],
+            ];
+        $this->assertEquals( $expected, $names );
+
+        //display_lebel => full
+        //expected: 'John David "Aihal" Smith'
+        $names = $this->Names->getName('smith', NamesTable::DISPLAY_LEBEL['full']);
+        $expected = [
+                ['name' => 'John',      'type' => 'given'],
+                ['name' => 'David',     'type' => 'middle'],
+                ['name' => '"Aihal"',   'type' => 'alias'],
+                ['name' => 'Smith',     'type' => 'family'],
+            ];
+        $this->assertEquals( $expected, $names );
+
+        //display_lebel => private
+        //expected: 'John David "Aihal" Smith "Ged"'
+        $names = $this->Names->getName('smith', NamesTable::DISPLAY_LEBEL['private']);
+        $expected = [
+                ['name' => 'John',      'type' => 'given'],
+                ['name' => 'David',     'type' => 'middle'],
+                ['name' => '"Aihal"',   'type' => 'alias'],
+                ['name' => 'Smith',     'type' => 'family'],
+                ['name' => '"Ged"',     'type' => 'true'],
+            ];
+        $this->assertEquals( $expected, $names );
+    }
 }

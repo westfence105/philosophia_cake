@@ -64,7 +64,7 @@ class NamesFixture extends TestFixture
         [
             'username' => 'smith', 
             'order_key' => 3, 
-            'name' => '"Jonny the Surfer"', 
+            'name' => '"Aihal"', 
             'type' => 'alias', 
             'display' => NamesTable::DISPLAY['omit']
         ],
@@ -78,11 +78,10 @@ class NamesFixture extends TestFixture
         ],
         [
             'username' => 'smith', 
-            'order_key' => 1, 
-            'name' => 'Doctor', 
-            'type' => 'given', 
+            'order_key' => 5, 
+            'name' => '"Ged"', 
+            'type' => 'true', 
             'display' => NamesTable::DISPLAY['private'],
-            'short' => 'Dr.'
         ],
     ];
 }
