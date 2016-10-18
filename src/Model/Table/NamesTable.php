@@ -19,6 +19,7 @@ use Cake\Validation\Validator;
  */
 class NamesTable extends Table
 {
+    const DISPLAY = [ 'private' => 0, 'omit' => 1, 'short' => 2, 'display' => 3  ];
 
     /**
      * Initialize method

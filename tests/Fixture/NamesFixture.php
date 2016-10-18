@@ -2,6 +2,7 @@
 namespace App\Test\Fixture;
 
 use Cake\TestSuite\Fixture\TestFixture;
+use App\Model\Table\NamesTable;
 
 /**
  * NamesFixture
@@ -23,7 +24,7 @@ class NamesFixture extends TestFixture
         'name' => ['type' => 'string', 'length' => 255, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'type' => ['type' => 'string', 'length' => 16, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'display' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
-        'clipped' => ['type' => 'string', 'length' => 16, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'short' => ['type' => 'string', 'length' => 16, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         '_indexes' => [
             'username' => ['type' => 'index', 'columns' => ['username'], 'length' => []],
         ],
@@ -45,13 +46,43 @@ class NamesFixture extends TestFixture
      */
     public $records = [
         [
-            'id' => 1,
-            'username' => 'Lorem ipsum do',
-            'order_key' => 1,
-            'name' => 'Lorem ipsum dolor sit amet',
-            'type' => 'Lorem ipsum do',
-            'display' => 1,
-            'clipped' => 'Lorem ipsum do'
+            'username' => 'smith', 
+            'order_key' => 1, 
+            'name' => 'John', 
+            'type' => 'given', 
+            'display' => NamesTable::DISPLAY['display'],
+            'short' => 'J'
+        ],
+        [
+            'username' => 'smith', 
+            'order_key' => 2, 
+            'name' => 'David', 
+            'type' => 'middle', 
+            'display' => NamesTable::DISPLAY['short'],
+            'short' => 'D'
+        ],
+        [
+            'username' => 'smith', 
+            'order_key' => 3, 
+            'name' => '"Jonny the Surfer"', 
+            'type' => 'alias', 
+            'display' => NamesTable::DISPLAY['omit']
+        ],
+        [
+            'username' => 'smith', 
+            'order_key' => 4, 
+            'name' => 'Smith', 
+            'type' => 'family', 
+            'display' => NamesTable::DISPLAY['display'],
+            'short' => 'S'
+        ],
+        [
+            'username' => 'smith', 
+            'order_key' => 1, 
+            'name' => 'Doctor', 
+            'type' => 'given', 
+            'display' => NamesTable::DISPLAY['private'],
+            'short' => 'Dr.'
         ],
     ];
 }
