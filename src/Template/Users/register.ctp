@@ -1,4 +1,4 @@
-<h2><?= __('Register') ?></h2>
+<h2><?= isset($title) ? h($title) : 'Register' ?></h2>
 <?php
 	echo $this->Form->create( $entities, ['type' => 'Post']), "\n";
 	echo $this->Form->input( 'email', 	 ['type' => 'text', 'label' => __('Email'), 'required' => true ] ), "\n";

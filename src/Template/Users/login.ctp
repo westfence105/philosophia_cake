@@ -1,4 +1,4 @@
-<h2><?= __('Login') ?></h2>
+<h2><?= isset($title) ? h($title) : 'Login' ?></h2>
 <?php
 	echo $this->Form->create('Post'), "\n";
 	echo $this->Form->input( 'username', ['type' => 'text', 'label' => __('Username') ] ), "\n";

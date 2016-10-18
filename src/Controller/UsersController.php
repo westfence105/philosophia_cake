@@ -93,7 +93,10 @@ class UsersController extends AppController
     public function profile( $username ){
         try {
             $user = $this->Users->get($username);
-            $this->set('username',$username);
+            
+            $this->set('profile',[
+                    'username' => $username,
+                ]);
         }
         catch( RecordNotFoundException $e ) {
             throw new NotFoundException();

@@ -1,1 +1,1 @@
-<?= $username."\t".$language ?>
+<?= h($username)."\t".h($language) ?>

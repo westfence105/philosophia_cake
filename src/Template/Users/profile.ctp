@@ -1,1 +1,1 @@
-<h2><?= $username ?></h2>
+<h2><?= h($profile['username']) ?></h2>

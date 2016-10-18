@@ -20,7 +20,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 <head>
     <?= $this->Html->charset() ?>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> <?= isset($title) ? $title : 'Φιλοσοφια' ?> - philosophia Speech Networking Service </title>
+    <title> <?= isset($title) ? h($title) : 'Φιλοσοφια' ?> - philosophia Speech Networking Service </title>
     <?= $this->Html->meta('icon') ?>
 
     <?= $this->Html->css('base.css') ?>
@@ -42,7 +42,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
             <ul class="right">
                 <li>
                     <?= isset($username) ? 
-                        '<a href="/users/'.$username.'">'.$username.'</a>' : 
+                        '<a href="/users/'.$username.'">'.h($username).'</a>' : 
                         '<a href="/login">'.__('Login').'</a>'
                     ?>
                 </li>
