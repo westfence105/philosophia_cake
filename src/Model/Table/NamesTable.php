@@ -22,6 +22,40 @@ class NamesTable extends Table
     const DISPLAY = [ 'private' => 0, 'omit' => 1, 'short' => 2, 'display' => 3  ];
     const DISPLAY_LEBEL = [ 'private' => 0, 'full' => 1, 'normal' => 3 ];
 
+    public static function types(){
+        return [
+            'given'         => __('Given Name'),
+            'family'        => __('Family Name'),
+            'middle'        => __('Middle Name'),
+            'hypocoristic'  => __('Hypocoristic'),
+            'patronym'      => __('Patronym'),
+            'alias'         => __('Alias'),
+            'pseudonym'     => __('Pseudonym'),
+            'courtesy'      => __('Courtesy Name / Zi'),
+            'clan'          => __('Clan Name / Shi'),
+            'title'         => __('Title'),
+            'other'         => __x('other name type','Other'),
+        ];
+    }
+
+    public static function display() {
+        return [
+            'display'   => __('Display'),
+            'private'   => __('Private'),
+            'omit'      => __('Omit'),
+            'short'     => __('Short'),
+        ];
+    }
+
+    public static function displayDescription() {
+        return [
+            'display'   => __('Always displayed'),
+            'private'   => __('Not displayed for other users'),
+            'short'     => __('Shorten except profile page'),
+            'omit'      => __('Displayed only profile page'),
+        ];
+    }
+
     /**
      * Initialize method
      *

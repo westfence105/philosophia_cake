@@ -7,6 +7,8 @@ use Cake\ORM\TableRegistry;
 use Cake\I18n\I18n;
 use Cake\Mailer\MailerAwareTrait;
 
+use App\Model\Table\NamesTable;
+
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\BadRequestException;
 use Cake\Datasource\Exception\RecordNotFoundException;
@@ -90,10 +92,20 @@ class UsersController extends AppController
         }
     }
 
+    public function config(){
+        $this->set('title',__x('title of user config page','Config'));
+        $this->set('types', NamesTable::types() );
+        $this->set('display', NamesTable::display() );
+        $this->set('display_description', NamesTable::displayDescription() );
+        if( $this->request->is('post') ){
+            //Not Implemented
+        }
+    }
+
     public function profile( $username ){
         try {
             $user = $this->Users->get($username);
-            
+
             $this->set('profile',[
                     'username' => $username,
                 ]);
