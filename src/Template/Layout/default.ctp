@@ -27,6 +27,9 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <?= $this->Html->css('cake.css') ?>
     <?= $this->Html->css('my.css') ?>
 
+    <?= $this->Html->script('https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js') ?>
+    <?= $this->Html->script('https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js') ?>
+
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>

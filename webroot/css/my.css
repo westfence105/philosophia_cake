@@ -25,14 +25,19 @@ div.user_config
 
 .user_config .add_name
 {
-	margin-bottom: 1em;
+	margin: 0;
+}
+
+.user_config form input[type="submit"]
+{
+	margin: 2em;
 }
 
 .user_config form table
 {
 	table-layout: auto;
 	margin: 0;
-	padding: 1em 2em;
+	padding: 1.5em 2em 0;
 	border: 0;
 	background: rgba(255,255,255,0);
 	border-collapse: separate;
@@ -41,7 +46,6 @@ div.user_config
 
 .user_config form.config_name tr.name_input
 {
-	margin: 1em 2em;
 	background: #fff;
 }
 
@@ -71,18 +75,18 @@ div.user_config
 	padding-right: 1.5em;
 }
 
-.user_config form.config_name .name_input td.name_display
+.user_config form.config_name .name_input td.input_name_display
 {
 	position: relative;
 	overflow: visible;
 }
 
-.user_config form.config_name .name_input td.name_display span.name_display_description
+.user_config form.config_name .name_input td.input_name_display span.name_display_description
 {
 	display: none;
 }
 
-.user_config form.config_name .name_input td.name_display:hover > span.name_display_description
+.user_config form.config_name .name_input td.input_name_display:hover > span.name_display_description
 {
 	display: block;
 	position: absolute;
@@ -93,4 +97,5 @@ div.user_config
 	border: #000 solid 1px;
 	padding: .5ex;
 	z-index: 2;
+	width: 20em;
 }

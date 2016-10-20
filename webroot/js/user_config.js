@@ -6,79 +6,106 @@ var data_display_description = JSON.parse(current_script.getAttribute('data-name
 
 var name_count = 0;
 function addName( name, type, display, short ){
-	var table_element = document.getElementById('name_inputs');
+	var $table_element = $('#name_inputs tbody');
 
-	var tr_element = table_element.insertRow( table_element.rows.length );
-	tr_element.setAttribute('class','name_input');
+	var $tr_element = $('<tr></tr>',{'class':'name_input'});
 
-	var name_element = document.createElement('input');
-	name_element.setAttribute('type','text');
-	name_element.setAttribute('name','names[' + name_count + '][name]');
+	var $name_cell = $('<td></td>', {'class': 'input_name'});
+	var $name_element = $('<input/>', {
+			'type': 'text',
+			'name': 'names[' + name_count + '][name]',
+		});
 	if( name ){
-		name_element.setAttribute('value',name);
+		$name_element.attr('value',name);
 	}
-	var name_cell = tr_element.insertCell( tr_element.cells.length );
-	name_cell.appendChild(name_element);
-	name_cell.setAttribute('class','input_name')
+	$tr_element.append( $name_cell.append( $name_element ) );
 
-	var type_element = document.createElement('select');
-	type_element.setAttribute('name','names[' + name_count + '][type]');
+	var $type_cell = $('<td></td>', {'class': 'input_name_type'});
+	var $type_element = $('<select></select>', {
+			'name': 'names[' + name_count + '][type]',
+		});
 	for( key in data_types ){
-		var type_opt = document.createElement('option');
-		type_opt.setAttribute('value',key);
+		var $type_opt = $('<option value="' + key + '">' + data_types[key] + '</option>', {'value': key });
 		if( type == key ){
-			type_opt.setAttribute('selected','selected');
+			$type_opt.prop('selected', true );
 		}
-		type_opt.innerHTML = data_types[key];
-		type_element.appendChild(type_opt);
+		$type_element.append( $type_opt );
 	}
-	var type_cell = tr_element.insertCell( tr_element.cells.length );
-	type_cell.appendChild(type_element);
-	type_cell.setAttribute('class','name_type');
+	$tr_element.append( $type_cell.append( $type_element ) );
 
 	var display_desc_id = 'display_desc[' + name_count + ']';
-	var display_element = document.createElement('select');
-	display_element.setAttribute('name','names[' + name_count + '][display]');
-	display_element.setAttribute('onChange', 'setDisplayDescription(this, "' + display_desc_id + '");');
+	var $display_cell = $('<td></td>', {'class':'input_name_display'});
+	var $display_element = $('<select></select>', {
+			'name': 'names[' + name_count + '][display]',
+			'class': 'select_name_display',
+			'desc_id': display_desc_id,
+		});
 	for( key in data_display ){
-		var display_opt = document.createElement('option');
-		display_opt.setAttribute('value',key);
+		var $display_opt = $('<option value="' + key + '">' + data_display[key] + '</option>');
 		if( display == key ){
-			display_opt.setAttribute('selected','selected');
+			$display_opt.prop('selected', true );
 		}
-		display_opt.innerHTML = data_display[key];
-		display_element.appendChild(display_opt);
+		$display_element.append( $display_opt );
 	}
-	var display_desc_element = document.createElement('span');
-	display_desc_element.setAttribute('id', display_desc_id );
-	display_desc_element.setAttribute('class', 'name_display_description');
-	var display_cell = tr_element.insertCell( tr_element.cells.length );
-	display_cell.appendChild(display_element);
-	display_cell.appendChild(display_desc_element);
-	display_cell.setAttribute('class','name_display');
-	setDisplayDescription( display_element, display_desc_id );
+	var $display_desc_element = $('<span></span>', {
+			'id': display_desc_id,
+			'class': 'name_display_description'
+		});
+	$tr_element.append( $display_cell.append( $display_element ).append( $display_desc_element ) );
+	setDisplayDescription( $display_element );
 
-	var short_label = document.createElement('label');
-	short_label.innerHTML = data_short;
-	var short_label_cell = tr_element.insertCell( tr_element.cells.length );
-	short_label_cell.appendChild(short_label);
-	short_label_cell.setAttribute('class','name_short_label');
+	$tr_element.append('<td class="name_short_label"><label>' + data_short + '</select></td>');
 
-	var short_element = document.createElement('input');
-	short_element.setAttribute('type','text');
-	short_element.setAttribute('name','names[' + name_count + '][short]');
+	var $short_cell = $('<td></td>',{'class':'input_name_short'});
+	var $short_element = $('<input></input>', {
+			'type': 'text',
+			'name': 'names[' + name_count + '][short]',
+		});
 	if( short ){
-		short_element.setAttribute('value',short);
+		$short_element.attr('value',short);
 	}
-	var short_cell = tr_element.insertCell( tr_element.cells.length );
-	short_cell.appendChild(short_element);
-	short_cell.setAttribute('class','name_short');
+	$tr_element.append( $short_cell.append( $short_element ) );
+
+	$table_element.append( $tr_element );
+
+	$('.sortable').trigger('sortupdate');
 
 	++name_count;
 }
 
-function setDisplayDescription( sl, id ){
-	desc_element = document.getElementById(id);
-	desc_element.innerHTML = data_display_description[sl.value];
-	console.log(desc_element.innerHTML);
+function setDisplayDescription( el ){
+	console.log( el.val() );
+	desc_str = data_display_description[ el.val() ];
+	el.next().html( desc_str );
+	console.log( el.next().html() );
 }
+
+$( function($){
+	$('.sortable').sortable();
+
+	$('.sortable').on( 'sortstop', function( ev, ui ){
+		var $rows = $('.name_input').each( function( i, el ) {
+		//	console.log(i);
+		//	console.log(el);
+			$(el).find('input,select').each( function( j, i_el ){
+				var name_old = $(i_el).attr('name');
+				var name_new = name_old.replace(/(names\[)[0-9]*(\])/,'$1'+i+'$2');
+				$(i_el).attr('name',name_new);
+			//	console.log( name_old + ' -> ' + name_new );
+			});
+		//	console.log('--');	
+		});
+		name_count = $rows.length;
+	//	console.log(name_count);
+	});
+
+	$(document).on( 'click', 'label', function(){
+		console.log( $(this).val() );
+	} );
+
+	$(document).on( 'change', '.select_name_display', function(){
+		console.log( $(this).val() );
+		setDisplayDescription( $(this) )
+	} );
+
+});

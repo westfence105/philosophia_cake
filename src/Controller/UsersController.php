@@ -98,6 +98,11 @@ class UsersController extends AppController
         $this->set('display', NamesTable::display() );
         $this->set('display_description', NamesTable::displayDescription() );
         if( $this->request->is('post') ){
+            $data = $this->request->data;
+            debug( $data );
+            if( isset( $data['names'] ) ){
+                $this->set( 'names', $data['names'] );
+            }
             //Not Implemented
         }
     }
