@@ -150,4 +150,20 @@ class NamesTable extends Table
         }
         return isset($names) ? $names : [];
     }
+
+    public function getNameData( string $username, array $options = [] ){
+        $query = $this->find()
+                      ->select(['name','type','display','short'])
+                      ->where(['username' => $username])
+                      ->order(['order_key' => 'ASC'])
+                      ->hydrate(false)
+                    ;
+        $data = $query->toList();
+        if( isset($options['display']) && $options['display'] == 'string' ){
+            foreach ( $data as $i => &$name ) {
+                $name['display'] = array_search( $name['display'], self::DISPLAY );
+            }
+        }
+        return $data;
+    }
 }

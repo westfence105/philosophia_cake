@@ -170,4 +170,18 @@ class NamesTableTest extends TestCase
             ];
         $this->assertEquals( $expected, $names );
     }
+
+    public function testGetNameData(){
+        $data = $this->Names->getNameData('smith');
+        foreach( $data as $i => $name ){
+            $this->assertInternalType( 'string', $name['name'] );
+            $this->assertInternalType( 'string', $name['type'] );
+            $this->assertInternalType( 'int',    $name['display'] );
+        }
+
+        $data = $this->Names->getNameData('smith', ['display' => 'string']);
+        foreach( $data as $i => $name ){
+            $this->assertInternalType( 'string', $name['display'] );
+        }
+    }
 }
