@@ -97,14 +97,22 @@ class UsersController extends AppController
         $this->set('types', NamesTable::types() );
         $this->set('display', NamesTable::display() );
         $this->set('display_description', NamesTable::displayDescription() );
+        $username = $this->Auth->user('username');
+        $names = TableRegistry::get('Names');
+        $entities = [];
         if( $this->request->is('post') ){
             $data = $this->request->data;
-            debug( $data );
+        //    debug( $data );
             if( array_key_exists('names',$data) ){
                 $this->set( 'names', $data['names'] );
             }
             //Not Implemented
         }
+
+        if( ! array_key_exists('names', $entities ) ){
+            $entities['names'] = $names->getNameData( $username, ['display' => 'string','array' => true ] );
+        }
+        $this->set('entities', $entities );
     }
 
     public function profile( $username ){

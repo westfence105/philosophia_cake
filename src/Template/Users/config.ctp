@@ -6,6 +6,9 @@
 			'data-name-display-description' => json_encode( $display_description ),
 			'data-name-short' 	=> json_encode( __x('description of name.short','Short') ),
 		];
+	if( ! empty($names) ){
+		$data_name += [ 'data-names' => json_encode($names) ];
+	}
 	echo $this->Html->script('user_config', $data_name + ['block' => true]), "\n";
 /*
 	echo $this->Html->scriptBlock('
@@ -17,24 +20,14 @@
 */
 	echo '<div class="user_config">'."\n";
 	
-	echo $this->Form->create( 
-			array_key_exists('names',$entities ) ? $entities['names'] : null, 
-			['type' => 'Post','class' => 'config_name']
-		), "\n";
+	echo $this->Form->create( 'Post',['class' => 'config_name']), "\n";
+	echo '<div></div>';
 	echo '<table id="name_inputs"><tbody class="sortable"></tbody></table>', "\n";
 	echo '<div class="add_name">', "\n",
 		 '<a href="javascript:void(0);" onClick="addName();">'.__('Add Name-Element').'</a>',
-		 '</div', "\n";
+		 '</div>', "\n";
 	echo $this->Form->submit(__('Save'));
 	echo $this->Form->end(), "\n";
-	if( ! empty( $names ) ){
-		foreach( $names as $key => $name ){
-			@$onload[] = 'addName("'.$name['name'].'","'.$name['type'].'","'.$name['display'].'","'.$name['short'].'");';
-		}
-	}
-	else {
-		$onload[] = 'addName();';
-	}
 
 	echo '</div>'."\n";
 

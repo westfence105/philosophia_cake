@@ -5,7 +5,7 @@ var data_short	 = JSON.parse(current_script.getAttribute('data-name-short'));
 var data_display_description = JSON.parse(current_script.getAttribute('data-name-display-description'));
 
 var name_count = 0;
-function addName( name, type, display, short ){
+function addName( args ){
 	var $table_element = $('#name_inputs tbody');
 
 	var $tr_element = $('<tr></tr>',{'class':'name_input'});
@@ -15,8 +15,8 @@ function addName( name, type, display, short ){
 			'type': 'text',
 			'name': 'names[' + name_count + '][name]',
 		});
-	if( name ){
-		$name_element.attr('value',name);
+	if( 'name' in args ){
+		$name_element.attr('value',args['name']);
 	}
 	$tr_element.append( $name_cell.append( $name_element ) );
 
@@ -26,7 +26,7 @@ function addName( name, type, display, short ){
 		});
 	for( key in data_types ){
 		var $type_opt = $('<option value="' + key + '">' + data_types[key] + '</option>', {'value': key });
-		if( type == key ){
+		if( 'type' in args && args['type'] == key ){
 			$type_opt.prop('selected', true );
 		}
 		$type_element.append( $type_opt );
@@ -42,7 +42,7 @@ function addName( name, type, display, short ){
 		});
 	for( key in data_display ){
 		var $display_opt = $('<option value="' + key + '">' + data_display[key] + '</option>');
-		if( display == key ){
+		if( 'display' in args && args['display'] == key ){
 			$display_opt.prop('selected', true );
 		}
 		$display_element.append( $display_opt );
@@ -61,8 +61,8 @@ function addName( name, type, display, short ){
 			'type': 'text',
 			'name': 'names[' + name_count + '][short]',
 		});
-	if( short ){
-		$short_element.attr('value',short);
+	if( 'short' in args ){
+		$short_element.attr('value',args['short']);
 	}
 	$tr_element.append( $short_cell.append( $short_element ) );
 
@@ -81,6 +81,15 @@ function setDisplayDescription( el ){
 }
 
 $( function($){
+	$(document).ready( function(){
+		names = [{}];
+		$.extend(names,JSON.parse(current_script.getAttribute('data-names')) );
+		for( el of names ){
+			addName( el );
+		};
+		console.log($('script').attr('src'));
+	});
+
 	$('.sortable').sortable();
 
 	$('.sortable').on( 'sortstop', function( ev, ui ){
