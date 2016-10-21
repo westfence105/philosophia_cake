@@ -6,6 +6,9 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
+use Cake\Event\Event;
+use ArrayObject;
+
 /**
  * Names Model
  *
@@ -124,6 +127,23 @@ class NamesTable extends Table
         return $rules;
     }
 
+    public function beforeMarshal( Event $event, ArrayObject $data, ArrayObject $options ){
+        if( $data->offsetExists('order_key') ){
+            @debug($data['order_key']);
+        }
+        else {
+            $data['order_key'] = $this->find()
+                                      ->select(['order_key'])
+                                      ->order(['order_key' => 'DESC'])
+                                      ->first()
+                                      ->order_key + 1;
+        }
+        if( $data->offsetExists('display') && is_string($data['display']) && 
+            array_key_exists( $data['display'], self::DISPLAY ) ){
+            $data['display'] = self::DISPLAY[$data['display']];
+        }
+    }
+
     public function getName( string $username, int $display_lebel = self::DISPLAY_LEBEL['normal'] ){
         $query = $this->find()
                       ->select(['name','type','short','display'])
@@ -134,7 +154,7 @@ class NamesTable extends Table
             if( $row->display == self::DISPLAY['private'] && $display_lebel != self::DISPLAY_LEBEL['private'] ){
                 continue;
             }
-            else if( $row->display == self::DISPLAY['omit'] && $display_lebel > self::DISPLAY_LEBEL['full'] ){
+            else if( $row->display <= self::DISPLAY['omit'] && $display_lebel > self::DISPLAY_LEBEL['full'] ){
                 continue;
             }
             else {
@@ -156,14 +176,21 @@ class NamesTable extends Table
                       ->select(['name','type','display','short'])
                       ->where(['username' => $username])
                       ->order(['order_key' => 'ASC'])
-                      ->hydrate(false)
                     ;
-        $data = $query->toList();
-        if( isset($options['display']) && $options['display'] == 'string' ){
-            foreach ( $data as $i => &$name ) {
-                $name['display'] = array_search( $name['display'], self::DISPLAY );
+        $display_string = ( array_key_exists('display',$options ) && $options['display'] == 'string' );
+        $to_array = ( array_key_exists('array',$options ) && $options['array'] == true );
+        foreach ( $query as $entity ) {
+            if( $display_string ){
+                $ret = array_search( $entity->display, self::DISPLAY );
+                $entity->display = $ret ? $ret : '';
+            }
+            if( $to_array ){
+                $data[] = $entity->toArray();
+            }
+            else {
+                $data[] = $entity;
             }
         }
-        return $data;
+        return isset($data) ? $data : [];
     }
 }

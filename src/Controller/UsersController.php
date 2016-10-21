@@ -100,7 +100,7 @@ class UsersController extends AppController
         if( $this->request->is('post') ){
             $data = $this->request->data;
             debug( $data );
-            if( isset( $data['names'] ) ){
+            if( array_key_exists('names',$data) ){
                 $this->set( 'names', $data['names'] );
             }
             //Not Implemented

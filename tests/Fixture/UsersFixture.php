@@ -47,6 +47,12 @@ class UsersFixture extends TestFixture
                 'language' => 'en_US',
                 'email' => 'test_user@example.com'
             ],
+            [
+                'username' => 'smith',
+                'password' => (new DefaultPasswordHasher)->hash('password'),
+                'language' => 'en_US',
+                'email' => 'smith@example.com'
+            ],
         ];
 
         parent::init();

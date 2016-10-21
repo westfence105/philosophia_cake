@@ -18,7 +18,7 @@
 	echo '<div class="user_config">'."\n";
 	
 	echo $this->Form->create( 
-			isset($entities['names']) ? $entities['names'] : null, 
+			array_key_exists('names',$entities ) ? $entities['names'] : null, 
 			['type' => 'Post','class' => 'config_name']
 		), "\n";
 	echo '<table id="name_inputs"><tbody class="sortable"></tbody></table>', "\n";

@@ -2,6 +2,7 @@
 namespace App\Test\TestCase\Model\Table;
 
 use App\Model\Table\NamesTable;
+use App\Model\Entity\Name;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\TestCase;
 
@@ -68,7 +69,7 @@ class NamesTableTest extends TestCase
      */
     public function testValidationDefault()
     {
-        $sample = ['username' => 'test', 'order_key' => 1, 'name' => 'John', 'type' => 'given', 'display' => 1 ];
+        $sample = ['username' => 'smith', 'name' => 'John', 'type' => 'given', 'display' => 1 ];
         foreach ( $sample as $key => $value) {
             $args = $sample;
             $args[$key] = null;
@@ -118,10 +119,20 @@ class NamesTableTest extends TestCase
         $this->markTestIncomplete('Not implemented yet.');
     }
 
+    public function testBeforeMarshal(){
+        $entity = $this->Names->newEntity([
+                'username'  => 'smith',
+                'name'      => 'Baron',
+                'type'      => 'title',
+                'display'   => 'display',
+            ]);
+        $this->assertEmpty( $entity->errors() );
+    }
+
     public function array_subset( array $exp, array $values ){
         foreach ( $values as $key => $value) {
             foreach ( $exp as $e_key => $e_value) {
-                if( isset($value[$e_key]) && $value[$e_key] == $e_value ){
+                if( array_key_exists($e_key,$value) && $value[$e_key] == $e_value ){
                     continue;
                 }
                 else {
@@ -174,6 +185,23 @@ class NamesTableTest extends TestCase
     public function testGetNameData(){
         $data = $this->Names->getNameData('smith');
         foreach( $data as $i => $name ){
+            $this->assertInstanceOf('\App\Model\Entity\Name',$name);
+            $this->assertInternalType( 'string', $name->name );
+            $this->assertInternalType( 'string', $name->type );
+            $this->assertInternalType( 'int',    $name->display );
+        }
+
+        $data = $this->Names->getNameData('smith', ['display' => 'string']);
+        foreach( $data as $i => $name ){
+            $this->assertInternalType( 'string', $name->display );
+        }
+
+        $data = $this->Names->getNameData('smith', ['array' => true ]);
+        $this->assertInternalType('array', $data );
+        foreach ( $data as $key => $name ) {
+            $this->assertArrayHasKey('name',   $name );
+            $this->assertArrayHasKey('type',   $name );
+            $this->assertArrayHasKey('display',$name );
             $this->assertInternalType( 'string', $name['name'] );
             $this->assertInternalType( 'string', $name['type'] );
             $this->assertInternalType( 'int',    $name['display'] );
