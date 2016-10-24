@@ -137,7 +137,10 @@ $( function($){
 		setDisplayDescription( $(this) )
 	} );
 
-	$(document).on('change', '.name_input input,select', function(){
+	$(document).on( 'keyup', '.name_input input', function(){
+		updateNamePreview();
+	});
+	$(document).on( 'change', '.name_input select', function(){
 		updateNamePreview();
 	});
 });
