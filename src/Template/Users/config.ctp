@@ -1,35 +1,36 @@
 <h2><?= isset($title) ? $title : 'Config' ?></h2>
 <?php
-	@$data_name = [
+	//load CSS
+	echo $this->Html->css('user_config',['block' => true ]);
+
+	//set data for javascript
+	@$data = [
 			'data-name-types' 	=> json_encode( $types ), 
 			'data-name-display' => json_encode( $display ),
 			'data-name-display-description' => json_encode( $display_description ),
 			'data-name-short' 	=> json_encode( __x('description of name.short','Short') ),
 		];
 	if( ! empty($names) ){
-		$data_name += [ 'data-names' => json_encode($names) ];
+		$data += [ 'data-names' => json_encode($names) ];
 	}
-	echo $this->Html->script('user_config', $data_name + ['block' => true]), "\n";
-/*
-	echo $this->Html->scriptBlock('
-			$( function() {
-			  $( "#sortable" ).sortable();
-			  $( "#sortable" ).disableSelection();
-			} );', ['block' => true ]
-		);
-*/
+	echo $this->Html->script('user_config', $data + ['block' => true]), "\n";
+
+	//div user_config -start-
 	echo '<div class="user_config">'."\n";
 	
-	echo $this->Form->create( 'Post',['class' => 'config_name']), "\n";
-	echo '<div></div>';
-	echo '<table id="name_inputs"><tbody class="sortable"></tbody></table>', "\n";
+	//names form
+	echo '<div class="config_name">'."\n";
+	echo $this->Form->create('Post'), "\n";
+	echo '<div id="name_inputs"></div>', "\n";
 	echo '<div class="add_name">', "\n",
 		 '<a href="javascript:void(0);" onClick="addName();">'.__('Add Name-Element').'</a>',
 		 '</div>', "\n";
 	echo $this->Form->submit(__('Save'));
 	echo $this->Form->end(), "\n";
+	echo '</div>'."\n";
 
 	echo '</div>'."\n";
+	//div user_config -end-
 
 	if( isset($onload) ){
 		echo $this->Html->scriptBlock(

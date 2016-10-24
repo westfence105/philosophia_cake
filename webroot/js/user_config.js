@@ -6,11 +6,15 @@ var data_display_description = JSON.parse(current_script.getAttribute('data-name
 
 var name_count = 0;
 function addName( args ){
-	var $table_element = $('#name_inputs tbody');
+	if( typeof args === 'undefined' ){
+		args = {};
+	}
 
-	var $tr_element = $('<tr></tr>',{'class':'name_input'});
+	var $table_element = $('#name_inputs');
 
-	var $name_cell = $('<td></td>', {'class': 'input_name'});
+	var $tr_element = $('<div></div>',{'class':'name_input'});
+
+	var $name_cell = $('<div></div>', {'class': 'cell input_name'});
 	var $name_element = $('<input/>', {
 			'type': 'text',
 			'name': 'names[' + name_count + '][name]',
@@ -20,7 +24,7 @@ function addName( args ){
 	}
 	$tr_element.append( $name_cell.append( $name_element ) );
 
-	var $type_cell = $('<td></td>', {'class': 'input_name_type'});
+	var $type_cell = $('<div></div>', {'class': 'cell input_name_type'});
 	var $type_element = $('<select></select>', {
 			'name': 'names[' + name_count + '][type]',
 		});
@@ -33,12 +37,12 @@ function addName( args ){
 	}
 	$tr_element.append( $type_cell.append( $type_element ) );
 
-	var display_desc_id = 'display_desc[' + name_count + ']';
-	var $display_cell = $('<td></td>', {'class':'input_name_display'});
+//	var display_desc_id = 'display_desc[' + name_count + ']';
+	var $display_cell = $('<div></div>', {'class':'cell input_name_display'});
 	var $display_element = $('<select></select>', {
 			'name': 'names[' + name_count + '][display]',
 			'class': 'select_name_display',
-			'desc_id': display_desc_id,
+		//	'desc_id': display_desc_id,
 		});
 	for( key in data_display ){
 		var $display_opt = $('<option value="' + key + '">' + data_display[key] + '</option>');
@@ -48,15 +52,15 @@ function addName( args ){
 		$display_element.append( $display_opt );
 	}
 	var $display_desc_element = $('<span></span>', {
-			'id': display_desc_id,
+		//	'id': display_desc_id,
 			'class': 'name_display_description'
 		});
 	$tr_element.append( $display_cell.append( $display_element ).append( $display_desc_element ) );
 	setDisplayDescription( $display_element );
 
-	$tr_element.append('<td class="name_short_label"><label>' + data_short + '</select></td>');
+	$tr_element.append('<div class="cell name_short_label"><label>' + data_short + '</select></div>');
 
-	var $short_cell = $('<td></td>',{'class':'input_name_short'});
+	var $short_cell = $('<div></div>',{'class':'cell input_name_short'});
 	var $short_element = $('<input></input>', {
 			'type': 'text',
 			'name': 'names[' + name_count + '][short]',
@@ -68,7 +72,7 @@ function addName( args ){
 
 	$table_element.append( $tr_element );
 
-	$('.sortable').trigger('sortupdate');
+	$('#name_inputs').trigger('sortupdate');
 
 	++name_count;
 }
@@ -76,8 +80,9 @@ function addName( args ){
 function setDisplayDescription( el ){
 	console.log( el.val() );
 	desc_str = data_display_description[ el.val() ];
-	el.next().html( desc_str );
-	console.log( el.next().html() );
+	desc_el = el.next();
+	desc_el.html( desc_str );
+	console.log( desc_el.html() );
 }
 
 $( function($){
@@ -87,25 +92,18 @@ $( function($){
 		for( el of names ){
 			addName( el );
 		};
-		console.log($('script').attr('src'));
 	});
 
-	$('.sortable').sortable();
-
-	$('.sortable').on( 'sortstop', function( ev, ui ){
+	$('#name_inputs').sortable();
+	$('#name_inputs').on( 'sortstop', function( ev, ui ){
 		var $rows = $('.name_input').each( function( i, el ) {
-		//	console.log(i);
-		//	console.log(el);
 			$(el).find('input,select').each( function( j, i_el ){
 				var name_old = $(i_el).attr('name');
 				var name_new = name_old.replace(/(names\[)[0-9]*(\])/,'$1'+i+'$2');
 				$(i_el).attr('name',name_new);
-			//	console.log( name_old + ' -> ' + name_new );
 			});
-		//	console.log('--');	
 		});
 		name_count = $rows.length;
-	//	console.log(name_count);
 	});
 
 	$(document).on( 'click', 'label', function(){
