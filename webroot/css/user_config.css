@@ -12,14 +12,26 @@ div.user_config
 	margin: 0;
 }
 
+.user_config div.config_title
+{
+	width: 100%;
+	padding: 1em 1.5em 0;
+	text-align: left;
+}
+
 .user_config form input[type="submit"]
 {
 	margin: 2em;
 }
 
+.user_config div[id="name_preview"]
+{
+	word-spacing: 100%;
+}
+
 .user_config .config_name div[id="name_inputs"] {
 	display: table;
-	padding: 1.5em 2em 0;
+	padding: 0 2em;
 	border-collapse: separate;
 	border-spacing: 0 1em;
 	width: 100%;
@@ -28,7 +40,7 @@ div.user_config
 .user_config .config_name div.name_input
 {
 	display: table-row;
-	background: #fff;
+	background: #eff;
 }
 
 .user_config .config_name .name_input div.cell

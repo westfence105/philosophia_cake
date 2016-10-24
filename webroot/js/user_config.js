@@ -85,6 +85,26 @@ function setDisplayDescription( el ){
 	console.log( desc_el.html() );
 }
 
+function updateNamePreview(){
+	str = [];
+	str_short = [];
+	$('.name_input').each( function( i, el ){
+		el_str = $(el).children('.input_name').children('input').val();
+		display = $(el).children('.input_name_display').children('select').val();
+		console.log( str + ': ' + display );
+		if( display != 'private' ){
+			str.push( el_str );
+			if( display == 'short' ){
+				str_short.push( $(el).children('.input_name_short').children('input').val() );
+			}
+			else if( display != 'omit' ){
+				str_short.push( el_str );
+			}
+		}
+	});
+	$('#name_preview').html( str.join(' ') + ' => ' + str_short.join(' ') );
+}
+
 $( function($){
 	$(document).ready( function(){
 		names = [{}];
@@ -92,6 +112,7 @@ $( function($){
 		for( el of names ){
 			addName( el );
 		};
+		updateNamePreview();
 	});
 
 	$('#name_inputs').sortable();
@@ -104,6 +125,7 @@ $( function($){
 			});
 		});
 		name_count = $rows.length;
+		updateNamePreview();
 	});
 
 	$(document).on( 'click', 'label', function(){
@@ -115,4 +137,7 @@ $( function($){
 		setDisplayDescription( $(this) )
 	} );
 
+	$(document).on('change', '.name_input input,select', function(){
+		updateNamePreview();
+	});
 });

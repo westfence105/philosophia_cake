@@ -20,6 +20,8 @@
 	
 	//names form
 	echo '<div class="config_name">'."\n";
+	echo '<div class="config_title"><h3>'.__x('title of name config form','Name').'</h3></div>'."\n";
+	echo '<div id="name_preview"></div>'."\n";
 	echo $this->Form->create('Post'), "\n";
 	echo '<div id="name_inputs"></div>', "\n";
 	echo '<div class="add_name">', "\n",
