@@ -43,23 +43,102 @@ class UserPagesTest extends TestCase
 
 	//	debug( $this->driver->getPageSource(), "\n" );
 
+		//-- test names form --
 		$name_inputs = $this->driver->findElements(WebDriverBy::cssSelector('.name_input'));
+		$base_full = [];
+		$base_short = [];
+		foreach ( $name_inputs as $i => $name_input ) {
+			$display = $name_input->findElement(WebDriverBy::cssSelector('.input_name_display'))
+								  ->findElement(WebDriverBy::cssSelector('select'))
+								  ->getAttribute('value')
+								;
+			if( $display != 'private' ){
+				$name = $name_input->findElement(WebDriverBy::cssSelector('.input_name'))
+								   ->getAttribute('value');
+				debug($name);
+				if( !empty($name) ){
+					$base_full[] = $name;
+				}
+
+				if( $display == 'display' && (!empty($name))  ){
+					$base_short[] = $name;
+				}
+				else if( $display == 'short' ){
+					$short = $name_input->findElement(WebDriverBy::cssSelector('.input_name_short'))
+										->getAttribute('value');
+					if( !empty(($short)) ){
+						$base_short[] = $short;
+					}
+					unset($short);
+				}
+				unset($name);
+			}
+			unset($display);
+			unset($name_input);
+		}
+		$gen_preview = function( $addition = [], $addition_short = [] )
+								use ( $base_full, $base_short ) 
+						{
+							foreach ( [ &$addition, &$addition_short ] as $i => &$value) {
+								if( is_string($value) ){
+									$value = [ $value ];
+								}
+								if( !is_array($value) ){
+									throw \TypeError();
+								}
+							}
+							$full  = array_merge( $base_full, $addition );
+							$short = array_merge( $base_short, $addition_short );
+							if( !empty( $full ) ){
+								return implode( ' ', $full ). 
+									   ' => '.
+									   ( empty( $short ) ? '""' : implode( ' ', $short ) );
+							}
+							else if( !empty($short) ) {
+								return implode( ' ', $short );
+							}
+							else return '';
+					  	};
+		//assert gen_preview works
+		$preview = $this->driver->findElement(WebDriverBy::id('name_preview'));
+		$this->assertEquals( $gen_preview(), $preview->getText(), 'gen_preview works' );
+
+		//assert adding name element
+		$count_old = count($name_inputs);
+		$this->driver->findElement(WebDriverBy::cssSelector('.add_name *'))->click();
+		$name_inputs = $this->driver->findElements(WebDriverBy::cssSelector('.name_input'));
+		$this->assertEquals( $count_old + 1, count($name_inputs), 'adding name element' );
 
 		$name_input = end($name_inputs);
+		$input_name = $name_input->findElement(WebDriverBy::cssSelector('.input_name'))
+				   				 ->findElement(WebDriverBy::cssSelector('input'));
+		$input_name_display = $name_input->findElement(WebDriverBy::cssSelector('.input_name_display'))
+				   						 ->findElement(WebDriverBy::cssSelector('select'));
+		$input_name_short = $name_input->findElement(WebDriverBy::cssSelector('.input_name_short'))
+									   ->findElement(WebDriverBy::tagName('input'));
 		
-		$name_input->findElement(WebDriverBy::cssSelector('.input_name'))
-				   ->findElement(WebDriverBy::cssSelector('input'))
-				   ->click()
-				;
+		//test input name
+		$input_name->click();
 		$this->driver->getKeyboard()->sendKeys('Test');
-		
-		$name_input->findElement(WebDriverBy::cssSelector('.input_name_display'))
-				   ->findElement(WebDriverBy::cssSelector('select'))
-				   ->click();
-		$this->driver->getKeyboard()->sendKeys('display');
+		$input_name_display->findElement(WebDriverBy::cssSelector('option[value="display"]'))->click();
+		$this->assertEquals( $gen_preview('Test','Test'), $preview->getText() );
 
-		$preview = $this->driver->findElement(WebDriverBy::id('name_preview'));
+		//assert short input is disabled when 'display' != 'short'
+		$this->assertFalse( $input_name_short->isEnabled() );
 
-		$this->assertRegExp('/Test => .*Test/', $preview->getText() );
+		$input_name_display->findElement(WebDriverBy::cssSelector('option[value="short"]'))->click();
+		$this->assertTrue( $input_name_short->isEnabled() );
+		$input_name_short->click();
+		$this->driver->getKeyboard()->sendKeys('T');
+
+		//test change display
+		$input_name_display->findElement(WebDriverBy::cssSelector('option[value="private"]'))->click();
+		$this->assertEquals( $gen_preview(), $preview->getText() );
+		$input_name_display->findElement(WebDriverBy::cssSelector('option[value="omit"]'))->click();
+		$this->assertEquals( $gen_preview(['Test']), $preview->getText() );
+		$input_name_display->findElement(WebDriverBy::cssSelector('option[value="short"]'))->click();
+		$this->assertEquals( $gen_preview(['Test'],['T']), $preview->getText() );
+
+		sleep(1);
 	}
 }
