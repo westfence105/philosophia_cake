@@ -126,10 +126,10 @@ function updateNamePreview(){
 
 	var html = '';
 	if( str.length ){
-		html = str.join(' ') + ' => ' + (str_short.length) ? str_short.join(' ') : '""';
+		html = str.join(' ') + ' => ' + ( (str_short.length) ? str_short.join(' ') : '""' );
 	}
 	else if( str_short.length ){
-		html = str_short.join(' ');
+		html += str_short.join(' ');
 	}
 	$('#name_preview').html( html );
 }
