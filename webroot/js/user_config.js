@@ -72,37 +72,66 @@ function addName( args ){
 
 	$table_element.append( $tr_element );
 
+	//post adding name
+	setShortEnabled( $display_element );
 	$('#name_inputs').trigger('sortupdate');
 
 	++name_count;
 }
 
-function setDisplayDescription( el ){
-	console.log( el.val() );
-	desc_str = data_display_description[ el.val() ];
-	desc_el = el.next();
-	desc_el.html( desc_str );
-	console.log( desc_el.html() );
+function setDisplayDescription( $el ){
+//	console.log( $el.val() );
+	var desc_str = data_display_description[ $el.val() ];
+	$desc_el = $el.next();
+	$desc_el.html( desc_str );
+//	console.log( $desc_el.html() );
+}
+
+function setShortEnabled( $el ){
+	$el_short	= $el.parent().siblings('.input_name_short').children('input');
+	if( $el.val() == 'short' ){
+		$el_short.prop('disabled',false);
+	}
+	else{
+		$el_short.prop('disabled',true);
+	}
 }
 
 function updateNamePreview(){
-	str = [];
-	str_short = [];
-	$('.name_input').each( function( i, el ){
-		el_str = $(el).children('.input_name').children('input').val();
-		display = $(el).children('.input_name_display').children('select').val();
-		console.log( str + ': ' + display );
+	var str = [];
+	var str_short = [];
+	$inputs = $('.name_input');
+	$inputs.each( function( i, el ){
+		var el_str  = $(el).children('.input_name').children('input').val();
+		var display = $(el).children('.input_name_display').children('select').val();
+	//	console.log( str + ': ' + display );
 		if( display != 'private' ){
-			str.push( el_str );
+			if( el_str.length ){
+				str.push( el_str );
+			}
+
 			if( display == 'short' ){
-				str_short.push( $(el).children('.input_name_short').children('input').val() );
+				var el_short = $(el).children('.input_name_short').children('input').val();
+				if( el_short.length ){
+					str_short.push( el_short );
+				}
 			}
 			else if( display != 'omit' ){
-				str_short.push( el_str );
+				if( el_str.length ){
+					str_short.push( el_str );
+				}
 			}
 		}
 	});
-	$('#name_preview').html( str.join(' ') + ' => ' + str_short.join(' ') );
+
+	var html = '';
+	if( str.length ){
+		html = str.join(' ') + ' => ' + (str_short.length) ? str_short.join(' ') : '""';
+	}
+	else if( str_short.length ){
+		html = str_short.join(' ');
+	}
+	$('#name_preview').html( html );
 }
 
 $( function($){
@@ -128,13 +157,10 @@ $( function($){
 		updateNamePreview();
 	});
 
-	$(document).on( 'click', 'label', function(){
-		console.log( $(this).val() );
-	} );
-
 	$(document).on( 'change', '.select_name_display', function(){
 		console.log( $(this).val() );
-		setDisplayDescription( $(this) )
+		setDisplayDescription( $(this) );
+		setShortEnabled( $(this) );
 	} );
 
 	$(document).on( 'keyup', '.name_input input', function(){
