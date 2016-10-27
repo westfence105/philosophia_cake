@@ -55,11 +55,16 @@ class AppController extends Controller
                         'loginAction' => [ 'controller' => 'Pages', 'action' => 'introduction' ]
                     ]);
         $this->Auth->config('checkAuthIn', 'Controller.initialize');
-        $this->loadComponent('Security', ['blackHoleCallback' => 'redirectSSL']);
+        $this->loadComponent('Security', [
+                                'blackHoleCallback' => 'redirectSSL',
+                                'validatePost' => false,
+                            ]);
     }
 
-    public function redirectSSL(){
-        $this->redirect('https://'.env('SERVER_NAME').$this->request->here);
+    public function redirectSSL( $type ){
+        if('secure'){
+            $this->redirect('https://'.env('SERVER_NAME').$this->request->here);
+        }
     }
 
     /**
