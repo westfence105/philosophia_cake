@@ -38,15 +38,20 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
     <nav class="top-bar expanded" data-topbar role="navigation">
         <ul class="title-area large-3 medium-4 columns">
             <li class="name">
-                <h1><a href="/">Φιλοσοφια</a></h1>
+                <h1><?= $this->Html->link( 'Φιλοσοφια', '/' ) ?></a></h1>
             </li>
         </ul>
         <div class="top-bar-section">
             <ul class="right">
-                <li>
+                <li class="username">
                     <?= isset($username) ? 
-                        '<a href="/users/'.$username.'">'.h($username).'</a>' : 
-                        '<a href="/login">'.__('Login').'</a>'
+                        $this->Html->link( h($username), [
+                                'controller' => 'Users',
+                                'action' => 'profile',
+                                'id' => $username
+                            ])
+                        : 
+                        $this->Html->link( __('Login'), ['controller' => 'Users', 'action' => 'login'] )
                     ?>
                 </li>
             </ul>
