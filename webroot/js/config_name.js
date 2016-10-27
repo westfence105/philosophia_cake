@@ -169,4 +169,8 @@ $( function($){
 	$(document).on( 'change', '.name_input select', function(){
 		updateNamePreview();
 	});
+
+	$("form").submit( function(event){
+		alert( $(this).prop('action') );
+	});
 });

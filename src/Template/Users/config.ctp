@@ -10,10 +10,10 @@
 			'data-name-display-description' => json_encode( $display_description ),
 			'data-name-short' 	=> json_encode( __x('description of name.short','Short') ),
 		];
-	if( ! empty($names) ){
-		$data += [ 'data-names' => json_encode($names) ];
+	if( array_key_exists('names', $entities ) ){
+		$data += [ 'data-names' => json_encode($entities['names']) ];
 	}
-	echo $this->Html->script('user_config', $data + ['block' => true]), "\n";
+	echo $this->Html->script('config_name', $data + ['block' => true]), "\n";
 
 	//div user_config -start-
 	echo '<div class="user_config">'."\n";

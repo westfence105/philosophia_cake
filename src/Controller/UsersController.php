@@ -104,7 +104,7 @@ class UsersController extends AppController
             $data = $this->request->data;
         //    debug( $data );
             if( array_key_exists('names',$data) ){
-                $this->set( 'names', $data['names'] );
+                $entities['names'] = $data['names'];
             }
             //Not Implemented
         }
@@ -112,6 +112,7 @@ class UsersController extends AppController
         if( ! array_key_exists('names', $entities ) ){
             $entities['names'] = $names->getNameData( $username, ['display' => 'string','array' => true ] );
         }
+    //    debug($entities);
         $this->set('entities', $entities );
     }
 
