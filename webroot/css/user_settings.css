@@ -1,35 +1,35 @@
-div.user_config
+div#user_settings
 {
 	background-color: #f0e68c;
 	margin: .5em 5em;
 	padding: 2em 2em;
 }
 
-.user_config div[class^="config_"]
+#user_settings div[class^="setting_"]
 {
 	text-align: center;
 	background-color: #eef;
 	margin: 0;
 }
 
-.user_config div.config_title
+#user_settings div.group_title
 {
 	width: 100%;
 	padding: 1em 1.5em 0;
 	text-align: left;
 }
 
-.user_config form input[type="submit"]
+#user_settings form input[type="submit"]
 {
 	margin: 2em;
 }
 
-.user_config div[id="name_preview"]
+#user_settings div[id="name_preview"]
 {
 	word-spacing: 100%;
 }
 
-.user_config .config_name div[id="name_inputs"] {
+#user_settings div[id="name_inputs"] {
 	display: table;
 	padding: 0 2em;
 	border-collapse: separate;
@@ -37,67 +37,67 @@ div.user_config
 	width: 100%;
 }
 
-.user_config .config_name div.name_input
+#user_settings div.name_input
 {
 	display: table-row;
 	background: #eff;
 }
 
-.user_config .config_name .name_input div.cell
+#user_settings .name_input div.cell
 {
 	display: table-cell;
 	vertical-align: middle;
 	padding: 1em .5em;
 }
 
-.user_config .config_name .name_input input,
-.user_config .config_name .name_input select,
-.user_config .config_name .name_input label
+#user_settings .name_input input,
+#user_settings .name_input select,
+#user_settings .name_input label
 {
 	margin: 0;
 }
 
-.user_config .config_name .name_input div.name_short_label
+#user_settings .name_input div.name_short_label
 {
 	padding-left:  1.0em;
 	padding-right: 0.2em;
 	text-align: right;
 }
 
-.user_config .config_name .name_input .input_name_short input
+#user_settings .name_input .input_name_short input
 {
 	max-width: 12em;
 }
 
-.user_config .config_name .name_input .input_name
+#user_settings .name_input .input_name
 {
 	width: 100%;
 	padding-right: 1em !important;
 	padding-left: 1.5em !important;
 }
 
-.user_config .config_name .name_input .input_name input
+#user_settings .name_input .input_name input
 {
 	width: 100%;
 } 
 
-.user_config .config_name .name_input .input_name_short
+#user_settings .name_input .input_name_short
 {
 	padding-right: 1.5em !important;
 }
 
-.user_config .config_name .name_input .input_name_display
+#user_settings .name_input .input_name_display
 {
 	position: relative;
 	overflow: visible;
 }
 
-.user_config .config_name .name_input .input_name_display span.name_display_description
+#user_settings .name_input .input_name_display span.name_display_description
 {
 	display: none;
 }
 
-.user_config .config_name .name_input .input_name_display:hover > span.name_display_description
+#user_settings .name_input .input_name_display:hover > span.name_display_description
 {
 	display: block;
 	position: absolute;

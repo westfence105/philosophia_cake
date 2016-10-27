@@ -92,28 +92,30 @@ class UsersController extends AppController
         }
     }
 
-    public function config(){
-        $this->set('title',__x('title of user config page','Config'));
-        $this->set('types', NamesTable::types() );
-        $this->set('display', NamesTable::display() );
-        $this->set('display_description', NamesTable::displayDescription() );
+    public function settings(){
+        $this->set('title',__x('title of user settings page','Settings'));
         $username = $this->Auth->user('username');
         $names = TableRegistry::get('Names');
-        $entities = [];
+        $data = [];
         if( $this->request->is('post') ){
-            $data = $this->request->data;
-        //    debug( $data );
-            if( array_key_exists('names',$data) ){
-                $entities['names'] = $data['names'];
-            }
-            //Not Implemented
+            $data = $this->request->data();
+            //save set data
         }
 
-        if( ! array_key_exists('names', $entities ) ){
-            $entities['names'] = $names->getNameData( $username, ['display' => 'string','array' => true ] );
+        if( ! array_key_exists('names', $data ) ){
+            $data['names'] = $names->getNameData( $username, ['display' => 'string','array' => true ] );
         }
-    //    debug($entities);
-        $this->set('entities', $entities );
+        $this->set('data',$data);
+
+        $translations = [
+                'short' => __x('description of name.short','Short'),
+            ];
+        $this->set('resources', [
+                'data-translations'     => json_encode( $translations ),
+                'data-name-types'       => json_encode( NamesTable::types() ),
+                'data-name-displaying'  => json_encode( NamesTable::display() ),
+                'data-name-display-description' => json_encode( NamesTable::displayDescription() ),
+            ]);
     }
 
     public function profile( $username ){

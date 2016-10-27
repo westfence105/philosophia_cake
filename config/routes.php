@@ -55,7 +55,7 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/login',      [ 'controller' => 'Users', 'action' => 'login' ] );
     $routes->connect('/logout',     [ 'controller' => 'Users', 'action' => 'logout' ] );
     $routes->connect('/register',   [ 'controller' => 'Users', 'action' => 'register' ] );
-    $routes->connect('/config',     [ 'controller' => 'Users', 'action' => 'config' ] );
+    $routes->connect('/settings',   [ 'controller' => 'Users', 'action' => 'settings' ] );
 
     $routes->connect('/users/:id',  [ 'controller' => 'Users', 'action' => 'profile' ],
                                     [ 'id' => '.+', 'pass' => [ 'id' ] ] );

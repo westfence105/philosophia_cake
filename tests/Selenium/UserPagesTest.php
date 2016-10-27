@@ -51,7 +51,7 @@ class UserPagesTest extends TestCase
 	}
 
 	public function testConfig(){
-		$this->driver->get( $this->host.'config' );
+		$this->driver->get( $this->host.'settings' );
 
 	//	debug( $this->driver->getPageSource(), "\n" );
 
@@ -60,12 +60,11 @@ class UserPagesTest extends TestCase
 		$base_full = [];
 		$base_short = [];
 		foreach ( $name_inputs as $i => $name_input ) {
-			$display = $name_input->findElement(WebDriverBy::cssSelector('.input_name_display'))
-								  ->findElement(WebDriverBy::cssSelector('select'))
+			$display = $name_input->findElement(WebDriverBy::cssSelector('.input_name_display select'))
 								  ->getAttribute('value')
 								;
 			if( $display != 'private' ){
-				$name = $name_input->findElement(WebDriverBy::cssSelector('.input_name'))
+				$name = $name_input->findElement(WebDriverBy::cssSelector('.input_name input'))
 								   ->getAttribute('value');
 				if( !empty($name) ){
 					$base_full[] = $name;
@@ -75,7 +74,7 @@ class UserPagesTest extends TestCase
 					$base_short[] = $name;
 				}
 				else if( $display == 'short' ){
-					$short = $name_input->findElement(WebDriverBy::cssSelector('.input_name_short'))
+					$short = $name_input->findElement(WebDriverBy::cssSelector('.input_name_short input'))
 										->getAttribute('value');
 					if( !empty(($short)) ){
 						$base_short[] = $short;
@@ -116,7 +115,7 @@ class UserPagesTest extends TestCase
 
 		//assert adding name element
 		$count_old = count($name_inputs);
-		$this->driver->findElement(WebDriverBy::cssSelector('.add_name *'))->click();
+		$this->driver->findElement(WebDriverBy::cssSelector('.add_name'))->click();
 		$name_inputs = $this->driver->findElements(WebDriverBy::cssSelector('.name_input'));
 		$this->assertEquals( $count_old + 1, count($name_inputs), 'adding name element' );
 
