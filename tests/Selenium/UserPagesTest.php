@@ -7,20 +7,32 @@ use Facebook\WebDriver\WebDriverBy;
 use Facebook\WebDriver\Remote;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
+use Facebook\WebDriver\Remote\WebDriverCapabilityType;
 
 class UserPagesTest extends TestCase
 {
-	public $server = 'http://localhost:4444/wd/hub';
-
 	public $driver;
+
+	public $host;
 
 	public function setUp(){
 		parent::setUp();
 
-		$this->driver = RemoteWebDriver::create( $this->server, DesiredCapabilities::chrome() );
+		$this->host = getenv('CAKE_SERVER_ROOT');
+		$this->assertNotEmpty( $this->host, 'CAKE_SERVER_ROOT is not set' );
+
+		$selenium_host = getenv('SELENIUM_HOST');
+		$selenium_driver = getenv('SELENIUM_DRIVER');
+		if( empty($selenium_host) ){
+			$selenium_host = 'http://localhost:4444/wd/hub';
+		}
+		debug('selenium host: '.$selenium_host);
+		$capability = DesiredCapabilities::chrome();
+		$capability->setCapability(WebDriverCapabilityType::ACCEPT_SSL_CERTS, false );
+		$this->driver = RemoteWebDriver::create( $selenium_host, $capability );
 
 		//login
-		$this->driver->get('http://localhost:8765/login');
+		$this->driver->get( $this->host.'login' );
 		$this->driver->findElement(WebDriverBy::id('username'))->click();
 		$this->driver->getKeyboard()->sendKeys('test');
 		$this->driver->findElement(WebDriverBy::id('password'))->click();
@@ -39,7 +51,7 @@ class UserPagesTest extends TestCase
 	}
 
 	public function testConfig(){
-		$this->driver->get('http://localhost:8765/config');
+		$this->driver->get( $this->host.'config' );
 
 	//	debug( $this->driver->getPageSource(), "\n" );
 
@@ -55,7 +67,6 @@ class UserPagesTest extends TestCase
 			if( $display != 'private' ){
 				$name = $name_input->findElement(WebDriverBy::cssSelector('.input_name'))
 								   ->getAttribute('value');
-				debug($name);
 				if( !empty($name) ){
 					$base_full[] = $name;
 				}

@@ -55,6 +55,11 @@ class AppController extends Controller
                         'loginAction' => [ 'controller' => 'Pages', 'action' => 'introduction' ]
                     ]);
         $this->Auth->config('checkAuthIn', 'Controller.initialize');
+        $this->loadComponent('Security', ['blackHoleCallback' => 'redirectSSL']);
+    }
+
+    public function redirectSSL(){
+        $this->redirect('https://'.env('SERVER_NAME').$this->request->here);
     }
 
     /**
@@ -73,6 +78,7 @@ class AppController extends Controller
     }
 
     public function beforeFilter(Event $event){
+        $this->Security->requireSecure();
         $username = $this->Auth->user('username');
         if( $username ) {
             $users = TableRegistry::get('Users');

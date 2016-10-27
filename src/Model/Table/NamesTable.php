@@ -128,9 +128,7 @@ class NamesTable extends Table
     }
 
     public function beforeMarshal( Event $event, ArrayObject $data, ArrayObject $options ){
-        if( $data->offsetExists('order_key') ){
-            @debug($data['order_key']);
-        }
+        if( $data->offsetExists('order_key') ){}
         else {
             $data['order_key'] = $this->find()
                                       ->select(['order_key'])

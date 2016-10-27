@@ -27,6 +27,12 @@ use Cake\View\Exception\MissingTemplateException;
  */
 class PagesControllerTest extends IntegrationTestCase
 {
+    public function setUp(){
+        parent::setUp();
+
+        $this->enableCsrfToken();
+    }
+
     /**
      * testMutlipleGet method
      *

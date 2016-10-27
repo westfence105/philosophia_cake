@@ -25,14 +25,32 @@ class UsersControllerTest extends IntegrationTestCase
     ];
 
     public $auth_data = [
-            'username' => 'users_test',
-            'password' => 'password'
-        ];
+                'username' => 'users_test',
+                'password' => 'password'
+            ];
+
+    public $new_user = [
+                'username' => 'test2',
+                'password' => 'password',
+                'language' => 'en_US',
+                'email' => 'test@example.com'
+            ];
 
     public function setUp(){
         parent::setUp();
+        
+        $this->enableSecurityToken();
+        $this->configRequest([
+                'environment' => [ 'HTTPS' => 'on' ]
+            ]);
+    }
 
-        $this->enableCsrfToken();
+    public function testCsrf(){
+        $this->post([ 'controller' => 'Users', 'action' => 'login' ], $this->auth_data );
+        $this->assertResponseError();
+
+        $this->post([ 'controller' => 'Users', 'action' => 'login' ], $this->new_user );
+        $this->assertResponseError();
     }
 
     public function testIndex()
@@ -46,19 +64,14 @@ class UsersControllerTest extends IntegrationTestCase
     }
 
     public function testLogin(){
+        $this->enableCsrfToken();
         $this->post([ 'controller' => 'Users', 'action' => 'login' ], $this->auth_data );
         $this->assertRedirect('/', $this->_response );
     }
 
     public function testRegister()
     {
-        $user_data = [
-                'username' => 'test2',
-                'password' => 'password',
-                'language' => 'en_US',
-                'email' => 'test@example.com'
-            ];
-
+        //setup email
         Email::dropTransport('default');
         Email::configTransport( 'default', [
                 'host' => 'localhost',
@@ -66,12 +79,15 @@ class UsersControllerTest extends IntegrationTestCase
                 'className' => 'Smtp'
             ] );
 
+        //setup http client (for getting email)
         $http = new Client();
         $http->delete('http://localhost:1080/messages');
 
-        $this->post([ 'controller' => 'Users', 'action' => 'register' ], $user_data );
+        $this->enableCsrfToken();
+        $this->post([ 'controller' => 'Users', 'action' => 'register' ], $this->new_user );
         $this->assertResponseOk('failed to add user',$this->_response);
 
+        //get verify email and access link (to complete register)
         $response = $http->get('http://localhost:1080/messages/1.plain');
         $this->assertTrue( $response->isOk(), 'failed to get catched mail');
         $this->assertTrue( preg_match( '/^\/register\?token=.*$/m', $response->body, $matches ) == 1, $response->body );
@@ -81,6 +97,7 @@ class UsersControllerTest extends IntegrationTestCase
 
     public function testProfile() {
         $this->session([ 'Auth.User.username' => $this->auth_data['username'] ]);
+        $this->enableCsrfToken();
 
         $this->get('/users/users_test');
         $this->assertResponseOk('failed to access profile page');
