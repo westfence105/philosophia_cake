@@ -111,10 +111,10 @@ class UsersController extends AppController
                 'short' => __x('description of name.short','Short'),
             ];
         $this->set('resources', [
-                'data-translations'     => json_encode( $translations ),
-                'data-name-types'       => json_encode( NamesTable::types() ),
-                'data-name-displaying'  => json_encode( NamesTable::display() ),
-                'data-name-display-description' => json_encode( NamesTable::displayDescription() ),
+                'data-translations'     => $translations,
+                'data-name-types'       => NamesTable::types(),
+                'data-name-displaying'  => NamesTable::display(),
+                'data-name-display-description' => NamesTable::displayDescription(),
             ]);
     }
 

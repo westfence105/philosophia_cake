@@ -6,6 +6,9 @@
 			$ret = '<'.$tag_name;
 			if( array_key_exists('attrs', $options) ){
 				foreach ( $options['attrs'] as $key => $value) {
+					if( !is_string($value) ){
+						$value = json_encode($value);
+					}
 					$ret .= ' '.$key.'="'.h($value).'"';
 				}
 			}

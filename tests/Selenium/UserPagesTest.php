@@ -27,8 +27,16 @@ class UserPagesTest extends TestCase
 			$selenium_host = 'http://localhost:4444/wd/hub';
 		}
 		debug('selenium host: '.$selenium_host);
-		$capability = DesiredCapabilities::chrome();
-		$capability->setCapability(WebDriverCapabilityType::ACCEPT_SSL_CERTS, false );
+		if( $selenium_driver == 'firefox' ){
+			$capability = DesiredCapabilities::firefox();
+		}
+		else if( $selenium_driver == 'phantomjs' ){
+			$capability = DesiredCapabilities::phantomjs();
+		}
+		else {
+			$capability = DesiredCapabilities::chrome();
+		}
+		$capability->setCapability(WebDriverCapabilityType::ACCEPT_SSL_CERTS, true );
 		$this->driver = RemoteWebDriver::create( $selenium_host, $capability );
 
 		//login

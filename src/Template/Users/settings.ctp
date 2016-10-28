@@ -18,15 +18,19 @@
 	echo '<div id="name_inputs">', "\n";
 	if( isset($data) && array_key_exists('names', $data ) ){
 		foreach ( $data['names'] as $i => $name ) {
-			echo \App\Utils\AppUtility::genHtmlTag('div', ['close' => true, 
-						'attrs' => [
-								'class' => 'name_input',
-								'data-name' => $name['name'],
-								'data-name-type' => $name['type'],
-								'data-name-display' => $name['display'],
-								'data-name-short' => $name['short'],
-							]
-						]), "\n";
+			$attrs = [
+				'class' => 'name_input',
+				'data-name' => $name['name'],
+				'data-name-type' => $name['type'],
+				'data-name-display' => $name['display'],
+				'data-name-short' => $name['short'],
+			];
+			if( array_key_exists( 'errors', $name ) ){
+				$attrs['data-name-errors'] = $name['errors'];
+			}
+			echo \App\Utils\AppUtility::genHtmlTag('div', ['close' => true, 'attrs' => $attrs ]), "\n";
+			unset($attrs);
+			unset($name);
 		}
 	}
 	echo '</div>', "\n";
