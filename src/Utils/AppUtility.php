@@ -28,13 +28,22 @@
 				}
 			}
 			if( array_key_exists('single', $options) && $options['single'] ){
+				if( array_key_exists('text', $options ) ){
+					$ret .= 'value="'.$options['text'].'"';
+				}
 				$ret .= ' />';
-			}
-			else if( array_key_exists('close', $options) && $options['close'] ){
-				$ret .= '></'.$tag_name.'>';
 			}
 			else {
 				$ret .= '>';
+				if( array_key_exists('html', $options ) ){
+					$ret .= $options['html'];
+				}
+				else if( array_key_exists('text', $options ) ){
+					$ret .= h($options['text']);
+				}
+				if( array_key_exists('close', $options) && $options['close'] ){
+					$ret .= '</'.$tag_name.'>';
+				}
 			}
 			return $ret;
 		}
