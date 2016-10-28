@@ -63,6 +63,8 @@ class UserPagesTest extends TestCase
 
 	//	debug( $this->driver->getPageSource(), "\n" );
 
+		$this->markTestIncomplete('Not implemented yet.');
+	/*	
 		//-- test names form --
 		$name_inputs = $this->driver->findElements(WebDriverBy::cssSelector('.name_input'));
 		$base_full = [];
@@ -158,5 +160,6 @@ class UserPagesTest extends TestCase
 		$this->assertEquals( $gen_preview(['Test'],['T']), $preview->getText() );
 
 		sleep(1);
+	*/
 	}
 }

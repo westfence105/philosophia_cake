@@ -195,9 +195,9 @@ class NamesTableTest extends TestCase
         $data = $this->Names->getNameData('smith');
         foreach( $data as $i => $name ){
             $this->assertInstanceOf('\App\Model\Entity\Name',$name);
-            $this->assertInternalType( 'string', $name->name );
-            $this->assertInternalType( 'string', $name->type );
-            $this->assertInternalType( 'int',    $name->display );
+            $this->assertInternalType('string', $name->name );
+            $this->assertInternalType('string', $name->type );
+            $this->assertInternalType('int',    $name->display );
         }
 
         $data = $this->Names->getNameData('smith', ['display' => 'string']);
@@ -207,18 +207,22 @@ class NamesTableTest extends TestCase
 
         $data = $this->Names->getNameData('smith', ['array' => true ]);
         $this->assertInternalType('array', $data );
-        foreach ( $data as $key => $name ) {
-            $this->assertArrayHasKey('name',   $name );
-            $this->assertArrayHasKey('type',   $name );
-            $this->assertArrayHasKey('display',$name );
-            $this->assertInternalType( 'string', $name['name'] );
-            $this->assertInternalType( 'string', $name['type'] );
-            $this->assertInternalType( 'int',    $name['display'] );
+        foreach( $data as $preset => $names ){
+            foreach ( $names as $i => $name ) {
+                $this->assertArrayHasKey('name',   $name );
+                $this->assertArrayHasKey('type',   $name );
+                $this->assertArrayHasKey('display',$name );
+                $this->assertInternalType('string', $name['name'] );
+                $this->assertInternalType('string', $name['type'] );
+                $this->assertInternalType('int',    $name['display'] );
+            }
         }
 
-        $data = $this->Names->getNameData('smith', ['display' => 'string']);
-        foreach( $data as $i => $name ){
-            $this->assertInternalType( 'string', $name['display'] );
+        $data = $this->Names->getNameData('smith', ['array' => true, 'display' => 'string']);
+        foreach( $data as $preset => $names ){
+            foreach ( $names as $i => $name ) {
+                $this->assertInternalType('string', $name['display']);
+            }
         }
     }
 }

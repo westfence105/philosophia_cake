@@ -6,6 +6,7 @@ use App\Controller\AppController;
 use Cake\ORM\TableRegistry;
 use Cake\I18n\I18n;
 use Cake\Mailer\MailerAwareTrait;
+use Cake\Error\Debugger;
 
 use App\Model\Table\NamesTable;
 
@@ -99,6 +100,7 @@ class UsersController extends AppController
         $data = [];
         if( $this->request->is('post') ){
             $data = $this->request->data();
+            Debugger::log( json_encode( $data ) );
             //save set data
         }
 
@@ -108,6 +110,7 @@ class UsersController extends AppController
         $this->set('data',$data);
 
         $translations = [
+                'save'  => __x('save user setting(s)','Save'),
                 'short' => __x('description of name.short','Short'),
             ];
         $this->set('resources', [

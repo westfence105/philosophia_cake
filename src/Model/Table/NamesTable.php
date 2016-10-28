@@ -213,19 +213,21 @@ class NamesTable extends Table
 
     public function getNameData( string $username, array $options = [] ){
         $query = $this->find()
-                      ->select(['name','type','display','short'])
+                      ->select(['name','type','display','short','preset'])
                       ->where(['username' => $username])
                       ->order(['order_key' => 'ASC'])
                     ;
         $display_string = ( array_key_exists('display',$options ) && $options['display'] == 'string' );
-        $to_array = ( array_key_exists('array',$options ) && $options['array'] == true );
+        $opt_array = ( array_key_exists('array',$options ) && $options['array'] == true );
         foreach ( $query as $entity ) {
             if( $display_string ){
                 $ret = array_search( $entity->display, self::DISPLAY );
                 $entity->display = $ret ? $ret : '';
             }
-            if( $to_array ){
-                $data[] = $entity->toArray();
+            if( $opt_array ){
+                $array = $entity->toArray();
+                unset($array['preset']);
+                $data[ $entity->preset ][] = $array;
             }
             else {
                 $data[] = $entity;

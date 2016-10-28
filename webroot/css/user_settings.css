@@ -1,53 +1,159 @@
+li
+{
+	list-style: none;
+}
+
+input[type="text"],
+select
+{
+	margin: 0;
+}
+
+#user_settings span.description
+{
+	display: none;
+	position: absolute;
+	top: 75%;
+	left: 25%;
+	background: #efe;
+	color: #000;
+	font-size: small;
+	border: #000 solid 1px;
+	padding: .5ex;
+	z-index: 2;
+	width: auto;
+	white-space: nowrap;
+}
+
 div#user_settings
 {
-	background-color: #f0e68c;
+	background-color: #ed8;
 	margin: .5em 5em;
 	padding: 2em 2em;
 }
 
 #user_settings div[class^="setting_"]
 {
-	text-align: center;
-	background-color: #eef;
+	background-color: #ddf;
 	margin: 0;
+	padding: 1em 1.5em;
 }
 
 #user_settings div.group_title
 {
 	width: 100%;
-	padding: 1em 1.5em 0;
-	text-align: left;
 }
 
-#user_settings form input[type="submit"]
+#user_settings input[type="text"],
+#user_settings input[type="password"],
+#user_settings select
 {
-	margin: 2em;
+	padding-top: 	.5em;
+	padding-bottom: .5em;
+	height: auto;
 }
 
-#user_settings div[id="name_preview"]
+#user_settings input[type="submit"]
+{
+	margin: 0;
+}
+
+#user_settings .name_preview
 {
 	word-spacing: 100%;
+	font-size: larger;
+	min-height: 2em;
+	vertical-align: middle;
+	text-align: center;
 }
 
-#user_settings div[id="name_inputs"] {
+#user_settings #name_presets
+{
+	margin: 0;
+	padding: 0 1em;
+	display: table;
+	width: 100%;
+}
+
+#user_settings #name_presets .name_preset
+{
+	display: table-row;
+}
+
+#user_settings #name_presets .name_preset div.preset_name
+{
+	display: table-cell;
+	min-width: 8ex;
+	vertical-align: middle;
+	text-align: right;
+	padding-right: 1ex;
+	position: relative;
+}
+
+#user_settings #name_presets .name_preset .names
+{
+	display: table-cell;
+	padding: 1em;
+	background: #eff;
+	white-space: nowrap;
+}
+
+#user_settings #name_presets .name_preset .edit_preset
+{
+	display: table-cell;
+	width: 100%;
+	text-align: left;
+	vertical-align: middle;
+	background: #eff;
+}
+
+#user_settings #name_presets .name_preset .names .name
+{
+	display: inline-block;
+	font-size: large;
+	margin-left: .5ex;
+	position: relative;
+}
+
+#user_settings #name_presets .name_preset .names .name:hover > .description
+{
+	display: block;
+}
+
+#user_settings #name_presets .name_preset .names div.save_name
+{
+	padding: 1em 0;
+	text-align: center;
+}
+
+#user_settings #name_presets .name_preset .preset_name input
+{
+	width: 100%;
+}
+
+#user_settings #name_presets .name_preset .preset_name > :hover + .description
+{
+	display: block;
+}
+
+#user_settings div.name_inputs {
 	display: table;
 	padding: 0 2em;
-	border-collapse: separate;
-	border-spacing: 0 1em;
 	width: 100%;
 }
 
 #user_settings div.name_input
 {
 	display: table-row;
-	background: #eff;
+	table-layout: auto;
+	width: 100%;
 }
 
 #user_settings .name_input div.cell
 {
 	display: table-cell;
 	vertical-align: middle;
-	padding: 1em .5em;
+	padding: .75em .5em;
 }
 
 #user_settings .name_input input,
@@ -57,23 +163,9 @@ div#user_settings
 	margin: 0;
 }
 
-#user_settings .name_input div.name_short_label
-{
-	padding-left:  1.0em;
-	padding-right: 0.2em;
-	text-align: right;
-}
-
-#user_settings .name_input .input_name_short input
-{
-	max-width: 12em;
-}
-
 #user_settings .name_input .input_name
 {
 	width: 100%;
-	padding-right: 1em !important;
-	padding-left: 1.5em !important;
 }
 
 #user_settings .name_input .input_name input
@@ -81,33 +173,24 @@ div#user_settings
 	width: 100%;
 } 
 
-#user_settings .name_input .input_name_short
+#user_settings .name_input .input_name_short input
 {
-	padding-right: 1.5em !important;
+	max-width: 12em;
+}
+
+#user_settings .name_input .name_short_label
+{
+	padding-left:  1.0em;
+	padding-right: 0.2em;
+	text-align: right;
 }
 
 #user_settings .name_input .input_name_display
 {
 	position: relative;
-	overflow: visible;
 }
 
-#user_settings .name_input .input_name_display span.name_display_description
-{
-	display: none;
-}
-
-#user_settings .name_input .input_name_display:hover > span.name_display_description
+#user_settings .name_input .input_name_display:hover > .description
 {
 	display: block;
-	position: absolute;
-	top: 75%;
-	left: 25%;
-	background: #efe;
-	color: #000;
-	border: #000 solid 1px;
-	padding: .5ex;
-	z-index: 2;
-	width: auto;
-	white-space: nowrap;
 }

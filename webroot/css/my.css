@@ -14,3 +14,20 @@ select
 	width: auto;
 	padding-right: 1.5em;
 }
+
+input[type="button"]
+{
+	padding-top: 	.2em;
+	padding-bottom: .2em;
+}
+
+.ui-sortable-handle
+{
+	cursor: move;
+}
+
+.ui-sortable-helper
+{
+	background: rgba(255,255,255,128);
+	border: dashed 1px #000;
+}
