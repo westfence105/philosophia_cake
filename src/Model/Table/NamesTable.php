@@ -23,7 +23,7 @@ use ArrayObject;
 class NamesTable extends Table
 {
     const DISPLAY = [ 'private' => 0, 'omit' => 1, 'short' => 2, 'display' => 3  ];
-    const DISPLAY_LEBEL = [ 'private' => 0, 'full' => 1, 'normal' => 3 ];
+    const DISPLAY_LEBEL = [ 'normal' => 0, 'full' => 1, 'private' => 2 ];
 
     public static function types(){
         return [
@@ -110,7 +110,8 @@ class NamesTable extends Table
             ->notEmpty('display');
 
         $validator
-            ->allowEmpty('clipped');
+            ->allowEmpty('clipped')
+            ->allowEmpty('preset');
 
         return $validator;
     }
@@ -142,29 +143,70 @@ class NamesTable extends Table
         }
     }
 
-    public function getName( string $username, int $display_lebel = self::DISPLAY_LEBEL['normal'] ){
+    public function getPresets( string $username ){
+        $query = $this->find()
+                      ->select(['preset'])
+                      ->distinct(['preset'])
+                      ->where(['username' => $username ])
+                      ->order(['order_key' => 'ASC'])
+                    ;
+        $ret = [];
+        foreach( $query as $entity ){
+            $ret[] = $entity->preset;
+        }
+        return $ret;
+    }
+
+    public function getName( string $username, array $options = [] ){
+        $display_lebel = self::DISPLAY_LEBEL['normal'];
+        if( array_key_exists('display_lebel',$options) ){
+            if( is_string($options['display_lebel']) ){
+                $display_lebel = self::DISPLAY_LEBEL[ $options['display_lebel'] ];
+            }
+            else if( is_int($options['display_lebel']) ){
+                $display_lebel = $options['display_lebel'];
+            }
+        }
+        
+        $preset = [];
+        if( array_key_exists('preset', $options ) ){
+            $preset = $options['preset'];
+        }
+        else {
+            $presets = $this->getPresets( $username );
+            if( empty($presets) ){
+                return [];
+            }
+            else {
+                $preset = $presets[0];
+            }
+            unset($presets);
+        }
+
         $query = $this->find()
                       ->select(['name','type','short','display'])
-                      ->where(['username' => $username])
+                      ->where(['username' => $username, 'preset' => $preset ])
                       ->order(['order_key' => 'ASC'])
                     ;
         foreach( $query as $row ){
-            if( $row->display == self::DISPLAY['private'] && $display_lebel != self::DISPLAY_LEBEL['private'] ){
+            if( $row->display == self::DISPLAY['private'] && $display_lebel < self::DISPLAY_LEBEL['private'] ){
                 continue;
             }
-            else if( $row->display <= self::DISPLAY['omit'] && $display_lebel > self::DISPLAY_LEBEL['full'] ){
+            else if( $row->display <= self::DISPLAY['omit'] && $display_lebel < self::DISPLAY_LEBEL['full'] ){
                 continue;
             }
             else {
                 $name = '';
-                if( $row->display == self::DISPLAY['short'] && $display_lebel > self::DISPLAY_LEBEL['full'] ){
+                if( $row->display == self::DISPLAY['short'] && $display_lebel < self::DISPLAY_LEBEL['full'] ){
                     $name = $row->short;
                 }
                 else {
                     $name = $row->name;
                 }
                 $names[] = ['name' => $name, 'type' => $row->type ];
+                unset($name);
             }
+            unset($row);
         }
         return isset($names) ? $names : [];
     }

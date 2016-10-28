@@ -25,7 +25,8 @@ class NamesTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.names'
+        'app.users',
+        'app.names',
     ];
 
     /**
@@ -86,6 +87,7 @@ class NamesTableTest extends TestCase
                 array_merge( $sample, ['order_key' => 1.2 ] ),  //order_key isn't int
                 array_merge( $sample, ['order_key' => true ] ), //order_key isn't int
                 array_merge( $sample, ['order_key' => [] ] ),   //order_key isn't int
+
                 array_merge( $sample, ['display' => '' ] ),     //display isn't int
                 array_merge( $sample, ['display' => 1.2 ] ),    //display isn't int
                 array_merge( $sample, ['display' => true ] ),   //display isn't int
@@ -99,8 +101,10 @@ class NamesTableTest extends TestCase
 
         $valid_args = [
                 $sample,
+                array_merge( $sample, ['order_key' => 1 ]),
                 array_merge( $sample, ['clipped' => '' ]),
                 array_merge( $sample, ['clipped' => 'J' ]),
+                array_merge( $sample, ['preset' => 'en' ]),
             ];
 
         foreach ($valid_args as $key => $args ) {
@@ -129,18 +133,23 @@ class NamesTableTest extends TestCase
         $this->assertEmpty( $entity->errors() );
     }
 
-    public function array_subset( array $exp, array $values ){
-        foreach ( $values as $key => $value) {
-            foreach ( $exp as $e_key => $e_value) {
-                if( array_key_exists($e_key,$value) && $value[$e_key] == $e_value ){
-                    continue;
-                }
-                else {
-                    return false;
-                }
-            }
+    public function testGetPresets(){
+        $presets = $this->Names->getPresets('smith');
+        $this->assertEquals( count($presets), 1, json_encode($presets) );
+
+        $entity = $this->Names->newEntity([
+                'username'  => 'smith',
+                'name'      => 'スミス',
+                'type'      => 'given',
+                'display'   => 'display',
+                'preset'    => 'ja',
+            ]);
+        if( empty( $entity->errors() ) ){
+            $this->Names->save($entity);
         }
-        return true;
+        $this->assertEmpty( $entity->errors(), json_encode($entity->errors) );
+        $presets = $this->Names->getPresets('smith');
+        $this->assertEquals( count($presets), 2, json_encode($presets) );
     }
 
     public function testGetName(){
@@ -160,7 +169,7 @@ class NamesTableTest extends TestCase
 
         //display_lebel => full
         //expected: 'John David "Aihal" Smith'
-        $names = $this->Names->getName('smith', NamesTable::DISPLAY_LEBEL['full']);
+        $names = $this->Names->getName('smith', [ 'display_lebel' => 'full' ]);
         $expected = [
                 ['name' => 'John',      'type' => 'given'],
                 ['name' => 'David',     'type' => 'middle'],
@@ -171,7 +180,7 @@ class NamesTableTest extends TestCase
 
         //display_lebel => private
         //expected: 'John David "Aihal" Smith "Ged"'
-        $names = $this->Names->getName('smith', NamesTable::DISPLAY_LEBEL['private']);
+        $names = $this->Names->getName('smith', ['display_lebel' => 'private']);
         $expected = [
                 ['name' => 'John',      'type' => 'given'],
                 ['name' => 'David',     'type' => 'middle'],
