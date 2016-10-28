@@ -2,6 +2,21 @@
 	namespace App\Utils;
 
 	class AppUtility {
+
+    	public static function array_subset( array $exp, array $values ){
+    	    foreach ( $values as $key => $value) {
+    	        foreach ( $exp as $e_key => $e_value) {
+    	            if( array_key_exists($e_key,$value) && $value[$e_key] == $e_value ){
+    	                continue;
+    	            }
+    	            else {
+    	                return false;
+    	            }
+    	        }
+    	    }
+    	    return true;
+    	}
+
 		public static function genHtmlTag( $tag_name, $options ){
 			$ret = '<'.$tag_name;
 			if( array_key_exists('attrs', $options) ){
