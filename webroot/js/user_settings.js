@@ -18,8 +18,8 @@ $( function(){
 			setDisplayDescription( $(this) );
 			setShortEnabled( $(this) );
 		});
-	$('.add_name').on('click', addNameInput );
-	$('.edit_name').on('click', editName );
+	$(document).on('click', '.add_name', addNameInput );
+	$(document).on('click', '.edit_name', editName );
 	$(document).on('click', '.name_preset .save', sendName );
 });
 
@@ -77,7 +77,7 @@ function addNameInput( $parent, data ){
 	if( !data ){
 		data = {};
 	}
-//	console.log(data);
+//	debug(data);
 
 	var $el = $('<div></div>',{'class':'name_input'});
 	$parent.append( $el );
@@ -110,12 +110,7 @@ function addNameInput( $parent, data ){
 	$el.append( $('<div></div>',{'class':'cell input_name_display'}).append($el_display).append($el_desc) );
 
 	var $el_short_label = $('<label></label>',{'class':'cell name_short_label'});
-	if( translations && 'short' in translations ){
-		$el_short_label.text( translations['short'] );
-	}
-	else {
-		$el_short_label.text('Short');
-	}
+	$el_short_label.text( 'short' in translations ? translations['short'] : 'short' );
 	$el.append( $('<div></div>',{'class':'cell label_name_short'}).append($el_short_label) );
 
 	var $el_short = $('<input/>', {'type':'text', 'name':'name.short'});
@@ -197,22 +192,51 @@ function setShortEnabled( $el ){
 function sendName(){
 	var $el = $(this).parents('.name_preset');
 
-	var preset_name = $el.find('.preset_name input').val();
-	console.log(preset_name);
-
-	var names = [];
-	$el.find('.name_input').each( function(){
-		names.push({
-			'name'	  : $(this).find('.input_name input').val(),
-			'type'	  : $(this).find('.input_name_type select').val(),
-			'display' : $(this).find('.input_name_display select').val(),
-			'short'	  : $(this).find('.input_name_short input').val(),
-		});
-	});
-	
 	var data = {
-		'names': {},
+		item: 'name_preset'
 	};
-	data['names'][preset_name] = names;
-	console.log( JSON.stringify(data) );
+
+	var preset_name_old = $el.find('div.preset_name').data('preset-name');
+	var preset_name_new = $el.find('div.preset_name input').val();
+	if( typeof preset_name_old !== 'undefined' && preset_name_old != preset_name_new ){
+		data['preset'] = preset_name_old;
+		data['preset_new'] = preset_name_new;
+	}
+	else if( typeof preset_name_new !== 'undefined' ){
+		data['preset'] = preset_name_new;
+	}
+	else {
+		data['preset'] = '';
+	}
+
+	$el.find('.name_input').each( function(i){
+		var path_name = 'names['+i+']';
+		data[path_name+'[name]'] 	= $(this).find('.input_name input').val();
+		data[path_name+'[type]'] 	= $(this).find('.input_name_type select').val();
+		data[path_name+'[display]'] = $(this).find('.input_name_display select').val();
+		data[path_name+'[short]']	= $(this).find('.input_name_short input').val();
+	});
+
+	debug( JSON.stringify(data) );
+
+	$.ajax({
+		type: 'POST',
+		url: './settings',
+		data: data,
+		beforeSend: function(xhr){
+			xhr.setRequestHeader('X-Csrf-Token', $('*[name="_csrfToken"]').val() );
+		},
+		success: function(data){
+			debug('success');
+			debug(data);
+			$el.replaceWith(data);
+		},
+		error: function(XMLHttpRequest,textStatus,errorThrown){
+			alert( 'error_ajax' in translations ? translations['error_ajax'] : 'error_ajax' );
+			debug('-- Error --');
+			debug(textStatus);
+			debug(errorThrown);
+			debug('-----------');
+		}
+	});
 }

@@ -29,12 +29,14 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 
     <?= $this->Html->script('https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js') ?>
     <?= $this->Html->script('https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js') ?>
+    <?= $this->Html->script('my.js') ?>
 
     <?= $this->fetch('meta') ?>
     <?= $this->fetch('css') ?>
     <?= $this->fetch('script') ?>
 </head>
 <body>
+    <?= @\Cake\Core\Configure::read('debug') ? '<input type="hidden" id="debug" />' : '' ?>
     <nav class="top-bar expanded" data-topbar role="navigation">
         <ul class="title-area large-3 medium-4 columns">
             <li class="name">

@@ -59,11 +59,12 @@ class UserPagesTest extends TestCase
 	}
 
 	public function testConfig(){
+		$this->markTestIncomplete('Not implemented yet.');
+		
 		$this->driver->get( $this->host.'settings' );
 
 	//	debug( $this->driver->getPageSource(), "\n" );
 
-		$this->markTestIncomplete('Not implemented yet.');
 	/*	
 		//-- test names form --
 		$name_inputs = $this->driver->findElements(WebDriverBy::cssSelector('.name_input'));
