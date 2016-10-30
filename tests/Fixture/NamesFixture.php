@@ -47,6 +47,14 @@ class NamesFixture extends TestFixture
      */
     public $records = [
         [
+            'username' => 'test_user',
+            'order_key' => 0,
+            'name' => 'Test',
+            'type' => 'given',
+            'display' => 'display',
+            'short' => 'T',
+        ],
+        [
             'username' => 'smith', 
             'order_key' => 1, 
             'name' => 'John', 

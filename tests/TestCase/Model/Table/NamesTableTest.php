@@ -193,19 +193,6 @@ class NamesTableTest extends TestCase
 
     public function testGetNameData(){
         $data = $this->Names->getNameData('smith');
-        foreach( $data as $i => $name ){
-            $this->assertInstanceOf('\App\Model\Entity\Name',$name);
-            $this->assertInternalType('string', $name->name );
-            $this->assertInternalType('string', $name->type );
-            $this->assertInternalType('int',    $name->display );
-        }
-
-        $data = $this->Names->getNameData('smith', ['display' => 'string']);
-        foreach( $data as $i => $name ){
-            $this->assertInternalType( 'string', $name->display );
-        }
-
-        $data = $this->Names->getNameData('smith', ['array' => true ]);
         $this->assertInternalType('array', $data );
         foreach( $data as $preset => $names ){
             foreach ( $names as $i => $name ) {
@@ -218,11 +205,82 @@ class NamesTableTest extends TestCase
             }
         }
 
-        $data = $this->Names->getNameData('smith', ['array' => true, 'display' => 'string']);
+        $data = $this->Names->getNameData('smith', ['display' => 'string']);
         foreach( $data as $preset => $names ){
             foreach ( $names as $i => $name ) {
                 $this->assertInternalType('string', $name['display']);
             }
         }
+    }
+
+    public function testSetNameData(){
+        $username = 'smith';
+        $test_data = [
+            [
+                '' => [
+                    ['name' => 'William', 'type' => 'given',  'display' => 'short', 'short' => 'W.'],
+                    ['name' => 'Joseph',  'type' => 'given', 'display' => 'short', 'short' => 'J.'],
+                    ['name' => 'Smith',   'type' => 'given', 'display' => 'display', 'short' =>'Smith'],
+                ],
+            ],
+            [ //sort
+                '' => [
+                    ['name' => 'Joseph',  'type' => 'given', 'display' => 'short', 'short' => 'J.'],
+                    ['name' => 'William', 'type' => 'given',  'display' => 'short', 'short' => 'W.'],
+                    ['name' => 'Smith',   'type' => 'given', 'display' => 'display', 'short' =>'Smith'],
+                ],
+            ],
+            [ //add
+                '' => [
+                    ['name' => 'Joseph',  'type' => 'given', 'display' => 'display', 'short' => 'J.'],
+                    ['name' => 'William', 'type' => 'given',  'display' => 'display', 'short' => 'W.'],
+                    ['name' => 'Philip',  'type' => 'given', 'display' => 'display', 'short' => 'F.' ],
+                    ['name' => 'Smith',   'type' => 'family', 'display' => 'display', 'short' =>'Smith'],
+                ],
+            ],
+            [ //other preset
+                'ru' => [
+                    ['name' => 'Иван',     'type' => 'given',    'display' => 'display', 'short' => 'И'],
+                    ['name' => 'Иванович', 'type' => 'petronym', 'display' => 'display', 'short' => 'И'],
+                    ['name' => 'Иванов',   'type' => 'family',   'display' => 'display', 'short' => 'И'],
+                ],
+            ],
+            [ //change multiple preset
+                '' => [
+                    ['name' => 'Alexander', 'type' => 'given',  'display' => 'display', 'short' => 'A.'],
+                    ['name' => 'John',      'type' => 'middle', 'display' => 'display', 'short' => 'J.'],
+                    ['name' => 'Smith',     'type' => 'family', 'display' => 'display', 'short' =>'Smith'],
+                ],
+                'ru' => [
+                    ['name' => 'Александр', 'type' => 'given',    'display' => 'display', 'short' => 'A'],
+                    ['name' => 'Иванович',  'type' => 'petronym', 'display' => 'display', 'short' => 'И'],
+                    ['name' => 'Иванов',    'type' => 'family',   'display' => 'display', 'short' => 'И'],
+                ],
+            ],
+        ];
+        $other_user_data = $this->Names->getNameData('test_user');
+
+        foreach ( $test_data as $i => $data ) {
+            $orig = $this->Names->getNameData( $username, ['display' => 'string'] );
+            $ret = $this->Names->setNameData( $username, $data, ['display' => 'string'] );
+            $this->assertNotFalse( $ret, 'assert returning value of setNameData not false' );
+            $this->assertEquals( $data, $ret, 'assert returning value is same as argument' );
+            $expected = array_replace( $orig, $data );
+            $result = $this->Names->getNameData( $username, ['display' => 'string'] );
+            $this->assertEquals( $expected, $result, 'assert data already set' );
+        }
+
+        $data = $this->Names->getNameData('test_user');
+        $this->assertEquals( $other_user_data, $data, 'assert method never effect to other users' );
+    }
+
+    public function testRenamePreset(){
+        $data_old = $this->Names->getNameData('smith');
+        $ret = $this->Names->renamePreset('smith','','en',['display' => 'string']);
+        $this->assertNotFalse($ret);
+        $data_new = $this->Names->getNameData('smith');
+        $this->assertArrayNotHasKey( '', $data_new );
+        $this->assertArrayHasKey('en', $data_new );
+        $this->assertEquals( $data_old[''], $data_new['en'] );
     }
 }

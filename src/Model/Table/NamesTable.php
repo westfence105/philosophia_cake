@@ -217,22 +217,98 @@ class NamesTable extends Table
                       ->where(['username' => $username])
                       ->order(['order_key' => 'ASC'])
                     ;
-        $display_string = ( array_key_exists('display',$options ) && $options['display'] == 'string' );
-        $opt_array = ( array_key_exists('array',$options ) && $options['array'] == true );
         foreach ( $query as $entity ) {
-            if( $display_string ){
-                $ret = array_search( $entity->display, self::DISPLAY );
-                $entity->display = $ret ? $ret : '';
+            $array = $entity->toArray();
+            unset($array['preset']);
+            if( array_key_exists('display',$options ) && $options['display'] == 'string' ){
+                $ret = array_search( $entity['display'], self::DISPLAY );
+                $array['display'] = $ret !== false ? $ret : '';
             }
-            if( $opt_array ){
-                $array = $entity->toArray();
-                unset($array['preset']);
-                $data[ $entity->preset ][] = $array;
-            }
-            else {
-                $data[] = $entity;
-            }
+            $data[ $entity->preset ][] = $array;
         }
         return isset($data) ? $data : [];
+    }
+
+    public function setNameData( string $username, array $data, array $options = [] ){
+        $r_data = [];
+        foreach ( $data as $preset => $names ) {
+            $insert = [];
+            $modified = [];
+            foreach ( $names as $i => $name ) {
+                $entity = $this->find()
+                               ->select(['order_key','name','type','display','short'])
+                               ->where( function( $exp, $q ) use ( $modified, $i ){
+                                    if( !empty($modified) ){
+                                        $exp->notIn('id', $modified );
+                                    }
+                                    return $exp->notEq('order_key', $i ) ;
+                                })
+                               ->where( array_merge(['username' => $username, 'preset' => $preset ], $name ) )
+                               ->first()
+                            ;
+                if( $entity ){
+                    $this->patchEntity($entity, ['order_key' => $i ]);
+                    if( empty($entity->errors()) && $this->save($entity) ){
+                        array_push( $modified, $entity->id );
+                        continue;
+                    }
+                }
+
+                $insert[$i] = $name;
+                unset($entity);
+            }
+
+            $this->query()
+                 ->delete()
+                 ->where( function( $exp, $q ) use ($modified) {
+                    if( !empty($modified) ){
+                        $exp->notIn('id', $modified);
+                    }
+                    return $exp;
+                 })
+                 ->where(['username' => $username, 'preset' => $preset ])
+                 ->execute();
+
+            foreach ( $insert as $i => &$name ) {
+                $name = array_merge( $name, ['username' => $username, 'order_key' => $i, 'preset' => $preset ]);
+            }
+            unset($name);
+            
+            $entities = $this->newEntities( $insert );
+            
+            $ret = $this->saveMany( $entities );
+
+            if( $ret === false ){
+                return false;
+            }
+
+            $array = $this->find()
+                          ->select(['name','type','display','short'])
+                          ->where( ['username' => $username, 'preset' => $preset ])
+                          ->order( ['order_key' => 'ASC' ])
+                          ->hydrate(false)
+                          ->toArray()
+                        ;
+            if( array_key_exists('display', $options ) && $options['display'] == 'string' ){
+                foreach( $array as $i => &$name ){
+                    $display_str = array_search( $name['display'], self::DISPLAY );
+                    $name['display'] = $display_str !== false ? $display_str : '';
+                }
+                unset($name);
+            }
+            $r_data[$preset] = $array;
+        }
+        
+        return $r_data;
+    }
+
+    public function renamePreset( string $username, string $preset, string $new_name ){
+        $presets_exist = $this->getPresets( $username );
+        if( array_search( $preset, $presets_exist ) !== false && array_search( $new_name, $presets_exist ) === false ){
+            return $this->updateAll( ['preset' => $new_name ], ['preset' => $preset ] );
+        }
+        else {
+            return false;
+        }
     }
 }
