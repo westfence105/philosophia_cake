@@ -21,7 +21,8 @@ class UsersControllerTest extends IntegrationTestCase
      */
     public $fixtures = [
         'app.users',
-        'app.temp_users'
+        'app.temp_users',
+        'app.names'
     ];
 
     public $auth_data = [
@@ -107,6 +108,10 @@ class UsersControllerTest extends IntegrationTestCase
 
         $this->get('/users/not_exist');
         $this->assertResponseCode( 404, 'response of request for not exist user' );
+    }
+
+    public function testSettings() {
+        $this->markTestIncomplete('Not implemented yet.');
     }
 
 }

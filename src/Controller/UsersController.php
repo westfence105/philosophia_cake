@@ -13,6 +13,7 @@ use App\Model\Table\NamesTable;
 use Cake\Network\Exception\HttpException;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\BadRequestException;
+use Cake\Network\Exception\InternalErrorException;
 use Cake\Datasource\Exception\RecordNotFoundException;
 
 class UsersController extends AppController
@@ -115,12 +116,22 @@ class UsersController extends AppController
                     }
                     $preset = $data['preset'];
                     $name_data = [ $preset => $data['names'] ];
-                    //do validate and save
+                    //validate and save
+                    $name_data = $this->Names->setNameData( $username, $name_data, ['display' => 'string' ] );
+                    if( !$name_data ){
+                        throw new BadRequestException("Illegal format: Validation failed.");
+                    }
+                    Debugger::log($name_data, 'debug', 10);
 
                     if( array_key_exists('preset_new', $data ) ){
-                        //do rename preset
-                        $name_data = [ $data['preset_new'] => $name_data['names'] ]; //mock
-                        $preset = $data['preset_new'];
+                        //rename preset
+                        if( $this->Names->renamePreset( $username, $preset, $data['preset_new'] ) !== false ){
+                            $name_data = array_combine( $data['preset_new'], $name_data[$preset] );
+                            $preset = $data['preset_new'];
+                        }
+                        else {
+                            throw new InternalErrorException("Failed to rename preset '$preset' to '$preset_new");
+                        }
                     }
 
                     $this->set('preset', $preset );
@@ -137,7 +148,7 @@ class UsersController extends AppController
                 throw $e;
             }
             catch( \Exception $e ){
-                $this->set('error',$e->message);
+                $this->set('error',$e->getMessage());
                 $this->set('_serialize',['error']);
             }
         }

@@ -115,6 +115,23 @@ div#user_settings
 	position: relative;
 }
 
+#user_settings #name_presets .name_preset .names .name .full
+{
+	color: #444;
+	margin-left: .2ex;
+}
+
+#user_settings #name_presets .name_preset .names .name .omit
+{
+	color: #d22;
+}
+
+#user_settings #name_presets .name_preset .names .name .private
+{
+	color: #8aa;
+}
+
+
 #user_settings #name_presets .name_preset .names .name:hover > .description
 {
 	display: block;
