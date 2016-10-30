@@ -157,18 +157,6 @@ class UsersController extends AppController
                 $data['names'] = $this->Names->getNameData( $username, ['display' => 'string','array' => true ] );
             }
             $this->set('data',$data);
-    
-            $translations = [
-                    'save'  => __x('save user setting(s)','Save'),
-                    'short' => __x('description of name.short','Short'),
-                    'error_ajax' => __x('error while ajax connection','Internal error occurred.'),
-                ];
-            $this->set('resources', [
-                    'data-translations'     => $translations,
-                    'data-name-types'       => NamesTable::types(),
-                    'data-name-displaying'  => NamesTable::display(),
-                    'data-name-display-description' => NamesTable::displayDescription(),
-                ]);
         }
     }
 

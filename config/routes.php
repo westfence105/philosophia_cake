@@ -62,6 +62,8 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/users/:id',  [ 'controller' => 'Users', 'action' => 'profile' ],
                                     [ 'id' => '.+', 'pass' => [ 'id' ] ] );
 
+    $routes->connect('/resources/:action', ['controller' => 'Resources'], ['routeClass' => DashedRoute::class ]);
+
     $routes->connect('/:action', ['controller' => 'Pages'] );
 
     /**

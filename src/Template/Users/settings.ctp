@@ -3,12 +3,6 @@
 	$this->Html->css('user_settings', ['block' => true ]);
 	$this->Html->script('user_settings', ['block' => true ]);
 
-	echo \App\Utils\AppUtility::genHtmlTag('div', [
-			'close' => true,
-			'attrs' => ['id' => 'resources', 'style' => 'display:none'] + $resources,
-		]);
-	echo "\n";
-
 	echo '<div id="user_settings">', "\n";
 	echo $this->Form->create('Post'), "\n";
 
@@ -18,7 +12,7 @@
 	if( isset($data) && array_key_exists('names', $data ) ){
 		foreach ( $data['names'] as $preset => $names ) {
 			echo $this->element('Users/settings/name_preset', 
-					[ 'resources' => $resources, 'preset' => $preset, 'names' => $names ]);
+					[ 'preset' => $preset, 'names' => $names ]);
 		}
 	}
 	echo '</ul>', "\n"; //id="name_presets"

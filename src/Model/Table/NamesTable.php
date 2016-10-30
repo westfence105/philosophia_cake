@@ -50,7 +50,7 @@ class NamesTable extends Table
         ];
     }
 
-    public static function displayDescription() {
+    public static function displayDescriptions() {
         return [
             'display'   => __('Always displayed'),
             'private'   => __('Not displayed for other users'),

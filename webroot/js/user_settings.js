@@ -1,13 +1,22 @@
-var translations	= {};
-var name_types 		= {};
-var name_displaying = {};
-var display_descs	= {};
+function loadJSON( url ){
+	var ret;
+	$.getJSON({
+		url: url,
+		dataType: 'json',
+		async: false,
+		success: function(data){
+			ret = data;
+		}
+	});
+	return ret;
+}
+
+var translations	= loadJSON('./resources/messages.json');
+var name_types 		= loadJSON('./resources/name-types.json');
+var name_display 	= loadJSON('./resources/name-display-enum.json');
+var display_descs	= loadJSON('./resources/name-display-descriptions.json');
 
 $( function(){
-	translations	= $('#resources').data('translations');
-	name_types 		= $('#resources').data('name-types');
-	name_displaying = $('#resources').data('name-displaying');
-	display_descs	= $('#resources').data('name-display-description');
 
 	$('.sortable').sortable();
 //	$('.sortable').on('sortstop', numberNames );
@@ -99,7 +108,7 @@ function addNameInput( $parent, data ){
 	$el.append( $('<div></div>',{'class':'cell input_name_type'}).append($el_type) );
 
 	var $el_display = $('<select></select>',{'name':'name.display'});
-	$.each( name_displaying, function( val, str ){
+	$.each( name_display, function( val, str ){
 		$el_opt = $('<option></option>',{'value': val }).text( str );
 		if( 'display' in data && data['display'] == val ){
 			$el_opt.prop('selected',true);
@@ -217,8 +226,7 @@ function sendName(){
 		data[path_name+'[short]']	= $(this).find('.input_name_short input').val();
 	});
 
-	debug( JSON.stringify(data) );
-
+	showLoading();
 	$.ajax({
 		type: 'POST',
 		url: './settings',
@@ -227,8 +235,6 @@ function sendName(){
 			xhr.setRequestHeader('X-Csrf-Token', $('*[name="_csrfToken"]').val() );
 		},
 		success: function(data){
-			debug('success');
-			debug(data);
 			$el.replaceWith(data);
 		},
 		error: function(XMLHttpRequest,textStatus,errorThrown){
@@ -237,6 +243,9 @@ function sendName(){
 			debug(textStatus);
 			debug(errorThrown);
 			debug('-----------');
+		},
+		complete: function(){
+			hideLoading();
 		}
 	});
 }
