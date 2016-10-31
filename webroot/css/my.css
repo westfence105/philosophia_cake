@@ -9,6 +9,64 @@ div.container
 	margin-left: 2em;
 }
 
+li.name > h1 > a
+{
+	line-height: 3rem;
+	font-size: 2rem;
+}
+
+ul.right
+{
+	margin-right: 1.5rem;
+	min-width: 6rem;
+	height: 100%;
+}
+
+ul.right li
+{
+	text-align: center;
+	width: 100%;
+	z-index: 1;
+}
+
+.menu_parent
+{
+	position: relative;
+}
+
+.menu_parent ul.menu_child
+{
+	position: absolute;
+	display: none;
+}
+
+.menu_parent:hover .menu_child
+{
+	display: block;
+}
+
+.menu_parent > div
+{
+	line-height: 3rem;
+	color: #fff;
+	vertical-align: middle;
+}
+
+.top-bar-section .menu_parent:hover > div
+{
+	background: rgba(255,255,255,0.15);
+}
+
+.top-bar-section ul[class^="menu"] li.menu_item > *
+{
+	line-height: 3rem;
+}
+
+.top-bar-section ul[class^="menu"] li.menu_item:hover > *
+{
+	background: rgba(255,255,255,0.5);
+}
+
 select
 {
 	width: auto;

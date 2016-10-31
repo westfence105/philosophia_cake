@@ -45,16 +45,24 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
         </ul>
         <div class="top-bar-section">
             <ul class="right">
-                <li class="username">
-                    <?= isset($username) ? 
-                        $this->Html->link( h($username), [
-                                'controller' => 'Users',
-                                'action' => 'profile',
-                                'id' => $username
-                            ])
-                        : 
-                        $this->Html->link( __('Login'), ['controller' => 'Users', 'action' => 'login'] )
-                    ?>
+                <li class="username menu_parent">
+                <?php if( isset($username) ): ?>
+                    <div><?= h($username) ?></div>
+                    <ul id="user_menu" class="menu_child">
+                        <li class="menu_item">
+                            <?= $this->Html->link( __('Profile'), 
+                                    ['controller' => 'Users', 'action' => 'profile', 'username' => $username ]
+                                ); ?>
+                        </li>
+                        <li class="menu_item">
+                            <?= $this->Html->link( __('Settings'), 
+                                    ['controller' => 'Users', 'action' => 'settings'] 
+                                ); ?>        
+                        </li>
+                    </ul>
+                <?php else: ?>
+                    <?= $this->Html->link( __('Login'), ['controller' => 'Users', 'action' => 'login'] ) ?>
+                <?php endif; ?>
                 </li>
             </ul>
         </div>

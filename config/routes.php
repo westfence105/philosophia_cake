@@ -59,8 +59,8 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/register',   [ 'controller' => 'Users', 'action' => 'register' ] );
     $routes->connect('/settings',   [ 'controller' => 'Users', 'action' => 'settings' ] );
 
-    $routes->connect('/users/:id',  [ 'controller' => 'Users', 'action' => 'profile' ],
-                                    [ 'id' => '.+', 'pass' => [ 'id' ] ] );
+    $routes->connect('/users/:username',  [ 'controller' => 'Users', 'action' => 'profile' ],
+                                          [ 'username' => '.+', 'pass' => [ 'username' ] ] );
 
     $routes->connect('/resources/:action', ['controller' => 'Resources'], ['routeClass' => DashedRoute::class ]);
 
