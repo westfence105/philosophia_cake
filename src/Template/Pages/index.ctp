@@ -1,0 +1,1 @@
+<h2><?= isset($title) ? $title : '' ?></h2>

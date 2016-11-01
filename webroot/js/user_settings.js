@@ -1,152 +1,109 @@
-function loadJSON( url ){
-	var ret;
-	$.getJSON({
-		url: url,
-		dataType: 'json',
-		async: false,
-		success: function(data){
-			ret = data;
-		}
-	});
-	return ret;
-}
-
-var translations	= loadJSON('./resources/messages.json');
-var name_types 		= loadJSON('./resources/name-types.json');
-var name_display 	= loadJSON('./resources/name-display-enum.json');
-var display_descs	= loadJSON('./resources/name-display-descriptions.json');
-
 $( function(){
-
 	$('.sortable').sortable();
-//	$('.sortable').on('sortstop', numberNames );
 
-	$(document).on('keyup', '.name_input input',  updateNamePreview );
+	$(document).on('sortstop', '.name_inputs', updateNamePreview );
+	$(document).on('keyup',  '.name_input input',  updateNamePreview );
 	$(document).on('change', '.name_input select', updateNamePreview );
 	$(document).on('change', '.input_name_display select', function(){
 			setDisplayDescription( $(this) );
 			setShortEnabled( $(this) );
 		});
-	$(document).on('click', '.add_name', addNameInput );
-	$(document).on('click', '.edit_name', editName );
+	$(document).on('keyup', 'input.preset_name', function(){
+			var val = $(this).val();
+			$el_preview = $(this).siblings('.preset_name_preview');
+			if( val.length == 0 ){
+				$el_preview.text('');
+			}
+			else if( ([2,3,5,6]).indexOf(val.length) >= 0 ){
+				if( val ){
+					$.ajax({
+						type: 'GET',
+						url: './resources/language-name',
+						data: {
+							lang: val,
+						},
+						success: function(data){
+							$el_preview.text(' => '+ data );
+						},
+						error: function(XMLHttpRequest,textStatus,errorThrown){
+							debug('error: '+errorThrown);
+							$el_preview.text('');
+						}
+					});
+				}
+				else {
+					$el_preview.text('');
+				}
+			}
+		});
+	$(document).on('click', '.edit_name', function(){
+			var $el_preset = $(this).closest('.name_preset');
+			editName( $el_preset );
+			$el_preset.find('.name_inputs').sortable();
+			namesChanged( $el_preset );
+		});
+	$(document).on('click', '.add_name', function(){
+			var $el_preset = $(this).closest('.name_preset');
+			var $el_inputs = $el_preset.find('.name_inputs');
+			$el_inputs.append( $('#templates').find('.name_input').clone() ).sortable('refresh');
+			namesChanged( $el_preset );
+		});
+	$(document).on('click', '.remove_name', function(){
+			var $el_preset = $(this).closest('.name_preset');
+			$(this).closest('.name_input').remove();
+			namesChanged( $el_preset );
+		});
 	$(document).on('click', '.name_preset .save', sendName );
+	$(document).on('click', '.name_preset .cancel', function(){
+			$el_preset = $(this).closest('.name_preset');
+			$el_preset.find('*').removeAttr('style');
+			$el_preset.find('.name_inputs').empty();
+			$el_preset.find('.name_editor').hide();
+			$(this).parent().detach();
+		});
+
+	$(document).on('click', '#add_preset', addPreset );
+	$(document).on('click', '.remove_preset input', function(){
+			removeNamePreset( $(this).closest('.name_preset') );
+		});
+
+	presetsChanged();
 });
 
-function editName(){
-	var $el_preset = $(this).parents('.name_preset');
+function editName( $el_preset ){
+	showLoading();
 
-	var $el_preset_name = $el_preset.find('div.preset_name');
-	var preset_name = $el_preset_name.data('preset-name');
-	$el_preset_name.find('span.preset_name').replaceWith( 
-		$('<input/>',
-			{
-				'type': 'text',
-				'name': 'preset_name',
-				'value': preset_name,
-				'maxlength': 6,
-			}
-		));
+	var $el_template = $('#templates').find('.name_input');
+	var $el_inputs = $.map( $el_preset.find('.names .name'), function(n){
+						$el = $el_template.clone();
+						var name 	= $(n).data('name');
+						var type 	= $(n).data('name-type');
+						var display = $(n).data('name-display');
+						var short 	= $(n).data('name-short');
+						if( name ){
+							$el.find('.input_name input').val(name);
+						}
+						if( type ){
+							$el.find('.input_name_type select').val(type);
+						}
+						if( display ){
+							$el.find('.input_name_display select').val(display);
+						}
+						if( short ){
+							$el.find('.input_name_short input').val(short);
+						}
+						return $el;
+					});
+//	debug($el_inputs);
+	$el_preset.children('div:not(.name_editor)').hide();
+	$el_preset.find('div.name_editor').css({width:'100%'}).show();
+	$el_preset.find('div.name_inputs').append($el_inputs);
 
-	var $el_names = $el_preset.find('.names');
-	var names = [];
-	$el_names.children('.name').each( function(){
-		names.push({
-			'name': 	$(this).data('name'),
-			'type': 	$(this).data('name-type'),
-			'display': $(this).data('name-display'),
-			'short': 	$(this).data('name-short'),
-		});
-	});
-	$el_names.children().remove();
-	$el_names.append( $('<div></div>',{'class':'name_preview'}) );
-	var $el_name_inputs = $('<div></div>', {'class':'name_inputs'}).sortable();
-	$.each( names, function(){
-		addNameInput( $el_name_inputs, this );
-	});
-	$el_names.append( $el_name_inputs );
-
-	$el_save = $('<input/>', {
-					'type'	: 'button',
-					'class'	: 'save',
-					'value'	: ('save' in translations) ? translations['save'] : 'save' ,
-				});
-	$('<div></div>',{'class':'save_name'}).append($el_save).appendTo($el_names);
-
-	$el_names.attr('style','width: 100%;');
-	$el_preset.find('div.edit_preset').attr('style','display:none;');
-}
-
-function addNameInput( $parent, data ){
-	if( !$parent[0] ){
-		$parent = $(this).parents('.name_preset').find('.name_inputs');
-		if( !$parent[0] ){
-			return false;
-		}
-	}
-	if( !data ){
-		data = {};
-	}
-//	debug(data);
-
-	var $el = $('<div></div>',{'class':'name_input'});
-	$parent.append( $el );
-
-	var $el_name = $('<input/>', {'type':'text', 'name':'name.name'});
-	if( 'name' in data ){
-		$el_name.attr('value', data['name'] );
-	}
-	$el.append( $('<div></div>',{'class':'cell input_name'}).append($el_name) );
-
-	var $el_type = $('<select></select>',{'name':'name.type'});
-	$.each( name_types, function( val, str ){
-		$el_opt = $('<option></option>',{'value': val }).text( str );
-		if( 'type' in data && data['type'] == val ){
-			$el_opt.prop('selected',true);
-		}
-		$el_type.append($el_opt);
-	});
-	$el.append( $('<div></div>',{'class':'cell input_name_type'}).append($el_type) );
-
-	var $el_display = $('<select></select>',{'name':'name.display'});
-	$.each( name_display, function( val, str ){
-		$el_opt = $('<option></option>',{'value': val }).text( str );
-		if( 'display' in data && data['display'] == val ){
-			$el_opt.prop('selected',true);
-		}
-		$el_display.append($el_opt);
-	});
-	$el_desc = $('<span></span>',{'class':'description'});
-	$el.append( $('<div></div>',{'class':'cell input_name_display'}).append($el_display).append($el_desc) );
-
-	var $el_short_label = $('<label></label>',{'class':'cell name_short_label'});
-	$el_short_label.text( 'short' in translations ? translations['short'] : 'short' );
-	$el.append( $('<div></div>',{'class':'cell label_name_short'}).append($el_short_label) );
-
-	var $el_short = $('<input/>', {'type':'text', 'name':'name.short'});
-	if( 'short' in data ){
-		$el_short.attr('value', data['short']);
-	}
-	$el.append( $('<div></div>',{'class':'cell input_name_short'}).append($el_short) );
-
-	$( function(){
-		$el.find('input,select').change();
-		$parent.sortable('refresh');
-	});
-}
-
-function numberNames(){
-	$('.name_input').each( function ( i, el ){
-		$(el).find('input,select').each( function( j, el_input ){
-			var name_old = $(el_input).attr('name');
-			var name_new = name_old.replace(/(names\[)[0-9]*(\])/,'$1'+i+'$2');
-			$(el_input).attr('name',name_new);
-		});
-	});
-	updateNamePreview();
+	hideLoading();
 }
 
 function updateNamePreview(){
-	var $parent = $(this).parents('.name_preset');
+	var $parent = $(this).closest('.name_preset');
 	var str = [];
 	var short = [];
 	$parent.find('.name_input').each( function(i,el){
@@ -199,14 +156,14 @@ function setShortEnabled( $el ){
 }
 
 function sendName(){
-	var $el = $(this).parents('.name_preset');
+	var $el = $(this).closest('.name_preset');
 
 	var data = {
 		item: 'name_preset'
 	};
 
-	var preset_name_old = $el.find('div.preset_name').data('preset-name');
-	var preset_name_new = $el.find('div.preset_name input').val();
+	var preset_name_old = $el.data('preset-name');
+	var preset_name_new = $el.find('input.preset_name').val();
 	if( typeof preset_name_old !== 'undefined' && preset_name_old != preset_name_new ){
 		data['preset'] = preset_name_old;
 		data['preset_new'] = preset_name_new;
@@ -218,13 +175,57 @@ function sendName(){
 		data['preset'] = '';
 	}
 
-	$el.find('.name_input').each( function(i){
-		var path_name = 'names['+i+']';
-		data[path_name+'[name]'] 	= $(this).find('.input_name input').val();
-		data[path_name+'[type]'] 	= $(this).find('.input_name_type select').val();
-		data[path_name+'[display]'] = $(this).find('.input_name_display select').val();
-		data[path_name+'[short]']	= $(this).find('.input_name_short input').val();
+	var preset_duplicate = false;
+	$el.siblings().each( function(){
+		if( data['preset'] == $(this).data('preset-name') ){
+			preset_duplicate = true;
+			return false;
+		}
 	});
+	if( preset_duplicate ){
+		alert( message('error: preset name is duplicated') );
+		return false;
+	}
+
+	var i = 0;
+	var blank = 0;
+	var wrote = 0;
+	$el.find('.name_input').each( function(){
+		var name 	= $(this).find('.input_name input').val();
+		var type 	= $(this).find('.input_name_type select').val();
+		var display = $(this).find('.input_name_display select').val();
+		var short 	= $(this).find('.input_name_short input').val();
+		if( name || display == 'short' && short ){
+			var path_name = 'names['+i+']';
+			data[path_name+'[name]'] 	= name;
+			data[path_name+'[type]'] 	= type;
+			data[path_name+'[display]'] = display;
+			data[path_name+'[short]']	= short;
+			++wrote;
+			++i;
+		}
+		else {
+			++blank;
+		}
+	});
+	if( wrote == 0 ){
+		if( $el.siblings().length ){
+			var ret = confirm( message('nothing names entered.') + '\n' + message(' remove this preset?') );
+			if( ret ){
+				removeNamePreset($el);
+			}
+		}
+		else {
+			alert( message('nothing names entered') );
+		}
+		return false;
+	}
+	else if( blank ){
+		var ret = confirm( message('empty field(s) are exist. are you sure to remove them?') );
+		if( ! ret ){
+			return false;
+		}
+	}
 
 	showLoading();
 	$.ajax({
@@ -236,11 +237,13 @@ function sendName(){
 		},
 		success: function(data){
 			$el.replaceWith(data);
+			$('div.edit_preset').show();
+			$('div.add_preset').show();
+			presetsChanged();
 		},
 		error: function(XMLHttpRequest,textStatus,errorThrown){
-			alert( 'error_ajax' in translations ? translations['error_ajax'] : 'error_ajax' );
+			alert( message('internal error occurred') );
 			debug('-- Error --');
-			debug(textStatus);
 			debug(errorThrown);
 			debug('-----------');
 		},
@@ -248,4 +251,111 @@ function sendName(){
 			hideLoading();
 		}
 	});
+}
+
+function addPreset(){
+	var preset = window.prompt( message('please input new preset name') );
+	if( preset != null ){
+		var exist = false;
+		$('.name_preset').each( function(){
+			if( $(this).data('preset-name') == preset ){
+				exist = true;
+				return false;
+			}
+		});
+		if( exist ){
+			alert( message('error: preset name is duplicated') );
+		}
+		else {
+			showLoading();
+			$.ajax({
+				type: 'POST',
+				url: './settings',
+				data: {
+					item: 'new_preset',
+					preset: preset
+				},
+				beforeSend: function(xhr){
+					xhr.setRequestHeader('X-Csrf-Token', $('*[name="_csrfToken"]').val() );
+				},
+				success: function(data){
+					$el = $(data).appendTo('#name_presets');
+					editName( $el );
+				},
+				error: function(XMLHttpRequest,textStatus,errorThrown){
+					alert( message('internal error occurred') );
+					debug('-- Error --');
+					debug(errorThrown);
+					debug('-----------');
+				},
+				complete: function(){
+					hideLoading();
+				}
+			});
+		}
+	}
+}
+
+function removeNamePreset( $el ){
+	if( $('.name_preset').length <= 1 ){
+		alert( message('1 or more preset(s) required.') );
+		return false;
+	}
+	else if( ! window.confirm( message('are you sure to remove this preset?') ) ){
+		return false;
+	}
+
+	showLoading();
+	$.ajax({
+		type: 'POST',
+		url: './settings',
+		data: {
+			item: 'remove_preset',
+			preset: $el.data('preset-name')
+		},
+		beforeSend: function(xhr){
+			xhr.setRequestHeader('X-Csrf-Token', $('*[name="_csrfToken"]').val() );
+		},
+		success: function(data){
+			$el.remove();
+			$('div.edit_preset').show();
+			$('div.add_preset').show();
+			presetsChanged();
+		},
+		error: function(XMLHttpRequest,textStatus,errorThrown){
+			alert( message('internal error occurred') );
+			debug('-- Error --');
+			debug(errorThrown);
+			debug('-----------');
+		},
+		complete: function(){
+			hideLoading();
+		}
+	});
+}
+
+function presetsChanged(){
+	var count = $('.name_preset').length;
+	if( 1 < count ){
+		$('div.remove_preset > *').show();
+	}
+	else {
+		$('div.remove_preset > *').hide();
+	}
+}
+
+function namesChanged( $el ){
+	$el.find('input,select').keyup().change();
+
+	var $el_remove = $el.find('div.button_remove_name');
+	if( $el.find('.name_input').length > 1 ){
+		$el_remove.each( function(){
+			$(this).show();
+		});
+	}
+	else {
+		$el_remove.each( function(){
+			$(this).hide();
+		});
+	}
 }

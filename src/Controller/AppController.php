@@ -52,7 +52,8 @@ class AppController extends Controller
         $this->loadComponent('Auth', 
                     [
                         'authenticate' => 'Form' ,
-                        'loginAction' => [ 'controller' => 'Pages', 'action' => 'introduction' ]
+                        'loginAction' => ['controller' => 'Users', 'action' => 'login'],
+                        'loginRedirect' => ['controller' => 'Pages', 'action' => 'index'],
                     ]);
         $this->Auth->config('checkAuthIn', 'Controller.initialize');
         $this->loadComponent('Security', [

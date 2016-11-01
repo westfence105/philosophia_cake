@@ -215,7 +215,7 @@ class NamesTable extends Table
         $query = $this->find()
                       ->select(['name','type','display','short','preset'])
                       ->where(['username' => $username])
-                      ->order(['order_key' => 'ASC'])
+                      ->order(['preset' => 'ASC', 'order_key' => 'ASC'])
                     ;
         foreach ( $query as $entity ) {
             $array = $entity->toArray();
@@ -310,5 +310,9 @@ class NamesTable extends Table
         else {
             return false;
         }
+    }
+
+    public function removePreset( string $username, string $preset ){
+        $this->query()->delete()->where(['username' => $username, 'preset' => $preset ])->execute();
     }
 }

@@ -70,9 +70,11 @@ div#user_settings
 #user_settings #name_presets
 {
 	margin: 0;
-	padding: 0 1em;
+	padding: 0 2.5rem;
 	display: table;
 	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0 0.5rem;
 }
 
 #user_settings #name_presets .name_preset
@@ -80,31 +82,38 @@ div#user_settings
 	display: table-row;
 }
 
-#user_settings #name_presets .name_preset div.preset_name
+#user_settings #name_presets .name_preset > div
 {
 	display: table-cell;
-	min-width: 8ex;
+	text-align: left;
 	vertical-align: middle;
+	background: #eff;
+	white-space: nowrap;
+	padding: 1rem 0.5rem;
+}
+
+#user_settings #name_presets .name_preset div.preset_name
+{
+	background: rgba(255,255,255,0);
+	min-width: 8ex;
 	text-align: right;
 	padding-right: 1ex;
 	position: relative;
 }
 
-#user_settings #name_presets .name_preset .names
+#user_settings #name_presets .name_preset div.names
 {
-	display: table-cell;
-	padding: 1em;
-	background: #eff;
-	white-space: nowrap;
+	padding-left: 1em;
 }
 
-#user_settings #name_presets .name_preset .edit_preset
+#user_settings #name_presets .name_preset div.remove_preset > *
 {
-	display: table-cell;
+	display: none;
+}
+
+#user_settings #name_presets .name_preset div.pad
+{
 	width: 100%;
-	text-align: left;
-	vertical-align: middle;
-	background: #eff;
 }
 
 #user_settings #name_presets .name_preset .names .name
@@ -137,77 +146,90 @@ div#user_settings
 	display: block;
 }
 
-#user_settings #name_presets .name_preset .names div.save_name
-{
-	padding: 1em 0;
-	text-align: center;
-}
-
-#user_settings #name_presets .name_preset .preset_name input
-{
-	width: 100%;
-}
-
-#user_settings #name_presets .name_preset .preset_name > :hover + .description
+#user_settings #name_presets .name_preset div.preset_name:hover > .description
 {
 	display: block;
 }
 
-#user_settings div.name_inputs {
+#user_settings div.add_preset
+{
+	margin-top: 0.5em;
+	width: 100%;
+	text-align: center;
+}
+
+#user_settings #name_presets input.preset_name
+{
+	width: auto;
+	display: inline;
+}
+
+#user_settings #name_presets div.name_inputs {
 	display: table;
-	padding: 0 2em;
+	padding: 0 1rem 0 2rem;
 	width: 100%;
 }
 
-#user_settings div.name_input
+#user_settings #name_presets div.name_inputs div.name_input
 {
 	display: table-row;
 	table-layout: auto;
 	width: 100%;
 }
 
-#user_settings .name_input div.cell
+#user_settings #name_presets div.name_inputs div.name_input div.cell
 {
 	display: table-cell;
 	vertical-align: middle;
 	padding: .75em .5em;
 }
 
-#user_settings .name_input input,
-#user_settings .name_input select,
-#user_settings .name_input label
+#user_settings #name_presets div.name_inputs div.name_input input,
+#user_settings #name_presets div.name_inputs div.name_input select,
+#user_settings #name_presets div.name_inputs div.name_input label
 {
 	margin: 0;
 }
 
-#user_settings .name_input .input_name
+#user_settings #name_presets div.name_inputs div.name_input div.input_name
 {
 	width: 100%;
 }
 
-#user_settings .name_input .input_name input
+#user_settings #name_presets div.name_inputs div.name_input div.input_name input
 {
 	width: 100%;
 } 
 
-#user_settings .name_input .input_name_short input
+#user_settings #name_presets div.name_inputs div.name_input div.input_name_short input
 {
 	max-width: 12em;
 }
 
-#user_settings .name_input .name_short_label
+#user_settings #name_presets div.name_inputs div.name_input div.name_short_label
 {
 	padding-left:  1.0em;
 	padding-right: 0.2em;
 	text-align: right;
 }
 
-#user_settings .name_input .input_name_display
+#user_settings #name_presets div.name_inputs div.name_input div.input_name_display
 {
 	position: relative;
 }
 
-#user_settings .name_input .input_name_display:hover > .description
+#user_settings #name_presets div.name_inputs div.name_input div.input_name_display:hover > .description
 {
 	display: block;
+}
+
+#user_settings #name_presets div.name_preset div.name_input_add_name,
+#user_settings #name_presets div.name_preset div.name_input_buttons
+{
+	text-align: center;
+}
+
+#user_settings #name_presets div.name_preset div.name_input_buttons input
+{
+	margin: 1rem;
 }

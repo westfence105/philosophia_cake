@@ -8,11 +8,19 @@ class PagesController extends AppController
 	public function initialize(){
 		parent::initialize();
 
-		$this->Auth->allow([ 'introduction' ]);
+		$this->Auth->allow([ 'index' ]);
 	}
 
-	public function introduction(){
+	public function index(){
+		if( $this->Auth->user() ){
+			//logged in
 
+		}
+		else {
+			//not logged in
+
+			$this->render('introduction');
+		}
 	}
 }
 ?>

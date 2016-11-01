@@ -283,4 +283,18 @@ class NamesTableTest extends TestCase
         $this->assertArrayHasKey('en', $data_new );
         $this->assertEquals( $data_old[''], $data_new['en'] );
     }
+
+    public function testRemovePreset(){
+        $data_old = $this->Names->getNameData('smith');
+        $this->Names->removePreset('',''); //nothing
+        $data = $this->Names->getNameData('smith');
+        $this->assertEquals( $data_old, $data, 'assert empty never remove others' );
+
+        $tu_exp = $this->Names->getNameData('test_user');
+        $this->Names->removePreset('test_user','');
+        unset($tu_exp['']);
+        $this->assertEquals( $tu_exp, $this->Names->getNameData('test_user'), 'assert remove works' );
+        $data = $this->Names->getNameData('smith');
+        $this->assertEquals( $data_old, $data, 'assert never remove others' );
+    }
 }

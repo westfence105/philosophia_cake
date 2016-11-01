@@ -26,16 +26,15 @@ class UsersController extends AppController
         $this->Auth->allow([ 'login', 'register' ]);
     }
 
-    public function index(){
-        
-    }
-
     public function home(){
 
     }
 
     public function login()
     {
+        if( $this->Auth->user() ){
+            return $this->redirect( $this->Auth->redirectUrl() );
+        }
         $this->set('title',__('Login'));
         if( $this->request->is('post') ){
             $user = $this->Auth->identify();
@@ -54,6 +53,9 @@ class UsersController extends AppController
     }
 
     public function register(){
+        if( $this->Auth->user() ){
+            return $this->redirect( $this->Auth->redirectUrl() );
+        }
         $this->set('title', __('Register') );
         $this->set('language', I18n::locale() );
         $this->set('entities', null );
@@ -107,7 +109,7 @@ class UsersController extends AppController
                 if( !array_key_exists('item', $data ) ){
                     throw new BadRequestException('Illegal format: Expected { "item" => "..." }');
                 }
-                if( $data['item'] == 'name_preset' ){
+                else if( $data['item'] == 'name_preset' ){
                     if( !array_key_exists('preset', $data ) ){
                         throw new BadRequestException('Illegal format: Expected { "preset" => "..." }');
                     }
@@ -126,7 +128,7 @@ class UsersController extends AppController
                     if( array_key_exists('preset_new', $data ) ){
                         //rename preset
                         if( $this->Names->renamePreset( $username, $preset, $data['preset_new'] ) !== false ){
-                            $name_data = array_combine( $data['preset_new'], $name_data[$preset] );
+                            $name_data = [ $data['preset_new'] => $name_data[$preset] ];
                             $preset = $data['preset_new'];
                         }
                         else {
@@ -136,9 +138,31 @@ class UsersController extends AppController
 
                     $this->set('preset', $preset );
                     $this->set('names',  $name_data[$preset]);
-                    $this->render('/Element/Users/settings/name_preset');
                     $this->viewBuilder()->layout(false);
+                    $this->render('/Element/Users/settings/name_preset');
                     return;
+                }
+                else if( $data['item'] == 'new_preset' ){
+                    if( ! array_key_exists('preset', $data ) ){
+                        throw new BadRequestException('Illegal format: Expected { "preset" => "..." }');
+                    }
+                    $preset = $data['preset'];
+                    $exist = $this->Names->getPresets( $username );
+                    if( array_search( $preset, $exist ) == false ){
+                        $this->set('preset', $preset );
+                        $this->viewBuilder()->layout(false);
+                        $this->render('/Element/Users/settings/name_preset');
+                        return;
+                    }
+                    else {
+                        throw new BadRequestException('Error: Requested preset name already exists.');
+                    }
+                }
+                else if( $data['item'] == 'remove_preset' ){
+                    if( ! array_key_exists('preset', $data ) ){
+                        throw new BadRequestException('Illegal format: Expected { "preset" => "..." }');
+                    }
+                    $this->Names->removePreset( $username, $data['preset'] );
                 }
                 else {
                     throw new BadRequestException('Illegal format: Unknown "item" given.}');
