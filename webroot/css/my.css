@@ -10,12 +10,6 @@ div.container
 	font-size: 100%;
 }
 
-li.name > h1 > a
-{
-	line-height: 3rem;
-	font-size: 2.5rem;
-}
-
 .container h2
 {
 	font-size: 2rem;
@@ -26,25 +20,39 @@ li.name > h1 > a
 	font-size: 1.6rem;
 }
 
+.top-bar.expanded,
+.top-bar.expanded ul,
+.top-bar,
+.top-bar-section ul
+{
+	background: #486;
+	color: #fff;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.top-bar.expanded *
+{
+	line-height: 2.5rem;
+}
+
 .top-bar.expanded .title-area {
-	background: #0020a0;
+	background: #042;
+	width: initial;
+	padding: 0 1rem;
+	margin-left: 2rem;
 }
 
 .top-bar.expanded .title-area .name
 {
-	height: auto;
+	height: 100%;
 }
 
-.top-bar.expanded,
-.top-bar .expanded
-.top-bar,
-.top-bar-section ul
+.top-bar.expanded .title-area .name a
 {
-	background: #5050ff;
-	color: #fff;
-	line-height: 3rem;
-	vertical-align: middle;
-	text-align: center;
+	font-size: 2rem;
+	color: #eef;
+	padding: 0;
 }
 
 .top-bar-section ul li,
