@@ -59,6 +59,12 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
                                     ['controller' => 'Users', 'action' => 'settings'] 
                                 ); ?>        
                         </li>
+                        <li class="menu_separator"><hr /></li>
+                        <li class="menu_item">
+                            <?= $this->Html->link( __('Logout'), 
+                                    ['controller' => 'Users', 'action' => 'logout'] 
+                                ); ?>
+                        </li>
                     </ul>
                 <?php else: ?>
                     <?= $this->Html->link( __('Login'), ['controller' => 'Users', 'action' => 'login'] ) ?>

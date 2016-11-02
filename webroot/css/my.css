@@ -6,27 +6,69 @@ input[type="password"]
 
 div.container
 {
-	margin-left: 2em;
+	margin: 1rem 2.5rem;
+	font-size: 100%;
 }
 
 li.name > h1 > a
 {
 	line-height: 3rem;
+	font-size: 2.5rem;
+}
+
+.container h2
+{
 	font-size: 2rem;
 }
 
-ul.right
+.container h3
+{
+	font-size: 1.6rem;
+}
+
+.top-bar.expanded .title-area {
+	background: #0020a0;
+}
+
+.top-bar.expanded .title-area .name
+{
+	height: auto;
+}
+
+.top-bar.expanded,
+.top-bar .expanded
+.top-bar,
+.top-bar-section ul
+{
+	background: #5050ff;
+	color: #fff;
+	line-height: 3rem;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.top-bar-section ul li,
+.top-bar-section ul li:not(.has-form) a:not(.button)
+{
+	background: rgba(255,255,255,0);
+	line-height: inherit;
+}
+
+.top-bar-section ul li:not(.has-form):hover > :not(ul)
+{
+	background: rgba(255,255,255,0.2);
+}
+
+.top-bar-section ul.right
 {
 	margin-right: 1.5rem;
 	min-width: 6rem;
 	height: 100%;
 }
 
-ul.right li
+.top-bar-section ul.right li
 {
-	text-align: center;
 	width: 100%;
-	z-index: 1;
 }
 
 .menu_parent
@@ -34,37 +76,42 @@ ul.right li
 	position: relative;
 }
 
-.menu_parent ul.menu_child
+.menu_parent > .menu_child
 {
 	position: absolute;
 	display: none;
 }
 
-.menu_parent:hover .menu_child
+.menu_parent:hover > .menu_child
 {
 	display: block;
 }
 
-.menu_parent > div
+.top-bar-section ul[class^="menu"]
 {
-	line-height: 3rem;
-	color: #fff;
-	vertical-align: middle;
+	padding: 0.15rem 0 0.2rem 0;
 }
 
-.top-bar-section .menu_parent:hover > div
+.top-bar-section ul[class^="menu"] li.menu_item a:hover,
+.top-bar-section ul[class^="menu"] li.menu_item div:hover
 {
-	background: rgba(255,255,255,0.15);
+	background: rgba(255,255,255,0);
+	color: #ee0;
 }
 
 .top-bar-section ul[class^="menu"] li.menu_item > *
 {
-	line-height: 3rem;
+	line-height: 2.5rem;
 }
 
-.top-bar-section ul[class^="menu"] li.menu_item:hover > *
+.top-bar-section ul[class^="menu"] li.menu_separator
 {
-	background: rgba(255,255,255,0.5);
+	border: 0;
+}
+
+.top-bar-section ul[class^="menu"] li.menu_separator > hr
+{
+	margin: 0.1rem;
 }
 
 select

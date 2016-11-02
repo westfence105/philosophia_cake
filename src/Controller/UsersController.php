@@ -110,6 +110,7 @@ class UsersController extends AppController
                     throw new BadRequestException('Illegal format: Expected { "item" => "..." }');
                 }
                 else if( $data['item'] == 'name_preset' ){
+                    //editing preset
                     if( !array_key_exists('preset', $data ) ){
                         throw new BadRequestException('Illegal format: Expected { "preset" => "..." }');
                     }
@@ -118,6 +119,7 @@ class UsersController extends AppController
                     }
                     $preset = $data['preset'];
                     $name_data = [ $preset => $data['names'] ];
+                    
                     //validate and save
                     $name_data = $this->Names->setNameData( $username, $name_data, ['display' => 'string' ] );
                     if( !$name_data ){
