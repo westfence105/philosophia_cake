@@ -58,10 +58,10 @@ class UserPagesTest extends TestCase
 		parent::tearDown();
 	}
 
-	/*	
 	public function testConfig(){
 		$this->markTestIncomplete('Not implemented yet.');
 		
+	/*	
 		$this->driver->get( $this->host.'settings' );
 
 	//	debug( $this->driver->getPageSource(), "\n" );
@@ -159,8 +159,6 @@ class UserPagesTest extends TestCase
 		$this->assertEquals( $gen_preview(['Test']), $preview->getText() );
 		$input_name_display->findElement(WebDriverBy::cssSelector('option[value="short"]'))->click();
 		$this->assertEquals( $gen_preview(['Test'],['T']), $preview->getText() );
-
-		sleep(1);
-	}
 	*/
+	}
 }

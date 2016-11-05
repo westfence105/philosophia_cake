@@ -34,17 +34,6 @@ class PagesControllerTest extends IntegrationTestCase
     }
 
     /**
-     * testMutlipleGet method
-     *
-     * @return void
-     */
-    public function testAddUnauthenticatedFails()
-    {
-        $this->get('/');
-        $this->assertRedirect(['controller' => 'Pages', 'action' => 'introduction']);
-    }
-
-    /**
      * Test that missing template renders 404 page in production
      *
      * @return void
