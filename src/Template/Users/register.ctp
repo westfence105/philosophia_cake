@@ -5,7 +5,7 @@
 	echo $this->Form->input( 'username', ['type' => 'text', 'label' => __('Username'), 'required' => true, 'maxlength' => 16 ] ), "\n";
 	echo $this->Form->input( 'password', ['type' => 'password', 'label' => __('Password'), 'required' => true ] ), "\n";
 	echo $this->Form->input( 'password_confirm', ['type' => 'password', 'label' => __('Password Confirm'), 'required' => true ] ), "\n";
-	echo $this->Form->input( 'language', ['type' => 'text',	 	'label' => __('Language (ISO 639 Code)'), 'value' => $language, 'maxlength' => 6 ] ), "\n";
+	echo $this->Form->input( 'language', ['type' => 'text',	 'label' => __('Language (ISO 639 Code)'), 'value' => $language, 'maxlength' => 6 ] ), "\n";
 	echo $this->Form->submit(__x('text of register form submit button','Register') ), "\n";
 	echo $this->Form->end();
 ?>

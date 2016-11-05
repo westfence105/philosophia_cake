@@ -1,0 +1,297 @@
+# LANGUAGE translation of CakePHP Application
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2016-11-05 04:01+0000\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: Controller/UsersController.php:38
+#: Template/Layout/default.ctp:70
+#: Template/Users/login.ctp:6
+msgid "Login"
+msgstr ""
+
+#: Controller/UsersController.php:46
+msgid "Username or Password is incorrect."
+msgstr ""
+
+#: Controller/UsersController.php:59
+#: Template/Pages/introduction.ctp:2
+#: Template/Users/login.ctp:8
+msgid "Register"
+msgstr ""
+
+#: Template/Users/register.ctp:9
+msgctxt "text of register form submit button"
+msgid "Register"
+msgstr ""
+
+#: Controller/UsersController.php:70
+msgid "registration completed"
+msgstr ""
+
+#: Controller/UsersController.php:74;93
+msgid "Failed to add to database."
+msgstr ""
+
+#: Controller/UsersController.php:78
+msgid "Invalid token given."
+msgstr ""
+
+#: Controller/UsersController.php:85
+msgid "Form data has invalid content."
+msgstr ""
+
+#: Controller/UsersController.php:101
+msgctxt "title of user settings page"
+msgid "Settings"
+msgstr ""
+
+#: Template/Layout/default.ctp:58
+msgid "Settings"
+msgstr ""
+
+#: Mailer/UserMailer.php:14
+msgid "Verify email address"
+msgstr ""
+
+#: Model/Table/NamesTable.php:30
+msgid "Given Name"
+msgstr ""
+
+#: Model/Table/NamesTable.php:31
+msgid "Family Name"
+msgstr ""
+
+#: Model/Table/NamesTable.php:32
+msgid "Middle Name"
+msgstr ""
+
+#: Model/Table/NamesTable.php:33
+msgid "Hypocoristic"
+msgstr ""
+
+#: Model/Table/NamesTable.php:34
+msgid "Patronym"
+msgstr ""
+
+#: Model/Table/NamesTable.php:35
+msgid "Alias"
+msgstr ""
+
+#: Model/Table/NamesTable.php:36
+msgid "Pseudonym"
+msgstr ""
+
+#: Model/Table/NamesTable.php:37
+msgid "Courtesy Name / Zi"
+msgstr ""
+
+#: Model/Table/NamesTable.php:38
+msgid "Clan Name / Shi"
+msgstr ""
+
+#: Model/Table/NamesTable.php:39
+msgid "Title"
+msgstr ""
+
+#: Model/Table/NamesTable.php:46
+msgid "Display"
+msgstr ""
+
+#: Model/Table/NamesTable.php:47
+msgid "Private"
+msgstr ""
+
+#: Model/Table/NamesTable.php:48
+msgid "Omit"
+msgstr ""
+
+#: Model/Table/NamesTable.php:49
+msgid "Short"
+msgstr ""
+
+#: Template/Users/settings.ctp:6;78
+msgctxt "description of name.short"
+msgid "Short"
+msgstr ""
+
+#: Model/Table/NamesTable.php:55
+msgid "Always displayed"
+msgstr ""
+
+#: Model/Table/NamesTable.php:56
+msgid "Not displayed for other users"
+msgstr ""
+
+#: Model/Table/NamesTable.php:57
+msgid "Shorten except profile page"
+msgstr ""
+
+#: Model/Table/NamesTable.php:58
+msgid "Displayed only profile page"
+msgstr ""
+
+#: Model/Table/NamesTable.php:40
+msgctxt "other name type"
+msgid "Other"
+msgstr ""
+
+#: Model/Table/UsersTable.php:63
+#: Model/Validation/UserValidator.php:27
+msgid "Username already exists."
+msgstr ""
+
+#: Model/Validation/UserValidator.php:13
+msgid "Username is empty."
+msgstr ""
+
+#: Model/Validation/UserValidator.php:14
+msgid "Password is empty."
+msgstr ""
+
+#: Model/Validation/UserValidator.php:33
+msgid "Username have to be between 4 and 16 characters."
+msgstr ""
+
+#: Model/Validation/UserValidator.php:39
+msgid "Password have to be over 8 characters."
+msgstr ""
+
+#: Model/Validation/UserValidator.php:46
+msgid "Username can only contain letters, numbers or underscore(_)."
+msgstr ""
+
+#: Model/Validation/UserValidator.php:48
+msgid "Password can only contain ASCII characters."
+msgstr ""
+
+#: Model/Validation/UserValidator.php:54
+msgid "Please input ISO 639 language code (ex. 'en', 'en_US', 'eng')"
+msgstr ""
+
+#: Model/Validation/UserValidator.php:59
+msgid "Password confirm is not match."
+msgstr ""
+
+#: Template/Element/Users/settings/name_preset.ctp:31
+msgid "Language"
+msgstr ""
+
+#: Template/Element/Users/settings/name_preset.ctp:70
+#: Template/Users/register.ctp:8
+msgid "Language (ISO 639 Code)"
+msgstr ""
+
+#: Template/Element/Users/settings/name_preset.ctp:77
+msgid "Add Name Element"
+msgstr ""
+
+#: Template/Element/Users/settings/name_preset.ctp:80
+#: Template/Users/settings.ctp:5
+msgctxt "save user setting(s)"
+msgid "Save"
+msgstr ""
+
+#: Template/Element/Users/settings/name_preset.ctp:81
+msgctxt "cancel editing user setting(s)"
+msgid "Cancel"
+msgstr ""
+
+#: Template/Element/Users/settings/name_preset.ctp:86
+msgctxt "edit name preset"
+msgid "Edit"
+msgstr ""
+
+#: Template/Element/Users/settings/name_preset.ctp:89
+msgctxt "remove name preset"
+msgid "Remove Preset"
+msgstr ""
+
+#: Template/Email/text/verify_email.ctp:1
+msgid "Thank you for joining philosophia.\n"
+msgstr ""
+
+#: Template/Email/text/verify_email.ctp:2
+msgid "Please verify your email address from this link.\n"
+msgstr ""
+
+#: Template/Email/text/verify_email.ctp:3
+msgid "...Sorry, error occured"
+msgstr ""
+
+#: Template/Layout/default.ctp:53
+msgid "Profile"
+msgstr ""
+
+#: Template/Layout/default.ctp:64
+msgid "Logout"
+msgstr ""
+
+#: Template/Layout/error.ctp:35
+msgid "Error"
+msgstr ""
+
+#: Template/Layout/error.ctp:43
+msgid "Back"
+msgstr ""
+
+#: Template/Pages/introduction.ctp:1
+msgctxt "heading of introduction page"
+msgid "Introduction"
+msgstr ""
+
+#: Template/Users/login.ctp:4
+#: Template/Users/register.ctp:5
+msgid "Username"
+msgstr ""
+
+#: Template/Users/login.ctp:5
+#: Template/Users/register.ctp:6
+msgid "Password"
+msgstr ""
+
+#: Template/Users/profile.ctp:11
+#: Template/Users/settings.ctp:46
+msgid "Name"
+msgstr ""
+
+#: Template/Users/register.ctp:4
+msgid "Email"
+msgstr ""
+
+#: Template/Users/register.ctp:7
+msgid "Password Confirm"
+msgstr ""
+
+#: Template/Users/register_verify.ctp:1
+msgid "Verify Email"
+msgstr ""
+
+#: Template/Users/register_verify.ctp:2
+msgid "Email sent to {0}, please access link and complete registration."
+msgstr ""
+
+#: Template/Users/settings.ctp:7
+msgid "Internal error occurred."
+msgstr ""
+
+#: Template/Users/settings.ctp:55
+msgctxt "add name preset"
+msgid "Add Preset"
+msgstr ""
+
+#: Template/Users/settings.ctp:83
+msgctxt "remove name element"
+msgid "Remove"
+msgstr ""
+

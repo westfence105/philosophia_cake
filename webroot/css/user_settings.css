@@ -28,8 +28,8 @@ select
 div#user_settings
 {
 	background-color: #ed8;
-	margin: .5em 5em;
-	padding: 2em 2em;
+	margin: 0 1rem;
+	padding: 1em 1em;
 }
 
 #user_settings div[class^="setting_"]
@@ -106,11 +106,6 @@ div#user_settings
 	padding-left: 1em;
 }
 
-#user_settings #name_presets .name_preset div.remove_preset > *
-{
-	display: none;
-}
-
 #user_settings #name_presets .name_preset div.pad
 {
 	width: 100%;
@@ -164,6 +159,16 @@ div#user_settings
 	display: inline;
 }
 
+#user_settings #name_presets div.name_editor
+{
+	width: 100%;
+}
+
+#user_settings #name_presets div.name_editor_padding
+{
+	background: rgba(0,0,0,0);
+}
+
 #user_settings #name_presets div.name_inputs {
 	display: table;
 	padding: 0 1rem 0 2rem;
@@ -177,7 +182,7 @@ div#user_settings
 	width: 100%;
 }
 
-#user_settings #name_presets div.name_inputs div.name_input div.cell
+#user_settings #name_presets div.name_inputs div.name_input > div
 {
 	display: table-cell;
 	vertical-align: middle;
@@ -203,7 +208,7 @@ div#user_settings
 
 #user_settings #name_presets div.name_inputs div.name_input div.input_name_short input
 {
-	max-width: 12em;
+	max-width: 5em;
 }
 
 #user_settings #name_presets div.name_inputs div.name_input div.name_short_label

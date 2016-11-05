@@ -2,13 +2,13 @@ $( function(){
 	$('.sortable').sortable();
 
 	$(document).on('sortstop', '.name_inputs', updateNamePreview );
-	$(document).on('keyup',  '.name_input input',  updateNamePreview );
 	$(document).on('change', '.name_input select', updateNamePreview );
+	$(document).on('change keyup',  '.name_input input',  updateNamePreview );
 	$(document).on('change', '.input_name_display select', function(){
 			setDisplayDescription( $(this) );
 			setShortEnabled( $(this) );
 		});
-	$(document).on('keyup', 'input.preset_name', function(){
+	$(document).on('change keyup', 'input.preset_name', function(){
 			var val = $(this).val();
 			$el_preview = $(this).siblings('.preset_name_preview');
 			if( val.length == 0 ){
@@ -40,26 +40,24 @@ $( function(){
 			var $el_preset = $(this).closest('.name_preset');
 			editName( $el_preset );
 			$el_preset.find('.name_inputs').sortable();
-			namesChanged( $el_preset );
+			namesChanged($el_preset);
 		});
 	$(document).on('click', '.add_name', function(){
 			var $el_preset = $(this).closest('.name_preset');
 			var $el_inputs = $el_preset.find('.name_inputs');
 			$el_inputs.append( $('#templates').find('.name_input').clone() ).sortable('refresh');
-			namesChanged( $el_preset );
+			namesChanged($el_preset);
 		});
 	$(document).on('click', '.remove_name', function(){
 			var $el_preset = $(this).closest('.name_preset');
 			$(this).closest('.name_input').remove();
-			namesChanged( $el_preset );
+			namesChanged($el_preset);
 		});
 	$(document).on('click', '.name_preset .save', sendName );
 	$(document).on('click', '.name_preset .cancel', function(){
 			$el_preset = $(this).closest('.name_preset');
-			$el_preset.find('*').removeAttr('style');
 			$el_preset.find('.name_inputs').empty();
-			$el_preset.find('.name_editor').hide();
-			$(this).parent().detach();
+			nameEditCompleted();
 		});
 
 	$(document).on('click', '#add_preset', addPreset );
@@ -95,11 +93,18 @@ function editName( $el_preset ){
 						return $el;
 					});
 //	debug($el_inputs);
-	$el_preset.children('div:not(.name_editor)').hide();
-	$el_preset.find('div.name_editor').css({width:'100%'}).show();
+	$('div.add_preset, div.edit_preset, div.remove_preset').hide();
+	$el_preset.find('div.preset_name, div.names').hide();
+	$el_preset.find('[class^="name_editor"]').show();
 	$el_preset.find('div.name_inputs').append($el_inputs);
 
 	hideLoading();
+}
+
+function nameEditCompleted(){
+	$('div.add_preset, .name_preset > :not([class^="name_editor"])').show();
+	$('[class^="name_editor"]').hide();
+	presetsChanged();
 }
 
 function updateNamePreview(){
@@ -237,8 +242,7 @@ function sendName(){
 		},
 		success: function(data){
 			$el.replaceWith(data);
-			$('div.edit_preset').show();
-			$('div.add_preset').show();
+			nameEditCompleted();
 			presetsChanged();
 		},
 		error: function(XMLHttpRequest,textStatus,errorThrown){
@@ -280,7 +284,7 @@ function addPreset(){
 				},
 				success: function(data){
 					$el = $(data).appendTo('#name_presets');
-					editName( $el );
+					$el.find('.edit_name').click();
 				},
 				error: function(XMLHttpRequest,textStatus,errorThrown){
 					alert( message('internal error occurred') );
@@ -318,8 +322,7 @@ function removeNamePreset( $el ){
 		},
 		success: function(data){
 			$el.remove();
-			$('div.edit_preset').show();
-			$('div.add_preset').show();
+			nameEditCompleted();
 			presetsChanged();
 		},
 		error: function(XMLHttpRequest,textStatus,errorThrown){
@@ -337,25 +340,21 @@ function removeNamePreset( $el ){
 function presetsChanged(){
 	var count = $('.name_preset').length;
 	if( 1 < count ){
-		$('div.remove_preset > *').show();
+		$('div.remove_preset').show();
 	}
 	else {
-		$('div.remove_preset > *').hide();
+		$('div.remove_preset').hide();
 	}
 }
 
 function namesChanged( $el ){
-	$el.find('input,select').keyup().change();
+	$el.find('input,select').change();
 
 	var $el_remove = $el.find('div.button_remove_name');
 	if( $el.find('.name_input').length > 1 ){
-		$el_remove.each( function(){
-			$(this).show();
-		});
+		$el_remove.css('visiblity','visible');
 	}
 	else {
-		$el_remove.each( function(){
-			$(this).hide();
-		});
+		$el_remove.css('visiblity','hidden');
 	}
 }

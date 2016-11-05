@@ -11,25 +11,25 @@
 	$display = @\App\Model\Table\NamesTable::display();
 	$display_descs = @\App\Model\Table\NamesTable::displayDescriptions();
 
-	const name_required = ['name','type','display','short'];
-	function checkName( $name ){
-		foreach ( name_required as $i => $key ) {
+	$name_required = ['name','type','display','short'];
+	foreach( $names as $i => &$name ) {
+		foreach ( $name_required as $j => $key ) {
 			if( ! array_key_exists( $key, $name ) ){
 				$name[$key] = '';
 			}
 		}
 	}
+	unset($name);
 ?>
 <div class="name_preset" data-preset-name="<?= @$preset ?>">
 	<div class="preset_name">
 		<span name="preset_name">
 			<?= (!empty($preset)) ? h(\Locale::getDisplayName( $preset, $preset )) : 'default', "\n" ?>:
 		</span>
-		<span class="description"><?= __x('description of name preset','Name Preset (Language)') ?></span>
+		<span class="description"><?= __('Language') ?></span>
 	</div>
 	<div class="names">
 		<?php foreach ( $names as $i => $name ): ?> <?= "\n" ?>
-			<?php checkName($name); ?>
 			<div class="name" 
 				 data-name="<?= $name['name'] ?>" 
 				 data-name-type="<?= $name['type'] ?>"
@@ -60,6 +60,9 @@
 			</div>
 		<?php endforeach; ?>
 	</div>
+
+	<!-- editor -->
+	<div class="name_editor_padding" style="display: none;"></div>
 	<div class="name_editor" style="display: none;">
 		<div class="name_input_preset_name">
 			<label><?= __('Language (ISO 639 Code)') ?></label>
@@ -76,6 +79,7 @@
 			<input type="button" class="cancel" value="<?= __x('cancel editing user setting(s)','Cancel') ?>" />
 		</div>
 	</div>
+
 	<div class="edit_preset">
 		<input type="button" class="edit_name" value="<?= __x('edit name preset','Edit') ?>" />
 	</div>
