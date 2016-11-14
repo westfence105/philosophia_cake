@@ -2,18 +2,19 @@
 namespace App\Controller;
 
 use App\Controller\AppController;
+use Cake\Event\Event;
+
+use Cake\Network\Exception\BadRequestException;
 
 class ApiController extends AppController
 {
 
 	public function initialize(){
 		parent::initialize();
-
-		$this->autoRender = false;
 	}
 
-	public function beforeFilter(){
-		parent::beforeFilter();
+	public function beforeFilter(Event $event){
+		parent::beforeFilter($event);
 
 		if( ! $this->request->is('ajax') ){
 			throw new BadRequestException('Request is not Ajax');
