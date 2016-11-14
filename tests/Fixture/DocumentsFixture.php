@@ -48,12 +48,10 @@ class DocumentsFixture extends TestFixture
     public $records = [
         [
             'id' => 1,
-            'username' => 'Lorem ipsum do',
-            'category' => 'Lorem ipsum dolor sit amet',
-            'parent' => 1,
-            'standpoint' => 1,
-            'counter' => 1,
-            'launched' => '2016-11-10 02:46:12'
+            'username' => 'user',
+            'category' => 'politics',
+            'counter' => 0,
+            'launched' => null,
         ],
     ];
 }

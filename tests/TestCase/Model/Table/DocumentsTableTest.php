@@ -24,7 +24,8 @@ class DocumentsTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.documents'
+        'app.users',
+        'app.documents',
     ];
 
     /**
@@ -52,23 +53,27 @@ class DocumentsTableTest extends TestCase
     }
 
     /**
-     * Test initialize method
-     *
-     * @return void
-     */
-    public function testInitialize()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
      * Test validationDefault method
      *
      * @return void
      */
     public function testValidationDefault()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $entity = $this->Documents->newEntity(['username' => 'user']);
+        $this->assertEmpty( $entity->errors(), json_encode( $entity->errors() ) );
+
+        $entity = $this->Documents->newEntity([
+                    'username' => 'user',
+                    'category' => 'politics',
+                    'parent' => 1,
+                    'standpoint' => false,
+                    'counter' => 0,
+                    'launched' => null,
+                ]);
+        $this->assertEmpty( $entity->errors(), json_encode( $entity->errors() ) );
+
+        $entity = $this->Documents->newEntity([]);
+        $this->assertNotEmpty( $entity->errors(), "entity passed validation without username" );
     }
 
     /**
@@ -78,6 +83,12 @@ class DocumentsTableTest extends TestCase
      */
     public function testBuildRules()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $entity = $this->Documents->newEntity(['username' => 'user']);
+        $this->Documents->save($entity);
+        $this->assertEmpty( $entity->errors(), $entity->errors() );
+
+        $entity = $this->Documents->newEntity(['username' => 'not_exist']);
+        $this->Documents->save($entity);
+        $this->assertNotEmpty( $entity->errors(), "entity passed rule with username that doesn't exist" );
     }
 }

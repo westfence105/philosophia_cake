@@ -53,23 +53,26 @@ class DocumentDataTableTest extends TestCase
     }
 
     /**
-     * Test initialize method
-     *
-     * @return void
-     */
-    public function testInitialize()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
      * Test validationDefault method
      *
      * @return void
      */
     public function testValidationDefault()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $entity = $this->DocumentData->newEntity(['document_id' => 1 ]);
+        $this->assertEmpty( $entity->errors(), json_encode( $entity->errors() ) );
+
+        $entity = $this->DocumentData->newEntity([
+                        'document_id' => 1,
+                        'language' => 'en',
+                        'title' => 'Test',
+                        'text' => 'This is a test document.',
+                        'is_draft' => true,
+                    ]);
+        $this->assertEmpty( $entity->errors(), json_encode( $entity->errors() ) );
+
+        $entity = $this->DocumentData->newEntity([]);
+        $this->assertNotEmpty( $entity->errors(), "entity passed validation without document_id" );
     }
 
     /**
@@ -79,6 +82,12 @@ class DocumentDataTableTest extends TestCase
      */
     public function testBuildRules()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $entity = $this->DocumentData->newEntity(['document_id' => 1 ]);
+        $this->DocumentData->save($entity);
+        $this->assertEmpty( $entity->errors(), json_encode( $entity->errors() ) );
+
+        $entity = $this->DocumentData->newEntity(['document_id' => 99 ]);
+        $this->DocumentData->save($entity);
+        $this->assertNotEmpty( $entity->errors(), "entity passed rule with document_id that doesn't exist" );
     }
 }

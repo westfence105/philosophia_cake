@@ -17,8 +17,9 @@ class DocumentVersionsFixture extends TestFixture
      */
     // @codingStandardsIgnoreStart
     public $fields = [
-        'id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
-        'language' => ['type' => 'string', 'length' => 6, 'null' => false, 'default' => '', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'autoIncrement' => true, 'precision' => null],
+        'document_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
+        'language' => ['type' => 'string', 'length' => 6, 'null' => true, 'default' => '', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'data_id' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'created' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
         'modified' => ['type' => 'datetime', 'length' => null, 'null' => true, 'default' => null, 'comment' => '', 'precision' => null],
@@ -26,8 +27,9 @@ class DocumentVersionsFixture extends TestFixture
             'data_id' => ['type' => 'index', 'columns' => ['data_id'], 'length' => []],
         ],
         '_constraints' => [
-            'primary' => ['type' => 'primary', 'columns' => ['id', 'language'], 'length' => []],
-            'document_versions_ibfk_1' => ['type' => 'foreign', 'columns' => ['id'], 'references' => ['documents', 'id'], 'update' => 'cascade', 'delete' => 'cascade', 'length' => []],
+            'primary' => ['type' => 'primary', 'columns' => ['id'], 'length' => []],
+            'document_id' => ['type' => 'unique', 'columns' => ['document_id', 'language'], 'length' => []],
+            'document_versions_ibfk_1' => ['type' => 'foreign', 'columns' => ['document_id'], 'references' => ['documents', 'id'], 'update' => 'cascade', 'delete' => 'cascade', 'length' => []],
             'document_versions_ibfk_2' => ['type' => 'foreign', 'columns' => ['data_id'], 'references' => ['document_data', 'id'], 'update' => 'cascade', 'delete' => 'cascade', 'length' => []],
         ],
         '_options' => [
@@ -45,10 +47,11 @@ class DocumentVersionsFixture extends TestFixture
     public $records = [
         [
             'id' => 1,
-            'language' => '5473083d-c642-45c2-bb4b-7f9f801a1c45',
+            'document_id' => 1,
+            'language' => 'Lore',
             'data_id' => 1,
-            'created' => '2016-11-10 02:46:26',
-            'modified' => '2016-11-10 02:46:26'
+            'created' => '2016-11-11 03:27:53',
+            'modified' => '2016-11-11 03:27:53'
         ],
     ];
 }

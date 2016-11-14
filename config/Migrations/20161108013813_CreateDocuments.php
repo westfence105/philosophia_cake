@@ -31,17 +31,20 @@ class CreateDocuments extends AbstractMigration
              ->addColumn('title','text',['null' => true, 'default' => ''])
              ->addColumn('text','text', ['null' => true, 'default' => ''])
              ->addColumn('is_draft','boolean',['null' => true, 'default' => false ])
+             ->addColumn('created', 'datetime', ['null' => true ])
+             ->addColumn('modified','datetime', ['null' => true ])
              ->addIndex(['document_id','language'])
              ->addForeignKey('document_id','documents','id',['update' => 'CASCADE', 'delete' => 'CASCADE'])
              ->create();
 
-        $this->table('document_versions', ['id' => false, 'primary_key' => ['id','language'] ])
-             ->addColumn('id', 'integer', ['null' => false ])
+        $this->table('document_versions')
+             ->addColumn('document_id', 'integer', ['null' => false ])
              ->addColumn('language', 'string',  ['limit' => 6, 'null' => true, 'default' => ''])
              ->addColumn('data_id', 'integer',  ['null' => false ])
              ->addColumn('created', 'datetime', ['null' => true ])
              ->addColumn('modified','datetime', ['null' => true ])
-             ->addForeignKey('id','documents','id',['update' => 'CASCADE', 'delete' => 'CASCADE'])
+             ->addIndex(['document_id','language'],['unique' => true ])
+             ->addForeignKey('document_id','documents','id',['update' => 'CASCADE', 'delete' => 'CASCADE'])
              ->addForeignKey('data_id','document_data','id',['update' => 'CASCADE', 'delete' => 'CASCADE'])
              ->create();
     }

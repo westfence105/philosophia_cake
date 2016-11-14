@@ -36,8 +36,16 @@ class DocumentsTable extends Table
         $this->displayField('id');
         $this->primaryKey('id');
 
+        $this->belongsTo('Users', [
+            'foreignKey' => 'username',
+        ]);
+
         $this->hasMany('DocumentData', [
             'foreignKey' => 'document_id'
+        ]);
+
+        $this->hasMany('DocumentVersions', [
+            'foreignKey' => 'id'
         ]);
     }
 
@@ -70,7 +78,6 @@ class DocumentsTable extends Table
 
         $validator
             ->integer('counter')
-            ->requirePresence('counter', 'create')
             ->notEmpty('counter');
 
         $validator
@@ -89,8 +96,7 @@ class DocumentsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
-        $rules->add($rules->isUnique(['username']));
-
+        $rules->add($rules->existsIn(['username'], 'Users'));
         return $rules;
     }
 }

@@ -51,8 +51,9 @@ class DocumentDataTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
-            ->integer('id')
-            ->allowEmpty('id', 'create');
+            ->requirePresence('document_id')
+            ->integer('document_id')
+            ->notEmpty('id');
 
         $validator
             ->allowEmpty('language');

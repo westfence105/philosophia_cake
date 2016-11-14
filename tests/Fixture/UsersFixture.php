@@ -42,7 +42,7 @@ class UsersFixture extends TestFixture
     public function init(){
         $this->records = [
             [
-                'username' => 'users_test',
+                'username' => 'user',
                 'password' => (new DefaultPasswordHasher)->hash('password'),
                 'language' => 'en_US',
                 'email' => 'test_user@example.com'

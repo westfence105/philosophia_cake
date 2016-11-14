@@ -26,12 +26,12 @@ class UsersControllerTest extends IntegrationTestCase
     ];
 
     public $auth_data = [
-                'username' => 'users_test',
+                'username' => 'user',
                 'password' => 'password'
             ];
 
     public $new_user = [
-                'username' => 'test2',
+                'username' => 'user2',
                 'password' => 'password',
                 'language' => 'en_US',
                 'email' => 'test@example.com'
@@ -100,7 +100,7 @@ class UsersControllerTest extends IntegrationTestCase
         $this->session([ 'Auth.User.username' => $this->auth_data['username'] ]);
         $this->enableCsrfToken();
 
-        $this->get('/users/users_test');
+        $this->get('/users/user');
         $this->assertResponseOk('failed to access profile page');
 
         $this->get('/users');

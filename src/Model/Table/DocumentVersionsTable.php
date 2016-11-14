@@ -6,6 +6,9 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
+use Cake\Event\Event;
+use ArrayObject;
+
 /**
  * DocumentVersions Model
  *
@@ -36,10 +39,14 @@ class DocumentVersionsTable extends Table
 
         $this->table('document_versions');
         $this->displayField('id');
-        $this->primaryKey(['id', 'language']);
+        $this->primaryKey('id');
 
         $this->addBehavior('Timestamp');
 
+        $this->belongsTo('Documents', [
+            'foreignKey' => 'document_id',
+            'joinType' => 'INNER'
+        ]);
         $this->belongsTo('DocumentData', [
             'foreignKey' => 'data_id',
             'joinType' => 'INNER'
@@ -55,11 +62,21 @@ class DocumentVersionsTable extends Table
     public function validationDefault(Validator $validator)
     {
         $validator
-            ->integer('id')
-            ->allowEmpty('id', 'create');
+            ->requirePresence(['document_id','data_id'])
+            ->integer('document_id')
+            ->notEmpty('document_id');
 
         $validator
-            ->allowEmpty('language', 'create');
+            ->allowEmpty('language');
+
+        $validator
+            ->add('unique',[
+                    'rule' => [ 'isUnique', ['document_id','language'], false ]
+                ]);
+
+        $validator
+            ->integer('data_id')
+            ->notEmpty('data_id');
 
         return $validator;
     }
@@ -73,6 +90,7 @@ class DocumentVersionsTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
+        $rules->add($rules->existsIn(['document_id'], 'Documents'));
         $rules->add($rules->existsIn(['data_id'], 'DocumentData'));
 
         return $rules;

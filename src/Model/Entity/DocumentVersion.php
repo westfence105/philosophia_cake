@@ -27,8 +27,6 @@ class DocumentVersion extends Entity
      * @var array
      */
     protected $_accessible = [
-        '*' => true,
-        'id' => false,
-        'language' => false
+        '*' => true
     ];
 }

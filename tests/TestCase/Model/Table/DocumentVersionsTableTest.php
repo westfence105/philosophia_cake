@@ -26,7 +26,7 @@ class DocumentVersionsTableTest extends TestCase
     public $fixtures = [
         'app.document_versions',
         'app.document_data',
-        'app.documents'
+        'app.documents',
     ];
 
     /**
@@ -54,23 +54,32 @@ class DocumentVersionsTableTest extends TestCase
     }
 
     /**
-     * Test initialize method
-     *
-     * @return void
-     */
-    public function testInitialize()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
      * Test validationDefault method
      *
      * @return void
      */
     public function testValidationDefault()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $entity = $this->DocumentVersions->newEntity([
+                        'document_id' => 1,
+                        'language' => 'en',
+                        'data_id' => 1,
+                    ]);
+        $this->assertEmpty( $entity->errors(), json_encode($entity->errors()) );
+
+        $required = ['document_id' => 1, 'data_id' => 1 ];
+        foreach( $required as $key => $value ){
+            $args = $required;
+            unset($args[$key]);
+            $entity = $this->DocumentVersions->newEntity($args);
+            $this->assertNotEmpty( $entity->errors(), "entity passed validation without $key" );
+        }
+
+        $entity = $this->DocumentVersions->newEntity([
+                        'document_id' => 1,
+                        'language' => 'duplicate',
+                        'data_id' => 1,
+                    ]);
     }
 
     /**
@@ -80,6 +89,37 @@ class DocumentVersionsTableTest extends TestCase
      */
     public function testBuildRules()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        //assert success
+        $entity = $this->DocumentVersions->newEntity([
+                        'document_id' => 1,
+                        'language' => 'en',
+                        'data_id' => 1,
+                    ]);
+        $this->DocumentVersions->save($entity);
+        $this->assertEmpty( $entity->errors(), json_encode($entity->errors()) );
+
+        $entity = $this->DocumentVersions->newEntity([
+                        'document_id' => 1,
+                        'data_id' => 1,
+                    ]);
+        $this->DocumentVersions->save($entity);
+        $this->assertEmpty( $entity->errors(), json_encode($entity->errors()) );
+
+        //assert fail
+        $entity = $this->DocumentVersions->newEntity([
+                        'document_id' => 99,
+                        'language' => 'en',
+                        'data_id' => 1,
+                    ]);
+        $this->DocumentVersions->save($entity);
+        $this->assertNotEmpty( $entity->errors(), "entity passed rule with id that doesn't exist" );
+
+        $entity = $this->DocumentVersions->newEntity([
+                        'document_id' => 1,
+                        'language' => 'en',
+                        'data_id' => 99,
+                    ]);
+        $this->DocumentVersions->save($entity);
+        $this->assertNotEmpty( $entity->errors(), "entity passed rule with data_id that doesn't exist" );
     }
 }
