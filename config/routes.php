@@ -87,11 +87,15 @@ Router::scope('/', function (RouteBuilder $routes) {
 
 Router::scope('/api/1.0', function($routes){
     $routes->extensions(['json']);
-    $routes->resources('Documents', [
-            'connectOptions' => [
-                'controller' => 'DocumentsApi'
-            ]
-        ]);
+
+    $routes->scope('/user', function($routes){
+        $routes->resources('Names', [
+                'id' => '[a-z]{2,3}([_-][A-Z]{2,3}){0,1}',
+                'only' => [ 'index', 'view', 'update', 'delete' ],
+            ]);
+    });
+
+    $routes->resources('Documents');
 });
 
 /**

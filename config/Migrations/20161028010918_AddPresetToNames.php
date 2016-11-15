@@ -14,7 +14,6 @@ class AddPresetToNames extends AbstractMigration
     {
         $table = $this->table('names');
         $table->addColumn('preset', 'string', [
-            'default' => '',
             'limit' => 6,
             'null' => false,
         ]);

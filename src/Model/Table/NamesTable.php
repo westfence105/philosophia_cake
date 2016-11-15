@@ -87,7 +87,7 @@ class NamesTable extends Table
             ->allowEmpty('id', 'create');
 
         $validator->requirePresence([
-                'username', 'order_key', 'name', 'type', 'display'
+                'username', 'order_key', 'name', 'type', 'display', 'preset'
             ]);
 
         $validator
@@ -111,7 +111,7 @@ class NamesTable extends Table
 
         $validator
             ->allowEmpty('clipped')
-            ->allowEmpty('preset');
+            ->notEmpty('preset');
 
         return $validator;
     }
@@ -157,7 +157,7 @@ class NamesTable extends Table
         return $ret;
     }
 
-    public function getName( string $username, array $options = [] ){
+    public function getName( string $username, string $preset, array $options = [] ){
         $display_lebel = self::DISPLAY_LEBEL['normal'];
         if( array_key_exists('display_lebel',$options) ){
             if( is_string($options['display_lebel']) ){
@@ -166,21 +166,6 @@ class NamesTable extends Table
             else if( is_int($options['display_lebel']) ){
                 $display_lebel = $options['display_lebel'];
             }
-        }
-        
-        $preset = [];
-        if( array_key_exists('preset', $options ) ){
-            $preset = $options['preset'];
-        }
-        else {
-            $presets = $this->getPresets( $username );
-            if( empty($presets) ){
-                return [];
-            }
-            else {
-                $preset = $presets[0];
-            }
-            unset($presets);
         }
 
         $query = $this->find()
@@ -217,6 +202,9 @@ class NamesTable extends Table
                       ->where(['username' => $username])
                       ->order(['preset' => 'ASC', 'order_key' => 'ASC'])
                     ;
+        if( array_key_exists( 'preset', $options ) ){
+            $query->where(['preset' => $options['preset']]);
+        }
         foreach ( $query as $entity ) {
             $array = $entity->toArray();
             unset($array['preset']);

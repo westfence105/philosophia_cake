@@ -25,7 +25,7 @@ class NamesFixture extends TestFixture
         'type' => ['type' => 'string', 'length' => 16, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         'display' => ['type' => 'integer', 'length' => 11, 'unsigned' => false, 'null' => false, 'default' => null, 'comment' => '', 'precision' => null, 'autoIncrement' => null],
         'short' => ['type' => 'string', 'length' => 16, 'null' => true, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
-        'preset' => ['type' => 'string', 'length' => 6, 'null' => false, 'default' => '', 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
+        'preset' => ['type' => 'string', 'length' => 6, 'null' => false, 'default' => null, 'collate' => 'utf8_general_ci', 'comment' => '', 'precision' => null, 'fixed' => null],
         '_indexes' => [
             'username' => ['type' => 'index', 'columns' => ['username'], 'length' => []],
         ],
@@ -53,6 +53,7 @@ class NamesFixture extends TestFixture
             'type' => 'given',
             'display' => 'display',
             'short' => 'T',
+            'preset' => 'en',
         ],
         [
             'username' => 'smith', 
@@ -60,7 +61,8 @@ class NamesFixture extends TestFixture
             'name' => 'John', 
             'type' => 'given', 
             'display' => NamesTable::DISPLAY['display'],
-            'short' => 'J'
+            'short' => 'J',
+            'preset' => 'en',
         ],
         [
             'username' => 'smith', 
@@ -68,14 +70,16 @@ class NamesFixture extends TestFixture
             'name' => 'David', 
             'type' => 'middle', 
             'display' => NamesTable::DISPLAY['short'],
-            'short' => 'D'
+            'short' => 'D',
+            'preset' => 'en',
         ],
         [
             'username' => 'smith', 
             'order_key' => 3, 
             'name' => '"Aihal"', 
             'type' => 'alias', 
-            'display' => NamesTable::DISPLAY['omit']
+            'display' => NamesTable::DISPLAY['omit'],
+            'preset' => 'en',
         ],
         [
             'username' => 'smith', 
@@ -83,7 +87,8 @@ class NamesFixture extends TestFixture
             'name' => 'Smith', 
             'type' => 'family', 
             'display' => NamesTable::DISPLAY['display'],
-            'short' => 'S'
+            'short' => 'S',
+            'preset' => 'en',
         ],
         [
             'username' => 'smith', 
@@ -91,6 +96,15 @@ class NamesFixture extends TestFixture
             'name' => '"Ged"', 
             'type' => 'true', 
             'display' => NamesTable::DISPLAY['private'],
+            'preset' => 'en',
         ],
+        [
+            'username' => 'smith', 
+            'order_key' => 1, 
+            'name' => 'ジョン', 
+            'type' => 'given', 
+            'display' => NamesTable::DISPLAY['display'],
+            'preset' => 'ja',
+        ]
     ];
 }

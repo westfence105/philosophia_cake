@@ -70,7 +70,7 @@ class NamesTableTest extends TestCase
      */
     public function testValidationDefault()
     {
-        $sample = ['username' => 'smith', 'name' => 'John', 'type' => 'given', 'display' => 1 ];
+        $sample = ['username' => 'smith', 'name' => 'John', 'type' => 'given', 'display' => 1, 'preset' => 'en' ];
         foreach ( $sample as $key => $value) {
             $args = $sample;
             $args[$key] = null;
@@ -129,33 +129,35 @@ class NamesTableTest extends TestCase
                 'name'      => 'Baron',
                 'type'      => 'title',
                 'display'   => 'display',
+                'preset'    => 'en',
             ]);
         $this->assertEmpty( $entity->errors() );
     }
 
     public function testGetPresets(){
         $presets = $this->Names->getPresets('smith');
-        $this->assertEquals( count($presets), 1, json_encode($presets) );
+        $this->assertEquals( count($presets), 2, json_encode($presets) );
 
         $entity = $this->Names->newEntity([
                 'username'  => 'smith',
-                'name'      => 'スミス',
+                'name'      => 'Иван',
                 'type'      => 'given',
                 'display'   => 'display',
-                'preset'    => 'ja',
+                'order_key' => 1,
+                'preset'    => 'ru',
             ]);
         if( empty( $entity->errors() ) ){
             $this->Names->save($entity);
         }
         $this->assertEmpty( $entity->errors(), json_encode($entity->errors) );
         $presets = $this->Names->getPresets('smith');
-        $this->assertEquals( count($presets), 2, json_encode($presets) );
+        $this->assertEquals( count($presets), 3, json_encode($presets) );
     }
 
     public function testGetName(){
         //display_lebel => normal
         //expected: 'John D Smith'
-        $names = $this->Names->getName('smith'); //
+        $names = $this->Names->getName('smith','en'); //
         foreach ( $names as $key => $name ) {
             $this->assertNotEmpty( $name['name'] );
             $this->assertNotEmpty( $name['type'] );
@@ -169,7 +171,7 @@ class NamesTableTest extends TestCase
 
         //display_lebel => full
         //expected: 'John David "Aihal" Smith'
-        $names = $this->Names->getName('smith', [ 'display_lebel' => 'full' ]);
+        $names = $this->Names->getName('smith', 'en', [ 'display_lebel' => 'full' ]);
         $expected = [
                 ['name' => 'John',      'type' => 'given'],
                 ['name' => 'David',     'type' => 'middle'],
@@ -180,7 +182,7 @@ class NamesTableTest extends TestCase
 
         //display_lebel => private
         //expected: 'John David "Aihal" Smith "Ged"'
-        $names = $this->Names->getName('smith', ['display_lebel' => 'private']);
+        $names = $this->Names->getName('smith', 'en', ['display_lebel' => 'private']);
         $expected = [
                 ['name' => 'John',      'type' => 'given'],
                 ['name' => 'David',     'type' => 'middle'],
@@ -217,21 +219,21 @@ class NamesTableTest extends TestCase
         $username = 'smith';
         $test_data = [
             [
-                '' => [
+                'en' => [
                     ['name' => 'William', 'type' => 'given',  'display' => 'short', 'short' => 'W.'],
                     ['name' => 'Joseph',  'type' => 'given', 'display' => 'short', 'short' => 'J.'],
                     ['name' => 'Smith',   'type' => 'given', 'display' => 'display', 'short' =>'Smith'],
                 ],
             ],
             [ //sort
-                '' => [
+                'en' => [
                     ['name' => 'Joseph',  'type' => 'given', 'display' => 'short', 'short' => 'J.'],
                     ['name' => 'William', 'type' => 'given',  'display' => 'short', 'short' => 'W.'],
                     ['name' => 'Smith',   'type' => 'given', 'display' => 'display', 'short' =>'Smith'],
                 ],
             ],
             [ //add
-                '' => [
+                'en' => [
                     ['name' => 'Joseph',  'type' => 'given', 'display' => 'display', 'short' => 'J.'],
                     ['name' => 'William', 'type' => 'given',  'display' => 'display', 'short' => 'W.'],
                     ['name' => 'Philip',  'type' => 'given', 'display' => 'display', 'short' => 'F.' ],
@@ -246,7 +248,7 @@ class NamesTableTest extends TestCase
                 ],
             ],
             [ //change multiple preset
-                '' => [
+                'en' => [
                     ['name' => 'Alexander', 'type' => 'given',  'display' => 'display', 'short' => 'A.'],
                     ['name' => 'John',      'type' => 'middle', 'display' => 'display', 'short' => 'J.'],
                     ['name' => 'Smith',     'type' => 'family', 'display' => 'display', 'short' =>'Smith'],
@@ -276,12 +278,12 @@ class NamesTableTest extends TestCase
 
     public function testRenamePreset(){
         $data_old = $this->Names->getNameData('smith');
-        $ret = $this->Names->renamePreset('smith','','en',['display' => 'string']);
+        $ret = $this->Names->renamePreset('smith','en','en_US',['display' => 'string']);
         $this->assertNotFalse($ret);
         $data_new = $this->Names->getNameData('smith');
-        $this->assertArrayNotHasKey( '', $data_new );
-        $this->assertArrayHasKey('en', $data_new );
-        $this->assertEquals( $data_old[''], $data_new['en'] );
+        $this->assertArrayNotHasKey( 'en', $data_new );
+        $this->assertArrayHasKey('en_US', $data_new );
+        $this->assertEquals( $data_old['en'], $data_new['en_US'] );
     }
 
     public function testRemovePreset(){
