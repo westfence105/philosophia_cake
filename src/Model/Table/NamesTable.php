@@ -157,6 +157,10 @@ class NamesTable extends Table
         return $ret;
     }
 
+    public function hasPreset( string $username, string $preset ){
+        return (bool)$this->find()->where(['username' => $username, 'preset' => $preset ])->count();
+    }
+
     public function getName( string $username, string $preset, array $options = [] ){
         $display_lebel = self::DISPLAY_LEBEL['normal'];
         if( array_key_exists('display_lebel',$options) ){

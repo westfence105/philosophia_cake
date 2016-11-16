@@ -18,11 +18,11 @@ class NamesControllerTest extends IntegrationTestCase
         parent::setUp();
         
         $this->enableSecurityToken();
+        $this->enableCsrfToken();
         $this->configRequest([
                 'environment' => [ 'HTTPS' => 'on' ]
             ]);
         $this->session([ 'Auth.User.username' => 'smith' ]);
-        $this->enableCsrfToken();
     }
 
     public function testNotAjaxDenied(){
@@ -31,11 +31,14 @@ class NamesControllerTest extends IntegrationTestCase
     }
 
     protected function setAjaxHeader(){
+        $token = 'test-csrf-token';
+        $this->cookie('csrfToken', $token );
         $this->configRequest([
             'headers' => [
                 'X-Requested-With' => 'XMLHttpRequest',
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json; charset=utf-8',
+                'X-Csrf-Token' => $token,
             ],
         ]);
     }
@@ -66,8 +69,33 @@ class NamesControllerTest extends IntegrationTestCase
     public function testView(){
         $this->setAjaxHeader();        
         $this->get( self::URL.'/en.json' );
-        $this->assertResponseOk();
         $ret = json_decode( $this->_response->body(), true );
         $this->validateNames( $ret );
+
+        $this->setAjaxHeader(); 
+        $this->get( self::URL.'/eo.json' );
+        $this->assertResponseCode(404);
+    }
+
+    public function testEdit(){
+        $this->setAjaxHeader();
+        $this->put( self::URL.'/en.json' );
+        $this->assertResponseOk();
+    }
+
+    public function testDelete(){
+        $this->setAjaxHeader();
+        $this->delete( self::URL.'/en.json' );
+        debug($this->_response->body());
+        $this->assertResponseOk();
+
+        //assert deleted
+        $this->setAjaxHeader(); 
+        $this->get( self::URL.'/en.json' );
+        $this->assertResponseCode(404);
+
+        $this->setAjaxHeader(); 
+        $this->delete( self::URL.'/en.json' );
+        $this->assertResponseCode(404);
     }
 }
