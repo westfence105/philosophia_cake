@@ -120,7 +120,22 @@ class NamesTableTest extends TestCase
      */
     public function testBuildRules()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $sample = ['username' => 'smith', 'name' => 'John', 'type' => 'given', 'display' => 1, 'preset' => 'en' ];
+        
+        $entity = $this->Names->newEntity($sample);
+        $this->Names->save($entity);
+        $this->assertEmpty($entity->errors());
+        unset($entity);
+
+        $invalid_args = [
+            array_merge( $sample, ['username' => 'not_exists'] ),
+        ];
+        foreach( $invalid_args as $i => $args ){
+            $entity = $this->Names->newEntity($args);
+            $this->Names->save($entity);
+            $this->assertNotEmpty($entity->errors(), json_encode($args));
+            unset($entity);
+        }
     }
 
     public function testBeforeMarshal(){

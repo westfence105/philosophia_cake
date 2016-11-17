@@ -35,7 +35,10 @@ class UsersTable extends Table
         $this->table('users');
         $this->displayField('username');
         $this->primaryKey('username');
-        $this->hasMany('ProfileData',[ 'foreignKey' => 'username' ]);
+
+        $this->hasMany('Names', ['foreignKey' => 'username']);
+        $this->hasMany('ProfileData', ['foreignKey' => 'username']);
+        $this->hasMany('Documents', ['foreignKey' => 'username']);
 
         $this->_validatorClass = 'App\Model\Validation\UserValidator';
     }

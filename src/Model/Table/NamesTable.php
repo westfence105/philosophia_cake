@@ -72,6 +72,10 @@ class NamesTable extends Table
         $this->table('names');
         $this->displayField('name');
         $this->primaryKey('id');
+
+        $this->belongsTo('Users', [ 'foreignKey' => 'username' ] );
+
+        $this->_validatorClass = '\App\Model\Validation\NameValidator';
     }
 
     /**
@@ -125,6 +129,7 @@ class NamesTable extends Table
      */
     public function buildRules(RulesChecker $rules)
     {
+        $rules->add( $rules->existsIn( 'username', 'users' ) );
         return $rules;
     }
 

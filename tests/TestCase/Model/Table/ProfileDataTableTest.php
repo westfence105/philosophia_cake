@@ -24,7 +24,8 @@ class ProfileDataTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.profile_data'
+        'app.users',
+        'app.profile_data',
     ];
 
     /**
@@ -76,7 +77,7 @@ class ProfileDataTableTest extends TestCase
 
         $valid_args = [
                 [
-                    'username' => 'test'
+                    'username' => 'user'
                 ]
             ];
         foreach ( $valid_args as $key => $value ) {
@@ -95,6 +96,19 @@ class ProfileDataTableTest extends TestCase
      */
     public function testBuildRules()
     {
-        $this->markTestIncomplete('Not implemented yet.');
+        $entity = $this->ProfileData->newEntity(['username' => 'user']);
+        $this->ProfileData->save($entity);
+        $this->assertEmpty($entity->errors(), json_encode($entity->errors()) );
+        unset($entity);
+
+        $invalid_args = [
+            ['username' => 'not_exists'],
+        ];
+        foreach( $invalid_args as $i => $args ){
+            $entity = $this->ProfileData->newEntity(['username' => 'not_exists']);
+            $this->ProfileData->save($entity);
+            $this->assertNotEmpty($entity->errors());
+            unset($entity);
+        }
     }
 }
