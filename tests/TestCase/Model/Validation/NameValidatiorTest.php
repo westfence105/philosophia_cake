@@ -21,6 +21,7 @@ class NameValidatorTest extends TestCase
 		foreach( NamesTable::types() as $type => $type_name ){
 			foreach ( NamesTable::display() as $display => $display_str ) {
 				$valid_args[] = array_merge( $base, ['type' => $type, 'display' => $display ]);
+				$valid_args[] = array_merge( $base, ['type' => $type, 'display' => NamesTable::DISPLAY[$display] ]);
 				if( $display == 'short' ){
 					$args = array_merge( $base, ['name' => '', 'type' => $type, 'display' => 'short' ]);
 					$valid_args[] = $args;

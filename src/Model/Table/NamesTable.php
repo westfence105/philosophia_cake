@@ -226,7 +226,7 @@ class NamesTable extends Table
         return isset($data) ? $data : [];
     }
 
-    public function setNameData( string $username, array $data, array $options = [] ){
+    public function setNameData( string $username, array $data, array $options = [], array &$errors = [] ){
         $r_data = [];
         foreach ( $data as $preset => $names ) {
             $insert = [];
@@ -276,6 +276,9 @@ class NamesTable extends Table
             $ret = $this->saveMany( $entities );
 
             if( $ret === false ){
+                foreach ( $entities as $i => $entity ) {
+                    $errors[] = [ $entity->name, $entity->errors() ];
+                }
                 return false;
             }
 

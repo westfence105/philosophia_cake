@@ -86,7 +86,6 @@ class NamesControllerTest extends IntegrationTestCase
     public function testDelete(){
         $this->setAjaxHeader();
         $this->delete( self::URL.'/en.json' );
-        debug($this->_response->body());
         $this->assertResponseOk();
 
         //assert deleted

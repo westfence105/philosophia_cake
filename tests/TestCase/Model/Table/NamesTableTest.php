@@ -54,16 +54,6 @@ class NamesTableTest extends TestCase
     }
 
     /**
-     * Test initialize method
-     *
-     * @return void
-     */
-    public function testInitialize()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    /**
      * Test validationDefault method
      *
      * @return void
@@ -109,7 +99,7 @@ class NamesTableTest extends TestCase
 
         foreach ($valid_args as $key => $args ) {
             $entity = $this->Names->newEntity( $args );
-            $this->assertEmpty( $entity->errors(), json_encode($args) );
+            $this->assertEmpty( $entity->errors(), json_encode($args)."\n".json_encode($entity->errors()) );
         }
     }
 
@@ -124,7 +114,7 @@ class NamesTableTest extends TestCase
         
         $entity = $this->Names->newEntity($sample);
         $this->Names->save($entity);
-        $this->assertEmpty($entity->errors());
+        $this->assertEmpty($entity->errors(), json_encode($sample)."\n".json_encode($entity->errors()) );
         unset($entity);
 
         $invalid_args = [
@@ -133,7 +123,7 @@ class NamesTableTest extends TestCase
         foreach( $invalid_args as $i => $args ){
             $entity = $this->Names->newEntity($args);
             $this->Names->save($entity);
-            $this->assertNotEmpty($entity->errors(), json_encode($args));
+            $this->assertNotEmpty($entity->errors(), json_encode($args)."\n".json_encode($entity->errors()) );
             unset($entity);
         }
     }
@@ -146,7 +136,7 @@ class NamesTableTest extends TestCase
                 'display'   => 'display',
                 'preset'    => 'en',
             ]);
-        $this->assertEmpty( $entity->errors() );
+        $this->assertEmpty( $entity->errors(), json_encode($entity->errors()) );
     }
 
     public function testGetPresets(){
@@ -164,7 +154,7 @@ class NamesTableTest extends TestCase
         if( empty( $entity->errors() ) ){
             $this->Names->save($entity);
         }
-        $this->assertEmpty( $entity->errors(), json_encode($entity->errors) );
+        $this->assertEmpty( $entity->errors(), json_encode($entity->errors()) );
         $presets = $this->Names->getPresets('smith');
         $this->assertEquals( count($presets), 3, json_encode($presets) );
     }
@@ -258,7 +248,7 @@ class NamesTableTest extends TestCase
             [ //other preset
                 'ru' => [
                     ['name' => 'Иван',     'type' => 'given',    'display' => 'display', 'short' => 'И'],
-                    ['name' => 'Иванович', 'type' => 'petronym', 'display' => 'display', 'short' => 'И'],
+                    ['name' => 'Иванович', 'type' => 'patronym', 'display' => 'display', 'short' => 'И'],
                     ['name' => 'Иванов',   'type' => 'family',   'display' => 'display', 'short' => 'И'],
                 ],
             ],
@@ -270,7 +260,7 @@ class NamesTableTest extends TestCase
                 ],
                 'ru' => [
                     ['name' => 'Александр', 'type' => 'given',    'display' => 'display', 'short' => 'A'],
-                    ['name' => 'Иванович',  'type' => 'petronym', 'display' => 'display', 'short' => 'И'],
+                    ['name' => 'Иванович',  'type' => 'patronym', 'display' => 'display', 'short' => 'И'],
                     ['name' => 'Иванов',    'type' => 'family',   'display' => 'display', 'short' => 'И'],
                 ],
             ],
@@ -279,9 +269,10 @@ class NamesTableTest extends TestCase
 
         foreach ( $test_data as $i => $data ) {
             $orig = $this->Names->getNameData( $username, ['display' => 'string'] );
-            $ret = $this->Names->setNameData( $username, $data, ['display' => 'string'] );
-            $this->assertNotFalse( $ret, 'assert returning value of setNameData not false' );
-            $this->assertEquals( $data, $ret, 'assert returning value is same as argument' );
+            $errors = [];
+            $ret = $this->Names->setNameData( $username, $data, ['display' => 'string'], $errors );
+            $this->assertNotFalse( $ret, 'returning value of setNameData is false'."\n".json_encode($errors,JSON_UNESCAPED_UNICODE) );
+            $this->assertEquals( $data, $ret, 'returning value isn\'t same as argument'."\n".json_encode($data) );
             $expected = array_replace( $orig, $data );
             $result = $this->Names->getNameData( $username, ['display' => 'string'] );
             $this->assertEquals( $expected, $result, 'assert data already set' );

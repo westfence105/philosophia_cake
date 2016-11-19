@@ -17,10 +17,16 @@ class NameValidator extends Validator {
 	public function __construct(){
 		parent::__construct();
 
+		$display_list = [];
+		foreach ( NamesTable::display() as $display => $desc ) {
+			$display_list[] = $display;
+			$display_list[] = NamesTable::DISPLAY[$display];
+		}
+
 		$this->requirePresence(['username', 'type', 'display'])
 			 ->notEmpty(['username','type','display'])
 			 ->inList('type', array_keys( NamesTable::types() ) )
-			 ->inList('display', array_keys( NamesTable::display() ) )
+			 ->inList('display', $display_list )
 			;
 
 		self::require( $this, 'name', __('"Name" is required except "Display" is "Short".'),
