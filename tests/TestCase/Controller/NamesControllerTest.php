@@ -4,6 +4,10 @@ namespace App\Test\TestCase\Controller;
 use App\Controller\DocumentsController;
 use Cake\TestSuite\IntegrationTestCase;
 
+use Cake\Log\Log;
+
+use App\Model\Validation\NameValidator;
+
 class NamesControllerTest extends IntegrationTestCase
 {
 
@@ -27,10 +31,10 @@ class NamesControllerTest extends IntegrationTestCase
 
     public function testNotAjaxDenied(){
         $this->get( self::URL.'.json' );
-        $this->assertResponseCode(400);
+        $this->assertResponseError();
     }
 
-    protected function setAjaxHeader(){
+    protected function ajax( string $func, string $url, $data = [] ){
         $token = 'test-csrf-token';
         $this->cookie('csrfToken', $token );
         $this->configRequest([
@@ -40,7 +44,15 @@ class NamesControllerTest extends IntegrationTestCase
                 'Content-Type' => 'application/json; charset=utf-8',
                 'X-Csrf-Token' => $token,
             ],
+            'input' => json_encode($data),
         ]);
+
+        if( $func == 'get' ){
+            return $this->get($url);
+        }
+        else{
+            return $this->$func($url);
+        }
     }
 
     protected function validateNames( array $names ){
@@ -55,8 +67,7 @@ class NamesControllerTest extends IntegrationTestCase
     }
 
     public function testIndex(){
-        $this->setAjaxHeader();        
-        $this->get( self::URL.'.json' );
+        $this->ajax( 'get', self::URL.'.json' );
         $this->assertResponseOk();
         $ret = json_decode( $this->_response->body(), true );
         foreach( $ret as $preset => $names ){
@@ -67,34 +78,100 @@ class NamesControllerTest extends IntegrationTestCase
     }
 
     public function testView(){
-        $this->setAjaxHeader();        
-        $this->get( self::URL.'/en.json' );
+        $this->ajax( 'get', self::URL.'/en.json' );
         $ret = json_decode( $this->_response->body(), true );
         $this->validateNames( $ret );
 
-        $this->setAjaxHeader(); 
-        $this->get( self::URL.'/eo.json' );
+        $this->ajax( 'get', self::URL.'/eo.json' );
         $this->assertResponseCode(404);
     }
 
     public function testEdit(){
-        $this->setAjaxHeader();
-        $this->put( self::URL.'/en.json' );
-        $this->assertResponseOk();
+        $valid_data = [
+            [
+                'names' => [
+                    ['name' => 'Jacob',  'type' => 'given', 'display' => 'omit', 'short' => 'J.'],
+                    ['name' => 'Isaac',  'type' => 'patronym', 'display' => 'omit', 'short' => 'I.'],
+                    ['name' => '"Jack"', 'type' => 'alias', 'display' => 'short', 'short' => 'Jack'],
+                    ['name' => 'Williams', 'type' => 'family', 'display' => 'display' ],
+                ],
+            ],
+        ];
+
+        $base = ['name' => 'John', 'type' => 'given', 'display' => 'display', 'short' => 'J.' ];
+        $invalid_data = [
+            array_merge( $base, ['name' => '']),        //empty name
+            array_merge( $base, ['type' => 'giben']),   //invalid type
+            array_merge( $base, ['type' => 'petronym']),//invalid type
+            array_merge( $base, ['display' => 'srt']),  //invalid display
+            array_merge( $base, ['display' => 'short', 'short' => '']), //display "short" without short
+        ];
+        foreach( ['name','type','display'] as $i => $key ){
+            $d = $base;
+            unset($d[$key]);
+            $invalid_data[] = $d;
+        }
+
+        $preset = 'en';
+        foreach ( $valid_data as $i => $data ) {
+            $this->ajax('put', self::URL."/$preset.json", $data );
+            $this->assertResponseOk();
+
+            $preset = array_key_exists('preset', $data ) ? $data['preset'] : ( $data['preset'] = $preset );
+            $exp = $data;
+            if( array_key_exists('names', $exp ) ){
+                foreach( $exp['names'] as $i => &$name ){
+                    if( !array_key_exists('name', $name ) ){
+                        $name['name'] = null;
+                    }
+                    if( !array_key_exists('short', $name ) ){
+                        $name['short'] = null;
+                    }
+                }
+                unset($name);
+            }
+            
+            $ret = json_decode( $this->_response->body(), true );
+            $this->assertEquals( $exp, $ret, 'returning value of PUT(edit) is not same expected value');
+
+            $this->ajax('get', self::URL."/$preset.json", $data );
+            $this->assertResponseOk();
+            $ret_view = json_decode( $this->_response->body(), true );
+            $this->assertEquals( $ret['names'], $ret_view );
+        }
+
+        $validator = new NameValidator();
+        foreach ( $invalid_data as $j => $data ) {
+            for( $i = 0; $i < 2; ++$i ){
+                $names = [];
+                for( $c = 0; $c < $i; ++$c ){
+                    $names[] = $base;
+                }
+                $names[$i] = $data;
+                $this->ajax( 'put', self::URL.'/en.json', [
+                        'names' => $names,
+                    ]);
+                $this->assertResponseCode(400);
+                $ret = json_decode( $this->_response->body(), true );
+                $exp = [
+                    'errors' => [
+                        "$i" => $validator->errors($data),
+                    ],
+                ];
+                $this->assertEquals( $exp, $ret );
+            }
+        }
     }
 
     public function testDelete(){
-        $this->setAjaxHeader();
-        $this->delete( self::URL.'/en.json' );
+        $this->ajax( 'delete', self::URL.'/en.json' );
         $this->assertResponseOk();
 
         //assert deleted
-        $this->setAjaxHeader(); 
-        $this->get( self::URL.'/en.json' );
+        $this->ajax( 'get', self::URL.'/en.json' );
         $this->assertResponseCode(404);
 
-        $this->setAjaxHeader(); 
-        $this->delete( self::URL.'/en.json' );
+        $this->ajax( 'delete', self::URL.'/en.json' );
         $this->assertResponseCode(404);
     }
 }

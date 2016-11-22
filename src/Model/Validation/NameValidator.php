@@ -23,8 +23,8 @@ class NameValidator extends Validator {
 			$display_list[] = NamesTable::DISPLAY[$display];
 		}
 
-		$this->requirePresence(['username', 'type', 'display'])
-			 ->notEmpty(['username','type','display'])
+		$this->requirePresence(['type', 'display'])
+			 ->notEmpty(['type','display'])
 			 ->inList('type', array_keys( NamesTable::types() ) )
 			 ->inList('display', $display_list )
 			;

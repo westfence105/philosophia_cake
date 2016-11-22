@@ -10,7 +10,6 @@ class NameValidatorTest extends TestCase
 {
 	public function testValidate(){
 		$base = [
-			'username' => 'smith', 
 			'name' => 'John',
 			'type' => 'given',
 			'display' => 'display',
@@ -48,7 +47,7 @@ class NameValidatorTest extends TestCase
 			array_merge( $base, ['display' => 'dispray']), 				  //invalid display
 		];
 
-		$required = ['username','name','type','display','short'];
+		$required = ['name','type','display','short'];
 		foreach ( $required as $i => $value ) {
 			$arg = $base;
 			unset($arg[$value]);

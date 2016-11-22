@@ -4,6 +4,7 @@ namespace App\Controller;
 use App\Controller\AppController;
 use Cake\Event\Event;
 
+use Cake\Network\Exception\NotFoundException;
 use Cake\Network\Exception\BadRequestException;
 
 class ApiController extends AppController
@@ -17,7 +18,7 @@ class ApiController extends AppController
 		parent::beforeFilter($event);
 
 		if( ! $this->request->is('ajax') ){
-			throw new BadRequestException('Request is not Ajax');
+			throw new NotFoundException();
 		}
 
 		$this->request->header('X-Content-Type-Options','nosniff');

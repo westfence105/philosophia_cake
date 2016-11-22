@@ -275,10 +275,13 @@ class NamesTable extends Table
             
             $ret = $this->saveMany( $entities );
 
-            if( $ret === false ){
-                foreach ( $entities as $i => $entity ) {
-                    $errors[] = [ $entity->name, $entity->errors() ];
+            foreach ( $entities as $i => $entity ) {
+                $err = $entity->errors();
+                if( !empty($err) ){
+                    $errors[] = [ $entity->name, $err ];
                 }
+            }
+            if( !empty($errors) ){
                 return false;
             }
 
