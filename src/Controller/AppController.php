@@ -52,7 +52,7 @@ class AppController extends Controller
         $this->loadComponent('Auth', 
                     [
                         'authenticate' => 'Form' ,
-                        'loginAction' => ['controller' => 'Users', 'action' => 'login'],
+                        'loginAction' => ['controller' => 'Pages', 'action' => 'login'],
                         'loginRedirect' => ['controller' => 'Pages', 'action' => 'index'],
                     ]);
         $this->Auth->config('checkAuthIn', 'Controller.initialize');
@@ -85,19 +85,5 @@ class AppController extends Controller
 
     public function beforeFilter(Event $event){
         $this->Security->requireSecure();
-        $username = $this->Auth->user('username');
-        if( $username ) {
-            $users = TableRegistry::get('Users');
-            try {
-                $user = $users->get( $username );
-                $language = $user['language'];
-                @I18n::locale( $language );
-                $this->set('username', $username );
-                $this->set('language', @\Locale::getDisplayLanguage( $language ) );
-            }
-            catch( RecordNotFoundException $e ){
-                $this->redirect( $this->Auth->logout() );
-            }
-        }
     }
 }

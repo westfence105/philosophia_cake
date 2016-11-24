@@ -27,10 +27,67 @@ use Cake\View\Exception\MissingTemplateException;
  */
 class PagesControllerTest extends IntegrationTestCase
 {
+    public $fixtures = [
+        'app.users',
+    ];
+
     public function setUp(){
         parent::setUp();
 
+        $this->enableSecurityToken();
+        $this->configRequest([
+                'environment' => [ 'HTTPS' => 'on' ]
+            ]);
+    }
+
+    protected function setUser(){
+        $this->session([ 'Auth.User.username' => 'user' ]);
         $this->enableCsrfToken();
+    }
+
+    public function testIndex()
+    {
+        $this->enableCsrfToken();
+        $this->get('/');
+        $this->assertResponseOk();
+    }
+
+    public function testHome()
+    {
+        $this->setUser();
+        $this->get('/');
+        $this->assertResponseOk();
+    }
+
+    public function testLogin(){
+        $auth_data = [
+            'username' => 'user',
+            'password' => 'password',
+        ];
+
+        $this->get('/login');
+        $this->assertResponseCode(403);
+        $this->post('/login', $auth_data );
+        $this->assertResponseCode(403);
+
+        $this->enableCsrfToken();
+
+        $this->get('/login');
+        $this->assertResponseOk();
+        $this->post('/login', $auth_data );
+        $this->assertRedirect('/');
+    }
+
+    public function testLogout(){
+        $this->setUser();
+        $this->get('/logout');
+        $this->assertRedirect('/login');
+    }
+
+    public function testSettings(){
+        $this->setUser();
+        $this->get('/settings');
+        $this->assertResponseOk();
     }
 
     /**
@@ -40,6 +97,7 @@ class PagesControllerTest extends IntegrationTestCase
      */
     public function testMissingMethod()
     {
+        $this->setUser();
         Configure::write('debug', false);
         $this->get('/not_existing');
 
@@ -54,6 +112,7 @@ class PagesControllerTest extends IntegrationTestCase
      */
     public function testMissingMethodInDebug()
     {
+        $this->setUser();
         Configure::write('debug', true);
         $this->get('/not_existing');
 

@@ -46,30 +46,6 @@ class UsersControllerTest extends IntegrationTestCase
             ]);
     }
 
-    public function testCsrf(){
-        $this->post([ 'controller' => 'Users', 'action' => 'login' ], $this->auth_data );
-        $this->assertResponseError();
-
-        $this->post([ 'controller' => 'Users', 'action' => 'login' ], $this->new_user );
-        $this->assertResponseError();
-    }
-
-    public function testIndex()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    public function testHome()
-    {
-        $this->markTestIncomplete('Not implemented yet.');
-    }
-
-    public function testLogin(){
-        $this->enableCsrfToken();
-        $this->post([ 'controller' => 'Users', 'action' => 'login' ], $this->auth_data );
-        $this->assertRedirect('/', $this->_response );
-    }
-
     public function testRegister()
     {
         //setup email
@@ -108,10 +84,6 @@ class UsersControllerTest extends IntegrationTestCase
 
         $this->get('/users/not_exist');
         $this->assertResponseCode( 404, 'response of request for not exist user' );
-    }
-
-    public function testSettings() {
-        $this->markTestIncomplete('Not implemented yet.');
     }
 
 }

@@ -1,6 +1,33 @@
 $( function(){
 	$('.sortable').sortable();
 
+	showLoading();
+	$.ajax({
+		type: 'GET',
+		url: './api/1.0/users/names.json',
+		beforeSend: function(xhr){
+			xhr.setRequestHeader('X-Csrf-Token', $('*[name="_csrfToken"]').val() );
+		},
+		success: function(data){
+			debug(data);
+			var $el_presets = $('#name_presets');
+			var template = _.template( $('#template_name_preset').text() );
+			var $presets = $.map( data, genPreset );
+			$el_presets.append($presets);
+			presetsChanged();
+		},
+		error: function(XMLHttpRequest,textStatus,errorThrown){
+			alert( message('internal error occurred') );
+			debug('-- Error --');
+			debug(errorThrown);
+			debug(textStatus);
+			debug('-----------');
+		},
+		complete: function(){
+			hideLoading();
+		}
+	});
+
 	$(document).on('sortstop', '.name_inputs', updateNamePreview );
 	$(document).on('change', '.name_input select', updateNamePreview );
 	$(document).on('change keyup',  '.name_input input',  updateNamePreview );
@@ -45,7 +72,7 @@ $( function(){
 	$(document).on('click', '.add_name', function(){
 			var $el_preset = $(this).closest('.name_preset');
 			var $el_inputs = $el_preset.find('.name_inputs');
-			$el_inputs.append( $('#templates').find('.name_input').clone() ).sortable('refresh');
+			$el_inputs.append( $('#template_name_input').html() ).sortable('refresh');
 			namesChanged($el_preset);
 		});
 	$(document).on('click', '.remove_name', function(){
@@ -64,16 +91,44 @@ $( function(){
 	$(document).on('click', '.remove_preset input', function(){
 			removeNamePreset( $(this).closest('.name_preset') );
 		});
-
-	presetsChanged();
 });
+
+function genPreset( names, preset ){
+	showLoading();
+
+	var data = {
+			preset: preset,
+			names:   names,
+		};
+	var template = _.template( $('#template_name_preset').text() );
+	var $el_preset = $( template( data ) );
+	$.ajax({
+		type: 'GET',
+		url: './resources/language-name',
+		data: {
+			lang: preset,
+		},
+		context : $el_preset,
+		success: function(data){
+			$(this).find('span[name="preset_name"]').text(data);
+		},
+		error: function(XMLHttpRequest,textStatus,errorThrown){
+			debug('error: '+errorThrown);
+		},
+		complete: function(){
+			hideLoading();
+		}
+	});
+	return $el_preset;
+}
 
 function editName( $el_preset ){
 	showLoading();
 
-	var $el_template = $('#templates').find('.name_input');
+	$el_preset.find('input.preset_name').val($el_preset.data('preset-name'));
+	var $el_template = $('#template_name_input');
 	var $el_inputs = $.map( $el_preset.find('.names .name'), function(n){
-						$el = $el_template.clone();
+						$el = $($el_template.html());
 						var name 	= $(n).data('name');
 						var type 	= $(n).data('name-type');
 						var display = $(n).data('name-display');
@@ -163,28 +218,14 @@ function setShortEnabled( $el ){
 function sendName(){
 	var $el = $(this).closest('.name_preset');
 
-	var data = {
-		item: 'name_preset'
-	};
-
 	var preset_name_old = $el.data('preset-name');
 	var preset_name_new = $el.find('input.preset_name').val();
-	if( typeof preset_name_old !== 'undefined' && preset_name_old != preset_name_new ){
-		data['preset'] = preset_name_old;
-		data['preset_new'] = preset_name_new;
-	}
-	else if( typeof preset_name_new !== 'undefined' ){
-		data['preset'] = preset_name_new;
-	}
-	else {
-		data['preset'] = '';
-	}
 
 	var preset_duplicate = false;
 	$el.siblings().each( function(){
-		if( data['preset'] == $(this).data('preset-name') ){
+		if( $(this).data('preset-name') == preset_name_new ){
 			preset_duplicate = true;
-			return false;
+			return false; //means 'break;'
 		}
 	});
 	if( preset_duplicate ){
@@ -192,28 +233,26 @@ function sendName(){
 		return false;
 	}
 
-	var i = 0;
+	var names = [];
 	var blank = 0;
-	var wrote = 0;
 	$el.find('.name_input').each( function(){
 		var name 	= $(this).find('.input_name input').val();
 		var type 	= $(this).find('.input_name_type select').val();
 		var display = $(this).find('.input_name_display select').val();
-		var short 	= $(this).find('.input_name_short input').val();
-		if( name || display == 'short' && short ){
-			var path_name = 'names['+i+']';
-			data[path_name+'[name]'] 	= name;
-			data[path_name+'[type]'] 	= type;
-			data[path_name+'[display]'] = display;
-			data[path_name+'[short]']	= short;
-			++wrote;
-			++i;
+		var short 	= $(this).find('.input_name_short input').val();	
+		if( name || ( display == 'short' && short ) ){
+			names.push({
+				'name':    name,
+				'type':    type,
+				'display': display,
+				'short':   short,
+			});
 		}
 		else {
 			++blank;
 		}
 	});
-	if( wrote == 0 ){
+	if( names.length == 0 ){
 		if( $el.siblings().length ){
 			var ret = confirm( message('nothing names entered.') + '\n' + message(' remove this preset?') );
 			if( ret ){
@@ -232,18 +271,27 @@ function sendName(){
 		}
 	}
 
+	var data = { 'names': names };
+	if( preset_name_old != preset_name_new ){
+		data['preset'] = preset_name_new;
+	}
+
 	showLoading();
 	$.ajax({
-		type: 'POST',
-		url: './settings',
+		type: 'PUT',
+		url: './api/1.0/users/names/' + preset_name_old + '.json',
 		data: data,
+		context: $el,
 		beforeSend: function(xhr){
 			xhr.setRequestHeader('X-Csrf-Token', $('*[name="_csrfToken"]').val() );
 		},
 		success: function(data){
-			$el.replaceWith(data);
-			nameEditCompleted();
-			presetsChanged();
+			debug(data);
+			if( data instanceof Object && 'names' in data && 'preset' in data ){
+				$el.replaceWith( genPreset( data['names'], data['preset'] ) );
+				nameEditCompleted();
+				presetsChanged();
+			}
 		},
 		error: function(XMLHttpRequest,textStatus,errorThrown){
 			alert( message('internal error occurred') );
@@ -258,8 +306,16 @@ function sendName(){
 }
 
 function addPreset(){
-	var preset = window.prompt( message('please input new preset name') );
-	if( preset != null ){
+	var again = true;
+	while( again ){
+		again = false;
+
+		var preset = window.prompt( message('please input new preset name') );
+		if( preset == '' ){
+			alert( message('error: preset name expected') );
+			again = true;
+		}
+
 		var exist = false;
 		$('.name_preset').each( function(){
 			if( $(this).data('preset-name') == preset ){
@@ -269,34 +325,37 @@ function addPreset(){
 		});
 		if( exist ){
 			alert( message('error: preset name is duplicated') );
+			again = true;
 		}
-		else {
-			showLoading();
-			$.ajax({
-				type: 'POST',
-				url: './settings',
-				data: {
-					item: 'new_preset',
-					preset: preset
-				},
-				beforeSend: function(xhr){
-					xhr.setRequestHeader('X-Csrf-Token', $('*[name="_csrfToken"]').val() );
-				},
-				success: function(data){
-					$el = $(data).appendTo('#name_presets');
-					$el.find('.edit_name').click();
-				},
-				error: function(XMLHttpRequest,textStatus,errorThrown){
-					alert( message('internal error occurred') );
-					debug('-- Error --');
-					debug(errorThrown);
-					debug('-----------');
-				},
-				complete: function(){
-					hideLoading();
-				}
-			});
-		}
+	}
+
+	if( preset != null ){
+		showLoading();
+		$.ajax({
+			type: 'POST',
+			url: './settings',
+			data: {
+				item: 'new_preset',
+				preset: preset
+			},
+			beforeSend: function(xhr){
+				xhr.setRequestHeader('X-Csrf-Token', $('*[name="_csrfToken"]').val() );
+			},
+			success: function(data){
+				$names = $.map( data['name'], genPreset );
+				$('#name_presets')
+				$el.find('.edit_name').click();
+			},
+			error: function(XMLHttpRequest,textStatus,errorThrown){
+				alert( message('internal error occurred') );
+				debug('-- Error --');
+				debug(errorThrown);
+				debug('-----------');
+			},
+			complete: function(){
+				hideLoading();
+			}
+		});
 	}
 }
 
@@ -317,11 +376,12 @@ function removeNamePreset( $el ){
 			item: 'remove_preset',
 			preset: $el.data('preset-name')
 		},
+		context: $el,
 		beforeSend: function(xhr){
 			xhr.setRequestHeader('X-Csrf-Token', $('*[name="_csrfToken"]').val() );
 		},
 		success: function(data){
-			$el.remove();
+			$(this).remove();
 			nameEditCompleted();
 			presetsChanged();
 		},

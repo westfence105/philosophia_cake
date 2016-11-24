@@ -53,11 +53,7 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
     $routes->connect('/', ['controller' => 'Pages', 'action' => 'index' ]);
 
-    $routes->connect('/home',       [ 'controller' => 'Users', 'action' => 'home' ]);
-    $routes->connect('/login',      [ 'controller' => 'Users', 'action' => 'login' ] );
-    $routes->connect('/logout',     [ 'controller' => 'Users', 'action' => 'logout' ] );
     $routes->connect('/register',   [ 'controller' => 'Users', 'action' => 'register' ] );
-    $routes->connect('/settings',   [ 'controller' => 'Users', 'action' => 'settings' ] );
 
     $routes->connect('/users/:username',  [ 'controller' => 'Users', 'action' => 'profile' ],
                                           [ 'username' => '.+', 'pass' => [ 'username' ] ] );
@@ -88,7 +84,7 @@ Router::scope('/', function (RouteBuilder $routes) {
 Router::scope('/api/1.0', function($routes){
     $routes->extensions(['json']);
 
-    $routes->scope('/user', function($routes){
+    $routes->scope('/users', function($routes){
         $routes->resources('Names', [
                 'id' => '[a-z]{2,3}([_-][A-Z]{2,3}){0,1}',
                 'only' => [ 'index', 'view', 'update', 'delete' ],

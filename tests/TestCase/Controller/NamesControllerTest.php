@@ -16,7 +16,7 @@ class NamesControllerTest extends IntegrationTestCase
         'app.names',
     ];
 
-	const URL = '/api/1.0/user/names';
+	const URL = '/api/1.0/users/names';
 
     public function setUp(){
         parent::setUp();
@@ -79,6 +79,7 @@ class NamesControllerTest extends IntegrationTestCase
 
     public function testView(){
         $this->ajax( 'get', self::URL.'/en.json' );
+        $this->assertResponseOk();
         $ret = json_decode( $this->_response->body(), true );
         $this->validateNames( $ret );
 

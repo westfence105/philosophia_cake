@@ -1,6 +1,8 @@
-var DEBUG = false;
+var debug = function(){};
 $( function(){
-	DEBUG = $('#debug')[0];
+	if( $('#debug')[0] ){
+		debug = console.log;
+	}
 
 	$('body').append( $('<div></div>',{'id':'loading_image'}).append( $('<img/>',{'src':'img/loading.gif'}) ) );
 	$('body').append( $('<div></div>',{'id':'modal_bg'}) );
@@ -10,20 +12,19 @@ $( function(){
 	$(window).on( 'resize', setLoadingImagePosition );
 });
 
-function debug( val ){
-	if( DEBUG && typeof val !== 'undefined' ){
-		console.log(val);
+var loads = 0;
+function showLoading(){
+	if( loads++ <= 0 ){
+		$('#loading_image').css({ display: 'block' });
+		$('#modal_bg').css({ display: 'block' });
 	}
 }
 
-function showLoading(){
-	$('#loading_image').css({ display: 'block' });
-	$('#modal_bg').css({ display: 'block' });
-}
-
 function hideLoading(){
-	$('#loading_image').css({ display: 'none' });
-	$('#modal_bg').css({ display: 'none' });
+	if( --loads <= 0 ){
+		$('#loading_image').css({ display: 'none' });
+		$('#modal_bg').css({ display: 'none' });
+	}
 }
 
 function setLoadingImagePosition(){

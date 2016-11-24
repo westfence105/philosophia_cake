@@ -29,6 +29,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
 
     <?= $this->Html->script('https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js') ?>
     <?= $this->Html->script('https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js') ?>
+    <?= $this->Html->script('underscore.js') ?>
     <?= $this->Html->script('my.js') ?>
 
     <?= $this->fetch('meta') ?>
@@ -55,19 +56,15 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
                                 ); ?>
                         </li>
                         <li class="menu_item">
-                            <?= $this->Html->link( __('Settings'), 
-                                    ['controller' => 'Users', 'action' => 'settings'] 
-                                ); ?>        
+                            <?= $this->Html->link( __('Settings'), '/settings' ); ?>        
                         </li>
                         <li class="menu_separator"><hr /></li>
                         <li class="menu_item">
-                            <?= $this->Html->link( __('Logout'), 
-                                    ['controller' => 'Users', 'action' => 'logout'] 
-                                ); ?>
+                            <?= $this->Html->link( __('Logout'), '/logout' ); ?>
                         </li>
                     </ul>
                 <?php else: ?>
-                    <?= $this->Html->link( __('Login'), ['controller' => 'Users', 'action' => 'login'] ) ?>
+                    <?= $this->Html->link( __('Login'), '/login' ) ?>
                 <?php endif; ?>
                 </li>
             </ul>

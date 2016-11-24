@@ -5,5 +5,5 @@
 	echo $this->Form->input( 'password', ['type' => 'password', 'label' => __('Password') ] ), "\n";
 	echo $this->Form->submit(__('Login') ), "\n";
 	echo $this->Form->end(), "\n";
-	echo $this->Html->link(__('Register'), ['controller' => 'Users', 'action' => 'register'])."\n";
+	echo $this->Html->link(__('Register'), '/register' )."\n";
 ?>
