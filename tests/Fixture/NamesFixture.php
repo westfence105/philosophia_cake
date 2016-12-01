@@ -94,7 +94,7 @@ class NamesFixture extends TestFixture
             'username' => 'smith', 
             'order_key' => 5, 
             'name' => '"Ged"', 
-            'type' => 'true', 
+            'type' => 'other', 
             'display' => NamesTable::DISPLAY['private'],
             'preset' => 'en',
         ],

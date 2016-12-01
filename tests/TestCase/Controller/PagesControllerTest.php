@@ -22,6 +22,10 @@ use Cake\Network\Response;
 use Cake\TestSuite\IntegrationTestCase;
 use Cake\View\Exception\MissingTemplateException;
 
+use Cake\Log\Log;
+use Cake\Http\Client;
+use Cake\Mailer\Email;
+
 /**
  * PagesControllerTest class
  */
@@ -29,7 +33,20 @@ class PagesControllerTest extends IntegrationTestCase
 {
     public $fixtures = [
         'app.users',
+        'app.temp_users',
     ];
+
+    public $auth_data = [
+                'username' => 'user',
+                'password' => 'password'
+            ];
+
+    public $new_user = [
+                'username' => 'user2',
+                'password' => 'password',
+                'language' => 'en_US',
+                'email' => 'test@example.com'
+            ];
 
     public function setUp(){
         parent::setUp();
@@ -89,6 +106,46 @@ class PagesControllerTest extends IntegrationTestCase
         $this->get('/settings');
         $this->assertResponseOk();
     }
+
+    public function testProfile() {
+        $this->setUser();
+
+        $this->get('/users/user');
+        $this->assertResponseOk('failed to access profile page');
+
+        $this->get('/users');
+        $this->assertResponseCode( 404, 'response of request with no user' );
+
+        $this->get('/users/not_exist');
+        $this->assertResponseCode( 404, 'response of request for not exist user' );
+    }
+
+    public function testRegister()
+    {
+        //setup email
+        Email::dropTransport('default');
+        Email::configTransport( 'default', [
+                'host' => 'localhost',
+                'port' => 1025,
+                'className' => 'Smtp'
+            ] );
+
+        //setup http client (for getting email)
+        $http = new Client();
+        $http->delete('http://localhost:1080/messages');
+
+        $this->enableCsrfToken();
+        $this->post( '/register', $this->new_user );
+        $this->assertResponseOk('failed to add user',$this->_response);
+
+        //get verify email and access link (to complete register)
+        $response = $http->get('http://localhost:1080/messages/1.plain');
+        $this->assertTrue( $response->isOk(), 'failed to get catched mail');
+        $this->assertTrue( preg_match( '/^\/register\?token=.*$/m', $response->body, $matches ) == 1, $response->body );
+        $this->get( $matches[0] );
+        $this->assertRedirect( '/home', $matches[0]."\n".$this->_response );
+    }
+
 
     /**
      * Test that missing template renders 404 page in production

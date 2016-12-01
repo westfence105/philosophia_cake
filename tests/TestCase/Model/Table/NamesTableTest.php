@@ -193,7 +193,7 @@ class NamesTableTest extends TestCase
                 ['name' => 'David',     'type' => 'middle'],
                 ['name' => '"Aihal"',   'type' => 'alias'],
                 ['name' => 'Smith',     'type' => 'family'],
-                ['name' => '"Ged"',     'type' => 'true'],
+                ['name' => '"Ged"',     'type' => 'other'],
             ];
         $this->assertEquals( $expected, $names );
     }

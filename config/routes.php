@@ -53,9 +53,7 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
     $routes->connect('/', ['controller' => 'Pages', 'action' => 'index' ]);
 
-    $routes->connect('/register',   [ 'controller' => 'Users', 'action' => 'register' ] );
-
-    $routes->connect('/users/:username',  [ 'controller' => 'Users', 'action' => 'profile' ],
+    $routes->connect('/users/:username',  [ 'controller' => 'Pages', 'action' => 'profile' ],
                                           [ 'username' => '.+', 'pass' => [ 'username' ] ] );
 
     $routes->connect('/resources/:action', ['controller' => 'Resources'], ['routeClass' => DashedRoute::class ]);
@@ -84,6 +82,11 @@ Router::scope('/', function (RouteBuilder $routes) {
 Router::scope('/api/1.0', function($routes){
     $routes->extensions(['json']);
 
+    $routes->resources('Users',[
+            'only' => ['view','update'],
+            'id' => '.+',
+        ]);
+    
     $routes->scope('/users', function($routes){
         $routes->resources('Names', [
                 'id' => '[a-z]{2,3}([_-][A-Z]{2,3}){0,1}',

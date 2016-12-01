@@ -19,6 +19,8 @@ class NamesController extends ApiController
 		$this->loadModel('Names');
 	}
 
+	//GET: /api/1.0/users/names.json
+	//format: { <preset>:[<names>], ... }
 	public function index(){
 		return $this->serialize(
 					$this->Names->getNameData( $this->Auth->user('username'), ['display' => 'string'] )
@@ -36,7 +38,7 @@ class NamesController extends ApiController
 		}
 	}
 
-	//PUT: /api/1.0/user/names/<old_preset>.json (<old_preset> => $lang)
+	//PUT: /api/1.0/users/names/<old_preset>.json (<old_preset> => $lang)
 	//format: {"preset":<(new)preset>, "names":[<names>]}
 	//errors:
 	// {

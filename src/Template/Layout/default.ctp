@@ -51,9 +51,7 @@ $cakeDescription = 'CakePHP: the rapid development php framework';
                     <div><?= h($username) ?></div>
                     <ul id="user_menu" class="menu_child">
                         <li class="menu_item">
-                            <?= $this->Html->link( __('Profile'), 
-                                    ['controller' => 'Users', 'action' => 'profile', 'username' => $username ]
-                                ); ?>
+                            <?= $this->Html->link( __('Profile'), '/users'. $username ); ?>
                         </li>
                         <li class="menu_item">
                             <?= $this->Html->link( __('Settings'), '/settings' ); ?>        

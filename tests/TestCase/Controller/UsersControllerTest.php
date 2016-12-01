@@ -2,8 +2,8 @@
 namespace App\Test\TestCase\Controller;
 
 use App\Controller\UsersController;
-use Cake\TestSuite\IntegrationTestCase;
 
+use Cake\Log\Log;
 use Cake\Http\Client;
 use Cake\Mailer\Email;
 use Cake\Datasource\Exception\RecordNotFoundException;
@@ -11,7 +11,7 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 /**
  * App\Controller\UsersController Test Case
  */
-class UsersControllerTest extends IntegrationTestCase
+class UsersControllerTest extends ApiControllerTest
 {
 
     /**
@@ -25,65 +25,17 @@ class UsersControllerTest extends IntegrationTestCase
         'app.names'
     ];
 
-    public $auth_data = [
-                'username' => 'user',
-                'password' => 'password'
-            ];
-
-    public $new_user = [
-                'username' => 'user2',
-                'password' => 'password',
-                'language' => 'en_US',
-                'email' => 'test@example.com'
-            ];
-
     public function setUp(){
         parent::setUp();
-        
-        $this->enableSecurityToken();
-        $this->configRequest([
-                'environment' => [ 'HTTPS' => 'on' ]
-            ]);
+        $this->session([ 'Auth.User.username' => 'smith' ]);
     }
 
-    public function testRegister()
-    {
-        //setup email
-        Email::dropTransport('default');
-        Email::configTransport( 'default', [
-                'host' => 'localhost',
-                'port' => 1025,
-                'className' => 'Smtp'
-            ] );
+    public function testView(){
+        $this->ajax('get','/api/1.0/users/user.json');
+        $this->assertResponseOk();
+        $ret = json_decode( $this->_response->body(), true );
 
-        //setup http client (for getting email)
-        $http = new Client();
-        $http->delete('http://localhost:1080/messages');
-
-        $this->enableCsrfToken();
-        $this->post([ 'controller' => 'Users', 'action' => 'register' ], $this->new_user );
-        $this->assertResponseOk('failed to add user',$this->_response);
-
-        //get verify email and access link (to complete register)
-        $response = $http->get('http://localhost:1080/messages/1.plain');
-        $this->assertTrue( $response->isOk(), 'failed to get catched mail');
-        $this->assertTrue( preg_match( '/^\/register\?token=.*$/m', $response->body, $matches ) == 1, $response->body );
-        $this->get( $matches[0] );
-        $this->assertRedirect( '/home', $matches[0]."\n".$this->_response );
+        $this->ajax('get','/api/1.0/users/not_exist.json');
+        $this->assertResponseCode(404);
     }
-
-    public function testProfile() {
-        $this->session([ 'Auth.User.username' => $this->auth_data['username'] ]);
-        $this->enableCsrfToken();
-
-        $this->get('/users/user');
-        $this->assertResponseOk('failed to access profile page');
-
-        $this->get('/users');
-        $this->assertResponseCode( 404, 'response of request with no user' );
-
-        $this->get('/users/not_exist');
-        $this->assertResponseCode( 404, 'response of request for not exist user' );
-    }
-
 }

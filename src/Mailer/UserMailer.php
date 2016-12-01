@@ -7,7 +7,7 @@ use Cake\Routing\Router;
 class UserMailer extends Mailer 
 {
 	public function verify_email( $user ){
-		$url = Router::url([ 'controller' => 'Users', 'action' => 'register'], true );
+		$url = Router::url([ 'controller' => 'Pages', 'action' => 'register'], true );
 		$this->profile('default')
 			 ->transport('default')
 			 ->to($user->email)

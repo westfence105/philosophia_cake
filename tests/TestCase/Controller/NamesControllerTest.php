@@ -2,13 +2,12 @@
 namespace App\Test\TestCase\Controller;
 
 use App\Controller\DocumentsController;
-use Cake\TestSuite\IntegrationTestCase;
 
 use Cake\Log\Log;
 
 use App\Model\Validation\NameValidator;
 
-class NamesControllerTest extends IntegrationTestCase
+class NamesControllerTest extends ApiControllerTest
 {
 
     public $fixtures = [
@@ -18,51 +17,29 @@ class NamesControllerTest extends IntegrationTestCase
 
 	const URL = '/api/1.0/users/names';
 
+    protected $validator;
+
+    public function __construct(){
+        $this->validator = new NameValidator();
+    }
+
     public function setUp(){
         parent::setUp();
-        
-        $this->enableSecurityToken();
-        $this->enableCsrfToken();
-        $this->configRequest([
-                'environment' => [ 'HTTPS' => 'on' ]
-            ]);
         $this->session([ 'Auth.User.username' => 'smith' ]);
     }
 
     public function testNotAjaxDenied(){
         $this->get( self::URL.'.json' );
-        $this->assertResponseError();
-    }
-
-    protected function ajax( string $func, string $url, $data = [] ){
-        $token = 'test-csrf-token';
-        $this->cookie('csrfToken', $token );
-        $this->configRequest([
-            'headers' => [
-                'X-Requested-With' => 'XMLHttpRequest',
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json; charset=utf-8',
-                'X-Csrf-Token' => $token,
-            ],
-            'input' => json_encode($data),
-        ]);
-
-        if( $func == 'get' ){
-            return $this->get($url);
-        }
-        else{
-            return $this->$func($url);
-        }
+        $this->assertResponseCode(403);
     }
 
     protected function validateNames( array $names ){
         foreach ( $names as $i => $name ) {
-            $this->assertInternalType('integer', $i, 'content of preset is not array' );
-            $this->assertArrayHasKey('name', $name );
-            $this->assertArrayHasKey('type', $name );
-            $this->assertArrayHasKey('display', $name );
-            $this->assertArrayHasKey('short',   $name );
-            $this->assertInternalType('string', $name['display'] );
+            $errors = $this->validator->errors( $name );
+            $this->assertEmpty( $errors, 'name validation failed'."\n".
+                                            json_encode($errors,JSON_PRETTY_PRINT)."\n".
+                                            json_encode($name,JSON_PRETTY_PRINT)
+                                        );
         }
     }
 
@@ -141,7 +118,6 @@ class NamesControllerTest extends IntegrationTestCase
             $this->assertEquals( $ret['names'], $ret_view );
         }
 
-        $validator = new NameValidator();
         foreach ( $invalid_data as $j => $data ) {
             for( $i = 0; $i < 2; ++$i ){
                 $names = [];
@@ -156,7 +132,7 @@ class NamesControllerTest extends IntegrationTestCase
                 $ret = json_decode( $this->_response->body(), true );
                 $exp = [
                     'errors' => [
-                        "$i" => $validator->errors($data),
+                        "$i" => $this->validator->errors($data),
                     ],
                 ];
                 $this->assertEquals( $exp, $ret );
