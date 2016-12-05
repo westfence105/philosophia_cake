@@ -34,6 +34,8 @@ class PagesControllerTest extends IntegrationTestCase
     public $fixtures = [
         'app.users',
         'app.temp_users',
+        'app.accept_languages',
+        'app.names',
     ];
 
     public $auth_data = [
@@ -110,14 +112,23 @@ class PagesControllerTest extends IntegrationTestCase
     public function testProfile() {
         $this->setUser();
 
-        $this->get('/users/user');
-        $this->assertResponseOk('failed to access profile page');
-
         $this->get('/users');
         $this->assertResponseCode( 404, 'response of request with no user' );
 
         $this->get('/users/not_exist');
         $this->assertResponseCode( 404, 'response of request for not exist user' );
+
+        $this->get('/users/user');
+        $this->assertResponseOk('failed to access profile page');
+
+        $this->configRequest([
+                'headers' => [
+                    'Accept-Language' => 'ja,en',
+                ]
+            ]);
+        $this->get('/users/smith');
+        $this->assertResponseOk();
+        $this->assertResponseContains('ジョン');
     }
 
     public function testRegister()

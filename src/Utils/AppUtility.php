@@ -21,12 +21,8 @@
     		if( is_string( $langs ) ){
     			$langs = [ $langs ];
     		}
-    		else if( ! is_array( $langs ) ){
-    			throw new \InvalidArgumentException();
-    		}
-
-    		if( empty( $langs ) || empty( $presets ) ){
-    			throw new \InvalidArgumentException();
+    		else if( (!is_array( $langs )) || empty( $langs ) || empty( $presets ) ){
+    			return "";
     		}
 
     		$preset_data = [];
@@ -66,6 +62,23 @@
 
     		return array_values($presets)[0];
     	}
+
+        public static function parseAcceptLanguage( string $str ){
+            $langs = [];
+            foreach( explode( ',', $str ) as $i => $value ){
+                $m = [];
+                if( preg_match('/([a-zA-Z-_]*)(;q=([0-9.]*)){0,1}/', $value, $m ) ){
+                    $q = ( array_key_exists( 3, $m ) ? $m[3] : 1 ) * 100;
+                    $langs[$q][] = $m[1];
+                }
+            }
+            krsort($langs);
+            $ret = [];
+            foreach( $langs as $i => $list ){
+                $ret = array_merge($ret,$list);
+            }
+            return $ret;
+        }
 
 		public static function genHtmlTag( $tag_name, $options ){
 			$ret = '<'.$tag_name;

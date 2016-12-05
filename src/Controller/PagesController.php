@@ -11,6 +11,8 @@ use Cake\Mailer\MailerAwareTrait;
 use Cake\Network\Exception\NotFoundException;
 use Cake\Datasource\Exception\RecordNotFoundException;
 
+use App\Utils\AppUtility;
+
 class PagesController extends AppController
 {
     use MailerAwareTrait;
@@ -19,6 +21,7 @@ class PagesController extends AppController
 		parent::initialize();
 
         $this->loadModel('Users');
+        $this->loadModel('Names');
 
 		$this->Auth->allow([ 'index', 'login', 'register' ]);
 	}
@@ -129,11 +132,24 @@ class PagesController extends AppController
 
     public function profile( $username ){
         try {
+            $profile = [
+                'username' => $username,
+            ];
+
             $user = $this->Users->get($username);
 
-            $this->set('profile',[
-                    'username' => $username,
-                ]);
+            //set names
+            $presets = $this->Names->getPresets( $username );
+            $accept  = $this->Users->getAcceptLanguages( $this->Auth->user('username') );
+            if(!array_filter($accept) ){
+                if( $header_str = $this->request->env('HTTP_ACCEPT_LANGUAGE') ){
+                    $accept = AppUtility::parseAcceptLanguage( $header_str );
+                }
+            }
+            $preset  = AppUtility::selectPreset( $accept, $presets );
+            $profile['names'] = $this->Names->getName( $username, $preset );
+
+            $this->set('profile', $profile );
         }
         catch( RecordNotFoundException $e ) {
             throw new NotFoundException();

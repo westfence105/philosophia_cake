@@ -166,6 +166,14 @@ class NamesTable extends Table
         return (bool)$this->find()->where(['username' => $username, 'preset' => $preset ])->count();
     }
 
+    //format:
+    //[
+    //  ['name' => <name>, 'type' => <type> ],
+    //  ...
+    //]
+    //
+    //options:
+    //  display_lebel: normal(default), full, private
     public function getName( string $username, string $preset, array $options = [] ){
         $display_lebel = self::DISPLAY_LEBEL['normal'];
         if( array_key_exists('display_lebel',$options) ){
@@ -205,6 +213,18 @@ class NamesTable extends Table
         return isset($names) ? $names : [];
     }
 
+    //format:
+    //[
+    //  <preset> => [
+    //      ['name' => <name>, 'type' => <type>, 'display' => <short>],
+    //      ...
+    //  ],
+    //  ...
+    //]
+    //
+    //options:
+    //  display:
+    //      'string' -> returning 'display' to be string (default integer)
     public function getNameData( string $username, array $options = [] ){
         $query = $this->find()
                       ->select(['name','type','display','short','preset'])
@@ -226,6 +246,25 @@ class NamesTable extends Table
         return isset($data) ? $data : [];
     }
 
+    //format( argument $data and returning value ):
+    //[
+    //  <preset> => [
+    //      [
+    //          [
+    //              'name' => <name>, 
+    //              'type' => <type>,  
+    //              'display' => <display(integer or string)>, 
+    //              'short' =>   <short>
+    //          ],
+    //          ...
+    //      ],
+    //      ...
+    //  ],
+    //  ..
+    //]
+    //
+    //options:
+    //  'display': type of 'display' for returning value. ( default => int, 'string' )
     public function setNameData( string $username, array $data, array $options = [], array &$errors = [] ){
         $r_data = [];
         foreach ( $data as $preset => $names ) {

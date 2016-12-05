@@ -27,7 +27,8 @@ class UsersTableTest extends TestCase
      * @var array
      */
     public $fixtures = [
-        'app.users'
+        'app.users',
+        'app.accept_languages',
     ];
 
     /**
@@ -151,5 +152,11 @@ class UsersTableTest extends TestCase
         if( $this->Users->save($entity,['checkExisting'=>false]) ){
             $this->assertNotEmpty($entity->errors(),'duplicate user passed rule');
         }
+    }
+
+    public function testAcceptLanguages(){
+        $ret = $this->Users->getAcceptLanguages('smith');
+        $exp = ['en_US','ru','ja_JP'];
+        $this->assertEquals($exp,$ret);
     }
 }

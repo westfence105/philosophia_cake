@@ -37,6 +37,7 @@ class UsersTable extends Table
         $this->primaryKey('username');
 
         $this->hasMany('Names', ['foreignKey' => 'username']);
+        $this->hasMany('AcceptLanguages', ['foreignKey' => 'username']);
         $this->hasMany('ProfileData', ['foreignKey' => 'username']);
         $this->hasMany('Documents', ['foreignKey' => 'username']);
 
@@ -67,4 +68,20 @@ class UsersTable extends Table
 
         return $rules;
     }
+
+    public function getAcceptLanguages( string $username ){
+        $user = $this->get($username);
+        $ret[] = $user->language;
+
+        $query = $this->AcceptLanguages->find()
+                                       ->where(['username' => $username ])
+                                       ->order(['order_key' => 'ASC'])
+                                    ;
+        foreach( $query as $entity ){
+            $ret[] = $entity->language;
+        }
+
+        return $ret;
+    }
+
 }

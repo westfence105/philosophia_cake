@@ -44,7 +44,7 @@ class UsersFixture extends TestFixture
             [
                 'username' => 'user',
                 'password' => (new DefaultPasswordHasher)->hash('password'),
-                'language' => 'en_US',
+                'language' => '',
                 'email' => 'test_user@example.com'
             ],
             [

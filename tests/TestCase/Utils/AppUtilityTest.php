@@ -50,4 +50,26 @@ class AppUtilityTest extends TestCase
 			$this->assertEquals( $case['expected'], $ret, "failed at case $i" );
 		}
 	}
+
+	public function testParseAcceptLanguage(){
+		$cases = [
+			[
+				'str' => 'ja,en',
+				'expected' => ['ja','en'],
+			],
+			[
+				'str' => 'ja;q=0.8,en',
+				'expected' => ['en','ja'],
+			],
+			[
+				'str' => 'en,ru;q=0.6,ja;q=0.8',
+				'expected' => ['en','ja','ru'],
+			],
+		];
+
+		foreach( $cases as $i => $case ){
+			$ret = AppUtility::parseAcceptLanguage( $case['str'] );
+			$this->assertEquals( $case['expected'], $ret, "failed at case $i" );
+		}
+	}
 }
