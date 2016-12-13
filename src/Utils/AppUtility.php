@@ -1,6 +1,8 @@
 <?php
 	namespace App\Utils;
 
+    use Locale;
+
 	class AppUtility {
 
     	public static function array_subset( array $exp, array $values ){
@@ -16,6 +18,20 @@
     	    }
     	    return true;
     	}
+
+        public static function calculateSimilarity( array $a, array $b ) : int {
+            if( count( $a ) > count( $b ) ){
+                list( $a, $b ) = [ $b, $a ]; //swap
+            }
+
+            $ret = 0;
+            foreach( $a as $key => $value ){
+                if( array_key_exists( $key, $b ) && $value === $b[$key] ){
+                    ++$ret;
+                }
+            }
+            return $ret;
+        }
 
     	public static function selectPreset( $langs, array $presets ){
     		if( is_string( $langs ) ){
@@ -62,6 +78,62 @@
 
     		return array_values($presets)[0];
     	}
+
+        public static function sortPresets( array $presets, $langs ){
+            if( is_string($langs) ){
+                $langs = self::parseAcceptLanguage( $langs );
+            }
+
+            if( (!is_array($langs)) || empty($presets) || empty($langs) ){
+                return $presets;
+            }
+
+            $locale_pool = [];
+            $parseLocale = function( $lang ) use( $locale_pool ){
+                if( array_key_exists( $lang, $locale_pool ) ){
+                    return $locale_pool[$lang];
+                }
+                $locale = Locale::parseLocale( $lang );
+                $locale_pool[$lang] = $locale;
+                return $locale;
+            };
+
+            $locales = [];
+            foreach( $langs as $i => $lang ){
+                if( array_key_exists( $lang, $locale_pool ) ){
+                    continue;
+                }
+                $locales[] = $parseLocale( $lang );
+            };
+
+            $match_pool = [];
+            $matchPreset = function( $preset ) use( $locales, $parseLocale, $match_pool ){
+                if( array_key_exists( $preset, $match_pool ) ){
+                    return $match_pool[$preset];
+                }
+                $p_locale = $parseLocale( $preset );
+                $v_count = count( $p_locale );
+                $match_count = 0;
+                $ret = count( $locales );
+                foreach ( $locales as $i => $locale ) {
+                    $mc = self::calculateSimilarity( $p_locale, $locale );
+                    if( $match_count < $mc ){
+                        $ret = $i;
+                        $match_count = $mc;
+                    }
+                }
+                $match_pool[$preset] = $ret;
+                return $ret;
+            };
+
+            usort( $presets, 
+                function( $first, $second ) use( $matchPreset ) : int {
+                    return $matchPreset( $first ) - $matchPreset( $second );
+                }
+            );
+
+            return $presets;
+        }
 
         public static function parseAcceptLanguage( string $str ){
             $langs = [];
