@@ -3,4 +3,3 @@
 /tmp/*
 /logs/*
 config/Migrations/schema-dump-default.lock
-composer.lock
