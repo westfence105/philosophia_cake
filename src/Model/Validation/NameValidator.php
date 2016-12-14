@@ -8,7 +8,7 @@ use App\Model\Table\NamesTable;
 
 class NameValidator extends Validator {
 
-	public static function require( Validator &$validator, string $field, string $message = null, $when = null ){
+	public static function _require( Validator &$validator, string $field, string $message = null, $when = null ){
 		$validator->requirePresence( $field, $when, $message )
 				  ->notEmpty( $field, $message, $when );
 		return $validator;
@@ -29,13 +29,13 @@ class NameValidator extends Validator {
 			 ->inList('display', $display_list )
 			;
 
-		self::require( $this, 'name', __('"Name" is required except "Display" is "Short".'),
+		self::_require( $this, 'name', __('"Name" is required except "Display" is "Short".'),
 				function($context){
 					return ( (!array_key_exists('display', $context['data'])) ||
 							  $context['data']['display'] != 'short' );
 				}
 		  );
-		self::require( $this, 'short', __('"Short" required when "Display" is "Short".'),
+		self::_require( $this, 'short', __('"Short" required when "Display" is "Short".'),
 				function($context){
 					return ( array_key_exists('display', $context['data']) && 
 							  $context['data']['display'] == 'short' );
