@@ -5,13 +5,13 @@
     "type": "project",
     "license": "MIT",
     "require": {
-        "php": ">=5.5.9",
+        "php": ">=5.4",
         "cakephp/cakephp": "3.3.*",
         "mobiledetect/mobiledetectlib": "2.*",
         "cakephp/migrations": "~1.0",
         "cakephp/plugin-installer": "*",
-        "phpunit/phpunit": "^5.6",
-        "facebook/webdriver": "^1.2"
+        "phpunit/phpunit": "5.*",
+        "facebook/webdriver": "1.*"
     },
     "require-dev": {
         "psy/psysh": "@stable",
