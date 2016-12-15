@@ -9,6 +9,8 @@ use Cake\Validation\Validator;
 use Cake\Event\Event;
 use ArrayObject;
 
+use App\Utils\AppUtility;
+
 /**
  * Names Model
  *
@@ -149,17 +151,18 @@ class NamesTable extends Table
     }
 
     public function getPresets( string $username ){
+        $user = $this->Users->get($username);
         $query = $this->find()
                       ->select(['preset'])
                       ->distinct(['preset'])
                       ->where(['username' => $username ])
-                      ->order(['order_key' => 'ASC'])
                     ;
         $ret = [];
         foreach( $query as $entity ){
             $ret[] = $entity->preset;
         }
-        return $ret;
+
+        return AppUtility::sortPresets( $ret, $this->Users->getAcceptLanguages( $username ) );
     }
 
     public function hasPreset( string $username, string $preset ){
@@ -243,7 +246,19 @@ class NamesTable extends Table
             }
             $data[ $entity->preset ][] = $array;
         }
-        return isset($data) ? $data : [];
+        if( isset($data) ){
+            $ret = [];
+            $presets = $this->getPresets( $username );
+            foreach( $presets as $i => $key ){
+                if( array_key_exists( $key, $data ) ){
+                    $ret[$key] = $data[$key];
+                }
+            }
+            return $ret;
+        }
+        else {
+            return [];
+        }
     }
 
     //format( argument $data and returning value ):

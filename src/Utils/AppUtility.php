@@ -33,52 +33,6 @@
             return $ret;
         }
 
-    	public static function selectPreset( $langs, array $presets ){
-    		if( is_string( $langs ) ){
-    			$langs = [ $langs ];
-    		}
-    		else if( (!is_array( $langs )) || empty( $langs ) || empty( $presets ) ){
-    			return "";
-    		}
-
-    		$preset_data = [];
-
-    		foreach( $langs as $i => $lang ){
-    			if( ( $i = array_search( $lang, $presets ) ) !== false ){
-    				return $presets[$i];
-    			}
-    			else {
-    				$lang_data = locale_parse($lang);
-    				if( empty($preset_data) ){
-    					foreach( $presets as $i => $preset ) {
-    						$preset_data[$i] = locale_parse($preset);
-    					}
-    				}
-    				$match = false;
-    				$match_rate = 0;
-    				foreach ( $preset_data as $i => $preset ) {
-    					if( $lang_data['language'] == $preset['language'] ){
-    						$c = 0;
-    						foreach( $lang_data as $key => $value) {
-    							if( array_key_exists( $key, $preset ) && $value == $preset[$key] ){
-    								++$c;
-    							}
-    						}
-    						if( $c > $match_rate ){
-    							$match = $presets[$i];
-    							$match_rate = $c;
-    						}
-    					}
-    				}
-    				if( $match ){
-    					return $match;
-    				}
-    			}
-    		}
-
-    		return array_values($presets)[0];
-    	}
-
         public static function sortPresets( array $presets, $langs ){
             if( is_string($langs) ){
                 $langs = self::parseAcceptLanguage( $langs );
@@ -128,7 +82,13 @@
 
             usort( $presets, 
                 function( $first, $second ) use( $matchPreset ) : int {
-                    return $matchPreset( $first ) - $matchPreset( $second );
+                    $ret = $matchPreset( $first ) - $matchPreset( $second );
+                    if( $ret == 0 ){
+                        return strnatcmp( $first, $second ); //sort by alpha if same priority
+                    }
+                    else {
+                        return $ret;
+                    }
                 }
             );
 

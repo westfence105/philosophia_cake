@@ -32,10 +32,13 @@ class PagesController extends AppController
             $users = TableRegistry::get('Users');
             try {
                 $user = $users->get( $username );
-                $language = $user['language'];
-                @I18n::locale( $language );
                 $this->set('username', $username );
-                $this->set('language', @\Locale::getDisplayLanguage( $language ) );
+
+                $language = $user['language'];
+                if( ! empty($language) ){
+                    @I18n::locale( $language );
+                    $this->set('language', @\Locale::getDisplayLanguage( $language ) );
+                }
             }
             catch( RecordNotFoundException $e ){
                 $this->redirect( $this->Auth->logout() );
@@ -139,15 +142,26 @@ class PagesController extends AppController
             $user = $this->Users->get($username);
 
             //set names
-            $presets = $this->Names->getPresets( $username );
             $accept  = $this->Users->getAcceptLanguages( $this->Auth->user('username') );
             if(!array_filter($accept) ){
                 if( $header_str = $this->request->env('HTTP_ACCEPT_LANGUAGE') ){
                     $accept = AppUtility::parseAcceptLanguage( $header_str );
                 }
             }
-            $preset  = AppUtility::selectPreset( $accept, $presets );
-            $profile['names'] = $this->Names->getName( $username, $preset );
+            $presets = AppUtility::sortPresets( $this->Names->getPresets( $username ), $accept );
+            if( !empty($presets) ){
+                $profile['names'] = $this->Names->getName( $username, array_values($presets)[0] );
+            }
+            else {
+                $profile['names'] = [];
+            }
+
+            //set all names
+            $all_names = [];
+            foreach( $presets as $i => $preset ){
+                $all_names[$preset] = $this->Names->getName( $username, $preset );
+            }
+            $profile['all_names'] = $all_names;
 
             $this->set('profile', $profile );
         }

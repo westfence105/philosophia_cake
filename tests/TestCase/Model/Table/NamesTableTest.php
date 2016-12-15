@@ -17,6 +17,7 @@ class NamesTableTest extends TestCase
      *
      * @var \App\Model\Table\NamesTable
      */
+    public $Users;
     public $Names;
 
     /**
@@ -157,6 +158,23 @@ class NamesTableTest extends TestCase
         $this->assertEmpty( $entity->errors(), json_encode($entity->errors()) );
         $presets = $this->Names->getPresets('smith');
         $this->assertEquals( count($presets), 3, json_encode($presets) );
+
+        $user = $this->Names->Users->get('smith');
+        for( $i = 0; $i < 10; ++$i ){
+            $user->language = 'en';
+            $ret = $this->Names->Users->save($user);
+            $this->assertNotFalse( $ret );
+            $this->assertEmpty( $user->errors() );
+            $presets = $this->Names->getPresets('smith');
+            $this->assertEquals( 'en', $presets[0] );
+
+            $user->language = 'ja';
+            $ret = $this->Names->Users->save($user);
+            $this->assertNotFalse( $ret );
+            $this->assertEmpty( $user->errors() );
+            $presets = $this->Names->getPresets('smith');
+            $this->assertEquals( 'ja', $presets[0] );
+        }
     }
 
     public function testGetName(){
@@ -218,6 +236,20 @@ class NamesTableTest extends TestCase
                 $this->assertInternalType('string', $name['display']);
             }
         }
+
+        $presets = $this->Names->getPresets('smith');
+        $this->assertEquals( count( $presets ), count( $data ), 
+                                'asserting count( $data ) == count( $presets )' );
+        $this->assertEquals( $presets, array_keys( $data ), 'assert order of name_data' );
+
+        $this->assertEquals( 'en', array_keys( $data )[0] );
+        $user = $this->Names->Users->get('smith');
+        $user->language = 'ja';
+        $ret = $this->Names->Users->save($user);
+        $this->assertNotFalse( $ret );
+        $this->assertEmpty( $user->errors() );
+        $data = $this->Names->getNameData('smith');
+        $this->assertEquals( 'ja', array_keys( $data )[0] );
     }
 
     public function testSetNameData(){
@@ -265,7 +297,7 @@ class NamesTableTest extends TestCase
                 ],
             ],
         ];
-        $other_user_data = $this->Names->getNameData('test_user');
+        $other_user_data = $this->Names->getNameData('user');
 
         foreach ( $test_data as $i => $data ) {
             $orig = $this->Names->getNameData( $username, ['display' => 'string'] );
@@ -278,7 +310,7 @@ class NamesTableTest extends TestCase
             $this->assertEquals( $expected, $result, 'assert data already set' );
         }
 
-        $data = $this->Names->getNameData('test_user');
+        $data = $this->Names->getNameData('user');
         $this->assertEquals( $other_user_data, $data, 'assert method never effect to other users' );
     }
 
@@ -298,10 +330,10 @@ class NamesTableTest extends TestCase
         $data = $this->Names->getNameData('smith');
         $this->assertEquals( $data_old, $data, 'assert empty never remove others' );
 
-        $tu_exp = $this->Names->getNameData('test_user');
-        $this->Names->removePreset('test_user','');
+        $tu_exp = $this->Names->getNameData('user');
+        $this->Names->removePreset('user','');
         unset($tu_exp['']);
-        $this->assertEquals( $tu_exp, $this->Names->getNameData('test_user'), 'assert remove works' );
+        $this->assertEquals( $tu_exp, $this->Names->getNameData('user'), 'assert remove works' );
         $data = $this->Names->getNameData('smith');
         $this->assertEquals( $data_old, $data, 'assert never remove others' );
     }

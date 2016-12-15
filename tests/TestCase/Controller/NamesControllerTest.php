@@ -13,6 +13,7 @@ class NamesControllerTest extends ApiControllerTest
     public $fixtures = [
         'app.users',
         'app.names',
+        'app.accept_languages'
     ];
 
 	const URL = '/api/1.0/users/names';
