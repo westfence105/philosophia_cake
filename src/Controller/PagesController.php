@@ -149,19 +149,14 @@ class PagesController extends AppController
                 }
             }
             $presets = AppUtility::sortPresets( $this->Names->getPresets( $username ), $accept );
-            if( !empty($presets) ){
-                $profile['names'] = $this->Names->getName( $username, array_values($presets)[0] );
-            }
-            else {
-                $profile['names'] = [];
-            }
 
-            //set all names
-            $all_names = [];
+            $names = [];
             foreach( $presets as $i => $preset ){
-                $all_names[$preset] = $this->Names->getName( $username, $preset );
+                $names[$preset] = $this->Names->getName( $username, $preset, ['display_level' => 'full']);
             }
-            $profile['all_names'] = $all_names;
+            $profile['names'] = $names;
+
+            $profile['languages'] = $this->Users->getAcceptLanguages( $username );
 
             $this->set('profile', $profile );
         }

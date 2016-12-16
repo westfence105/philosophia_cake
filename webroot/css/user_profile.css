@@ -6,14 +6,14 @@ div.container
 
 div#user_profile
 {
-	margin-left: 3em;
-	margin-right: 5em;
+	margin: 0 1rem;
+	padding: 0.5rem 1.5rem 0 3rem;
 	min-height: 2em;
 	background-color: #ffa;
-	padding: 1em;
 	display: table;
 	border-collapse: separate;
-	border-spacing: 0.5rem 1.0rem;
+	border-spacing: 1rem 1.0rem;
+	width: 100%;
 }
 
 div.profile_component
@@ -26,15 +26,23 @@ div.profile_component > *
 	display: table-cell;
 }
 
+div.component_name
+{
+	text-align: right;
+	vertical-align: middle;
+	min-width: 10%;
+}
+
 div.profile_content
 {
 	background-color: #fff;
+	width: 100%;
+	padding: 1em 1.2rem;
 }
 
 div#profile_name
 {
 	display: table;
-	padding: 1em 1.2rem;
 	border-collapse: separate;
 	border-spacing: 0.5em 0.5em;
 }
@@ -50,10 +58,18 @@ div#profile_name div.name_preset > span
 	display: table-cell;
 }
 
+div#profile_name div.name_preset .preset_name
+{
+	text-align: right;
+	font-size: 0.9em;
+}
+
 div#profile_name div.name_preset div.names
 {
-	background-color: #ddf;
-	padding: 0 0.5rem;
+	background-color: #ced;
+	padding: 0.2em 0.5em;
+	font-size: 1.2em;
+	font-weight: bolder;
 }
 
 div#profile_name div.name_preset div.names div.name
@@ -66,4 +82,15 @@ div#profile_name div.name_preset div.names div.name
 div#profile_name div.name_preset div.names div.name:hover > span.description
 {
 	display: block;
+}
+
+span.language
+{
+	display: inline-block;
+	margin: 0 0.5em;
+}
+
+#native_language
+{
+	font-weight: bold;
 }
