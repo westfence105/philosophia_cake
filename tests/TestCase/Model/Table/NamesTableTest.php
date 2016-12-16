@@ -178,7 +178,7 @@ class NamesTableTest extends TestCase
     }
 
     public function testGetName(){
-        //display_lebel => normal
+        //display_level => normal
         //expected: 'John D Smith'
         $names = $this->Names->getName('smith','en'); //
         foreach ( $names as $key => $name ) {
@@ -192,9 +192,9 @@ class NamesTableTest extends TestCase
             ];
         $this->assertEquals( $expected, $names );
 
-        //display_lebel => full
+        //display_level => full
         //expected: 'John David "Aihal" Smith'
-        $names = $this->Names->getName('smith', 'en', [ 'display_lebel' => 'full' ]);
+        $names = $this->Names->getName('smith', 'en', [ 'display_level' => 'full' ]);
         $expected = [
                 ['name' => 'John',      'type' => 'given'],
                 ['name' => 'David',     'type' => 'middle'],
@@ -203,9 +203,9 @@ class NamesTableTest extends TestCase
             ];
         $this->assertEquals( $expected, $names );
 
-        //display_lebel => private
+        //display_level => private
         //expected: 'John David "Aihal" Smith "Ged"'
-        $names = $this->Names->getName('smith', 'en', ['display_lebel' => 'private']);
+        $names = $this->Names->getName('smith', 'en', ['display_level' => 'private']);
         $expected = [
                 ['name' => 'John',      'type' => 'given'],
                 ['name' => 'David',     'type' => 'middle'],

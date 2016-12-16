@@ -25,7 +25,7 @@ use App\Utils\AppUtility;
 class NamesTable extends Table
 {
     const DISPLAY = [ 'private' => 0, 'omit' => 1, 'short' => 2, 'display' => 3  ];
-    const DISPLAY_LEBEL = [ 'normal' => 0, 'full' => 1, 'private' => 2 ];
+    const DISPLAY_LEVEL = [ 'normal' => 0, 'full' => 1, 'private' => 2 ];
 
     public static function types(){
         return [
@@ -176,15 +176,15 @@ class NamesTable extends Table
     //]
     //
     //options:
-    //  display_lebel: normal(default), full, private
+    //  display_level: normal(default), full, private
     public function getName( string $username, string $preset, array $options = [] ){
-        $display_lebel = self::DISPLAY_LEBEL['normal'];
-        if( array_key_exists('display_lebel',$options) ){
-            if( is_string($options['display_lebel']) ){
-                $display_lebel = self::DISPLAY_LEBEL[ $options['display_lebel'] ];
+        $display_level = self::DISPLAY_LEVEL['normal'];
+        if( array_key_exists('display_level',$options) ){
+            if( is_string($options['display_level']) ){
+                $display_level = self::DISPLAY_LEVEL[ $options['display_level'] ];
             }
-            else if( is_int($options['display_lebel']) ){
-                $display_lebel = $options['display_lebel'];
+            else if( is_int($options['display_level']) ){
+                $display_level = $options['display_level'];
             }
         }
 
@@ -194,15 +194,15 @@ class NamesTable extends Table
                       ->order(['order_key' => 'ASC'])
                     ;
         foreach( $query as $row ){
-            if( $row->display == self::DISPLAY['private'] && $display_lebel < self::DISPLAY_LEBEL['private'] ){
+            if( $row->display == self::DISPLAY['private'] && $display_level < self::DISPLAY_LEVEL['private'] ){
                 continue;
             }
-            else if( $row->display <= self::DISPLAY['omit'] && $display_lebel < self::DISPLAY_LEBEL['full'] ){
+            else if( $row->display <= self::DISPLAY['omit'] && $display_level < self::DISPLAY_LEVEL['full'] ){
                 continue;
             }
             else {
                 $name = '';
-                if( $row->display == self::DISPLAY['short'] && $display_lebel < self::DISPLAY_LEBEL['full'] ){
+                if( $row->display == self::DISPLAY['short'] && $display_level < self::DISPLAY_LEVEL['full'] ){
                     $name = $row->short;
                 }
                 else {
